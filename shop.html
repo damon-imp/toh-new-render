@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--accent-glow:rgba(172,102,167,.12);--accent-glow2:rgba(172,102,167,.25);--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--radius:12px;--max-w:1280px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-light)}img{max-width:100%;display:block}.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:12px}.nav-logo .mark{font-weight:900;font-size:28px;color:var(--accent);letter-spacing:-1px}.nav-logo .wordmark{line-height:1.1}.nav-logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--t2);letter-spacing:2px;text-transform:uppercase}.nav-logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--white)}.nav-links{display:flex;align-items:center;gap:32px}.nav-links a{color:var(--t2);font-size:13px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}.nav-links a:hover,.nav-links a.active{color:var(--white)}.nav-cart{position:relative;cursor:pointer;padding:8px}.nav-cart svg{width:22px;height:22px;stroke:var(--t2);fill:none;stroke-width:1.5;transition:stroke .2s}.nav-cart:hover svg{stroke:var(--white)}.cart-count{position:absolute;top:2px;right:0;background:var(--accent);color:var(--bg);font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+@media(max-width:768px){.nav-links{display:none}}
+
+.page-header{padding:120px 0 40px;border-bottom:1px solid rgba(255,255,255,.04)}.page-header h1{font-size:clamp(32px,4vw,48px);font-weight:800;color:var(--white);margin-bottom:8px}.page-header p{font-size:16px;color:var(--t3);font-weight:300}
+
+.shop-controls{padding:24px 0;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:32px}
+.shop-search{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:10px 16px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.shop-search:focus{border-color:var(--accent)}
+.filter-btn{background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:8px 16px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+.filter-btn:hover,.filter-btn.active{background:var(--accent);color:var(--white);border-color:var(--accent)}
+
+.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-bottom:80px}
+.product-card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden;transition:all .3s}
+.product-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.product-img{height:200px;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative}
+.product-img .vial-placeholder{width:50px;height:90px;background:linear-gradient(180deg,rgba(172,102,167,.15),rgba(172,102,167,.05));border:1px solid var(--t4);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.product-img .vial-placeholder .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;opacity:.5}
+.product-img .vial-placeholder .line{width:20px;height:2px;background:var(--t4)}
+.product-img .badge{position:absolute;top:12px;right:12px;background:var(--accent);color:var(--white);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.product-body{padding:16px 18px 20px}
+.product-body .form-tag{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.product-body h3{font-size:15px;font-weight:600;color:var(--white);margin-bottom:4px}
+.product-body .content{font-size:12px;color:var(--t3);margin-bottom:12px}
+.product-body .price-row{display:flex;align-items:center;justify-content:space-between}
+.product-body .price{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--accent)}
+.product-body .add-btn{background:var(--bg3);border:1px solid var(--t4);color:var(--t2);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.product-body .add-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--white)}
+.product-body .add-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.no-results{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--t3);font-size:16px}
+@media(max-width:900px){.product-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.product-grid{grid-template-columns:1fr}}
+
+.footer{padding:60px 0 40px;border-top:1px solid rgba(255,255,255,.04)}.footer-bottom{display:flex;justify-content:space-between;align-items:center}.footer-bottom p{font-size:12px;color:var(--t4)}.footer-bottom .disclaimer{font-size:10px;color:var(--t4);max-width:500px;text-align:right;line-height:1.5}
+@media(max-width:768px){.footer-bottom{flex-direction:column;gap:12px;text-align:center}.footer-bottom .disclaimer{text-align:center}}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner">
+  <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
+  <div class="nav-links"><a href="index.html">Home</a><a href="shop.html" class="active">Shop</a><a href="coa.html">COA</a><a href="about.html">About</a><a href="partners.html">Partners</a><a href="contact.html">Contact</a></div>
+  <div class="nav-cart" onclick="toggleCart()"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><div class="cart-count" id="cartCount">0</div></div>
+</div></nav>
+
+<section class="page-header"><div class="container">
+  <h1>Shop All Products</h1>
+  <p>17 research compounds. Third-party tested. 99%+ purity verified.</p>
+</div></section>
+
+<section><div class="container">
+  <div class="shop-controls">
+    <input type="text" class="shop-search" id="search" placeholder="Search products..." oninput="filterProducts()">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('metabolic',this)">Metabolic</button>
+    <button class="filter-btn" onclick="setFilter('recovery',this)">Recovery</button>
+    <button class="filter-btn" onclick="setFilter('longevity',this)">Longevity</button>
+    <button class="filter-btn" onclick="setFilter('cognitive',this)">Cognitive</button>
+    <button class="filter-btn" onclick="setFilter('hormonal',this)">Hormonal</button>
+    <button class="filter-btn" onclick="setFilter('aesthetic',this)">Aesthetic</button>
+  </div>
+  <div class="product-grid" id="productGrid"></div>
+</div></section>
+
+<footer class="footer"><div class="container"><div class="footer-bottom">
+  <p>&copy; 2026 The Optimized Human. All rights reserved.</p>
+  <div class="disclaimer">All products are sold strictly for laboratory research purposes only and are not intended for human or animal consumption.</div>
+</div></div></footer>
+
+<script>
+const PRODUCTS = [
+  { id:"kpv", name:"KPV", content:"10mg", form:"Lyophilized", price:49.99, category:"recovery", badge:"" },
+  { id:"ksptn", name:"KSPTN", content:"10mg", form:"Lyophilized", price:44.99, category:"hormonal", badge:"" },
+  { id:"methblue", name:"Methylene Blue 1%", content:"60ml", form:"Liquid", price:33.99, category:"cognitive", badge:"" },
+  { id:"tesa", name:"Tesamorelin", content:"10mg", form:"Lyophilized", price:74.99, category:"metabolic", badge:"" },
+  { id:"amino5", name:"5-Amino-1MQ", content:"20mg", form:"Lyophilized", price:79.99, category:"metabolic", badge:"" },
+  { id:"selank", name:"Selank (N-Acetyl)", content:"10mg", form:"Lyophilized", price:79.99, category:"cognitive", badge:"" },
+  { id:"ta1", name:"Thymosin Alpha-1", content:"5mg", form:"Lyophilized", price:49.99, category:"hormonal", badge:"" },
+  { id:"b12", name:"B12 (Methylated)", content:"10mg", form:"Liquid", price:67.99, category:"hormonal", badge:"" },
+  { id:"glut", name:"Glutathione", content:"600mg", form:"Lyophilized", price:38.99, category:"hormonal", badge:"" },
+  { id:"motsc", name:"MOTS-c", content:"10mg", form:"Lyophilized", price:55.99, category:"longevity", badge:"" },
+  { id:"epi", name:"Epithalon", content:"10mg", form:"Lyophilized", price:42.99, category:"longevity", badge:"" },
+  { id:"tb500", name:"TB-500", content:"10mg", form:"Lyophilized", price:64.99, category:"recovery", badge:"Best Seller" },
+  { id:"nad", name:"NAD+", content:"500mg", form:"Lyophilized", price:59.99, category:"longevity", badge:"Popular" },
+  { id:"ipa", name:"Ipamorelin", content:"10mg", form:"Lyophilized", price:59.99, category:"metabolic", badge:"" },
+  { id:"bpc", name:"BPC-157", content:"10mg", form:"Lyophilized", price:64.99, category:"recovery", badge:"Best Seller" },
+  { id:"ghkcu", name:"GHK-Cu", content:"50mg", form:"Lyophilized", price:54.99, category:"aesthetic", badge:"" },
+  { id:"glp3r", name:"GLP-3R", content:"10mg", form:"Lyophilized", price:89.99, category:"metabolic", badge:"New" },
+];
+
+let activeFilter = 'all';
+
+function renderCard(p) {
+  return `<div class="product-card" data-category="${p.category}" data-name="${p.name.toLowerCase()}">
+    <div class="product-img">
+      <div class="vial-placeholder"><div class="dot"></div><div class="line"></div><div class="dot"></div></div>
+      ${p.badge ? `<div class="badge">${p.badge}</div>` : ''}
+    </div>
+    <div class="product-body">
+      <div class="form-tag">${p.form} &middot; ${p.content}</div>
+      <h3>${p.name}</h3>
+      <div class="price-row">
+        <div class="price">$${p.price.toFixed(2)}</div>
+        <button class="add-btn" onclick="addToCart('${p.id}')">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAll() {
+  document.getElementById('productGrid').innerHTML = PRODUCTS.map(renderCard).join('');
+  filterProducts();
+}
+
+function setFilter(cat, el) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  filterProducts();
+}
+
+function filterProducts() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const cards = document.querySelectorAll('.product-card');
+  let visible = 0;
+  cards.forEach(c => {
+    const cat = c.dataset.category;
+    const name = c.dataset.name;
+    const matchCat = activeFilter === 'all' || cat === activeFilter;
+    const matchSearch = !search || name.includes(search);
+    const show = matchCat && matchSearch;
+    c.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  const existing = document.querySelector('.no-results');
+  if (existing) existing.remove();
+  if (visible === 0) {
+    document.getElementById('productGrid').insertAdjacentHTML('beforeend', '<div class="no-results">No products match your search.</div>');
+  }
+}
+
+let cart = JSON.parse(localStorage.getItem('toh_cart') || '[]');
+function updateCartCount() { document.getElementById('cartCount').textContent = cart.reduce((s,i) => s+i.qty, 0); }
+function addToCart(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  const existing = cart.find(x => x.id === id);
+  if (existing) existing.qty++; else cart.push({id, name:p.name+' '+p.content, price:p.price, qty:1});
+  localStorage.setItem('toh_cart', JSON.stringify(cart));
+  updateCartCount();
+}
+function toggleCart() {}
+
+renderAll();
+updateCartCount();
+
+// Handle hash-based category navigation
+if (window.location.hash) {
+  const cat = window.location.hash.replace('#','');
+  const btn = [...document.querySelectorAll('.filter-btn')].find(b => b.textContent.toLowerCase().includes(cat));
+  if (btn) { setFilter(cat, btn); }
+}
+</script>
+</body>
+</html>
