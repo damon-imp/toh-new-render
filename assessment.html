@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OH Score™ + Protocol Finder | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0D0D0D;--surface:#161616;--card:#1C1C1C;--card-hover:#252525;
+  --purple:#AC66A7;--purple-light:#c88cc4;--purple-glow:rgba(172,102,167,.15);--purple-dim:rgba(172,102,167,.08);
+  --green:#34D399;--orange:#F59E0B;--red:#EF4444;--blue:#3B82F6;--cyan:#06B6D4;
+  --text:#F5F5F5;--text2:#999;--text3:#666;--text4:#444;
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.1);
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+.wrap{max-width:700px;margin:0 auto;padding:32px 20px 80px}
+
+/* ─── LOGO ─── */
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.logo .mark{font-weight:900;font-size:28px;color:var(--purple);letter-spacing:-1px}
+.logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--text2);letter-spacing:2px;text-transform:uppercase}
+.logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--text)}
+
+/* ─── DISCLAIMER BAR ─── */
+.disclaimer-bar{background:var(--surface);border:1px solid var(--text4);border-radius:8px;padding:12px 16px;margin-bottom:32px}
+.disclaimer-bar p{font-size:11px;color:var(--text3);line-height:1.6;margin:0}
+.disclaimer-bar strong{color:var(--text2)}
+
+/* ─── SCREENS ─── */
+.screen{display:none;animation:fadeUp .4s ease}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── PHASE INDICATOR ─── */
+.phase-indicator{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.phase-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:700;border:2px solid var(--text4);color:var(--text3);transition:all .3s}
+.phase-dot.active{background:var(--purple);border-color:var(--purple);color:#fff}
+.phase-dot.done{background:var(--green);border-color:var(--green);color:#000}
+.phase-line{flex:1;height:2px;background:var(--text4);border-radius:1px;position:relative}
+.phase-line .fill{height:100%;background:var(--green);border-radius:1px;transition:width .5s ease}
+
+/* ─── HEADINGS ─── */
+h1{font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;line-height:1.15;margin-bottom:12px}
+h1 span{color:var(--purple)}
+h2{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px}
+.subtitle{font-size:14px;color:var(--text3);margin-bottom:24px;line-height:1.6}
+.label-tag{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+
+/* ─── HABIT CARDS (Intro) ─── */
+.habit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px}
+.habit-card{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.habit-card .ic{font-size:22px}
+.habit-card h3{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.habit-card p{font-size:11px;color:var(--text3)}
+.habit-card.full{grid-column:1/-1}
+@media(max-width:500px){.habit-grid{grid-template-columns:1fr}}
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap{margin-bottom:28px}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-top .plabel{font-size:13px;font-weight:600;color:var(--text)}
+.progress-top .pcount{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.progress-bar{height:4px;background:var(--surface);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple-light));border-radius:2px;transition:width .4s ease}
+
+/* ─── PILLAR BADGE ─── */
+.pillar-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px;border:1px solid}
+.pillar-S{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:#3B82F6}
+.pillar-H{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:#06B6D4}
+.pillar-I{background:rgba(172,102,167,.1);border-color:rgba(172,102,167,.3);color:#AC66A7}
+.pillar-F{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:#34D399}
+.pillar-T{background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.3);color:#F97316}
+
+/* ─── OPTIONS (Assessment) ─── */
+.option{background:var(--surface);border:1px solid var(--text4);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.option:hover{border-color:var(--purple);background:var(--card-hover)}
+.option.selected{border-color:var(--purple);background:var(--purple-glow)}
+.option .dot{width:20px;height:20px;min-width:20px;border-radius:50%;border:2px solid var(--text4);transition:all .2s;display:flex;align-items:center;justify-content:center}
+.option.selected .dot{border-color:var(--purple);background:var(--purple)}
+.option .dot::after{content:'';width:8px;height:8px;border-radius:50%;background:#fff;opacity:0;transition:opacity .2s}
+.option.selected .dot::after{opacity:1}
+.option span{font-size:14px;color:var(--text2);transition:color .2s}
+.option.selected span{color:#fff}
+
+/* ─── MULTI-SELECT OPTIONS (Protocol) ─── */
+.multi-option{background:var(--surface);border:1px solid var(--text4);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.multi-option:hover{border-color:var(--purple);background:var(--card-hover)}
+.multi-option.selected{border-color:var(--purple);background:var(--purple-glow)}
+.multi-option .check{width:20px;height:20px;min-width:20px;border-radius:5px;border:2px solid var(--text4);transition:all .2s;display:flex;align-items:center;justify-content:center}
+.multi-option.selected .check{border-color:var(--purple);background:var(--purple)}
+.multi-option .check svg{opacity:0;transition:opacity .2s}
+.multi-option.selected .check svg{opacity:1}
+.multi-option .label{font-size:14px;font-weight:600;color:var(--text)}
+.multi-option .desc{font-size:12px;color:var(--text3);margin-top:3px}
+.multi-option.selected .label{color:#fff}
+
+/* ─── NAV BUTTONS ─── */
+.nav-row{display:flex;gap:12px;margin-top:28px}
+.btn-back{background:var(--surface);border:1px solid var(--text4);border-radius:10px;padding:12px 24px;color:var(--text2);font-size:14px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .2s}
+.btn-back:hover{border-color:var(--text2)}
+.btn-next{background:var(--purple);border:none;border-radius:10px;padding:12px 32px;color:#fff;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .2s}
+.btn-next:hover{background:var(--purple-light)}
+.btn-next:disabled{background:var(--text4);color:var(--text3);cursor:not-allowed}
+.btn-cta{background:var(--purple);border:none;border-radius:10px;padding:16px 40px;color:#fff;font-size:15px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-cta:hover{background:var(--purple-light);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--purple);border-radius:10px;padding:12px 24px;color:var(--purple);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-outline:hover{background:var(--purple-dim)}
+
+/* ─── EMAIL GATE ─── */
+.gate-card{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 32px;text-align:center}
+.gate-card h2{margin-bottom:16px}
+.blurred-score{font-family:var(--mono);font-size:72px;font-weight:700;color:var(--purple);filter:blur(12px);margin:20px 0;user-select:none}
+.gate-card p{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px;max-width:440px;margin-left:auto;margin-right:auto}
+.input-group{display:flex;flex-direction:column;gap:10px;max-width:360px;margin:0 auto 20px}
+.input-group input{background:var(--card);border:1px solid var(--text4);border-radius:8px;padding:14px 16px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color .2s}
+.input-group input:focus{border-color:var(--purple)}
+.input-group input::placeholder{color:var(--text3)}
+.gate-fine{font-size:11px;color:var(--text4);margin-top:12px}
+
+/* ─── OH SCORE DISPLAY ─── */
+.score-ring-wrap{display:flex;justify-content:center;margin:24px 0}
+.score-ring{position:relative;width:200px;height:200px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .bg-ring{fill:none;stroke:var(--surface);stroke-width:10}
+.score-ring .fg-ring{fill:none;stroke:var(--purple);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1.5s ease}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-number{font-family:var(--mono);font-size:52px;font-weight:700;color:#fff}
+.score-of{font-size:13px;color:var(--text3);font-family:var(--mono)}
+
+/* ─── TIER BADGE ─── */
+.tier-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:16px}
+.tier-depleted{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#EF4444}
+.tier-struggling{background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);color:#F97316}
+.tier-functional{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#FBBF24}
+.tier-optimized{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);color:#34D399}
+
+/* ─── PILLAR BREAKDOWN ─── */
+.pillar-row{margin-bottom:16px}
+.pillar-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pillar-name{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.pillar-pct{font-family:var(--mono);font-size:14px;font-weight:700}
+.focus-tag{font-size:9px;font-weight:700;color:var(--red);background:rgba(239,68,68,.12);padding:3px 8px;border-radius:10px;letter-spacing:.5px;text-transform:uppercase}
+.pillar-bar{height:8px;background:var(--surface);border-radius:4px;overflow:hidden}
+.pillar-bar-fill{height:100%;border-radius:4px;transition:width 1s ease .3s}
+
+/* ─── LADDER ─── */
+.ladder{display:flex;flex-direction:column;gap:8px;margin:24px 0}
+.rung{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);position:relative}
+.rung.highlighted{border-color:var(--purple);background:var(--purple-dim)}
+.rung-number{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--text4);min-width:24px}
+.rung.highlighted .rung-number{color:var(--purple)}
+.rung-name{font-size:14px;font-weight:600;color:var(--text)}
+.rung-desc{font-size:12px;color:var(--text3)}
+.your-step{position:absolute;right:16px;font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono)}
+
+/* ─── COMPOUND RESULTS CARD ─── */
+.compound-card{background:var(--surface);border:1px solid var(--text4);border-radius:14px;overflow:hidden;margin-bottom:14px;transition:border-color .3s}
+.compound-card.primary{border-color:var(--purple)}
+.compound-head{padding:16px 20px 12px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--border)}
+.compound-tier-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-family:var(--mono)}
+.compound-cat-tag{font-size:10px;color:var(--text3);background:var(--card);padding:2px 8px;border-radius:4px;margin-left:8px}
+.compound-name{font-size:22px;font-weight:700;color:#fff;margin-top:4px}
+.compound-price{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--purple)}
+.compound-meta{font-size:11px;color:var(--text3)}
+.compound-body{padding:14px 20px 18px}
+.compound-desc{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:10px}
+.compound-reason{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:var(--purple-dim);border-radius:8px;border:1px solid rgba(172,102,167,.15)}
+.compound-reason .arrow{color:var(--purple);font-size:14px;margin-top:1px}
+.compound-reason span{font-size:12px;color:var(--purple-light);line-height:1.5}
+
+/* ─── COST SUMMARY ─── */
+.cost-bar{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--surface);border:1px solid var(--text4);border-radius:10px;margin-bottom:28px}
+.cost-bar .amount{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--green)}
+.cost-bar .cost-label{font-size:12px;color:var(--text3);margin-bottom:2px}
+.cost-bar .cost-right{font-size:11px;color:var(--text3);text-align:right;line-height:1.5}
+
+/* ─── CTA BOX ─── */
+.cta-box{background:var(--purple-dim);border:1px solid rgba(172,102,167,.2);border-radius:14px;padding:24px 28px;margin:28px 0}
+.cta-box h3{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px}
+.cta-box p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px}
+.cta-box .btns{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ─── SECTION DIVIDER ─── */
+.section-divider{border:none;border-top:1px solid var(--border2);margin:40px 0}
+
+/* ─── FINAL DISCLAIMER ─── */
+.final-disclaimer{padding:16px 20px;background:var(--surface);border:1px solid var(--text4);border-radius:8px;margin-top:40px}
+.final-disclaimer p{font-size:10px;color:var(--text3);line-height:1.7;margin:0}
+.final-disclaimer strong{color:var(--text2)}
+
+@media(max-width:500px){
+  .gate-card{padding:28px 20px}
+  .cost-bar{flex-direction:column;align-items:flex-start;gap:8px}
+  .cost-bar .cost-right{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- LOGO -->
+<div class="logo">
+  <div class="mark">OH</div>
+  <div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer-bar">
+  <p><strong>DISCLAIMER:</strong> This tool is for educational and research orientation purposes only. It is <strong>not medical advice</strong>. All products referenced are sold strictly for laboratory research purposes and are not intended for human or animal consumption. Consult a qualified healthcare provider before making any health-related decisions.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 1: INTRO
+     ══════════════════════════════════════════════ -->
+<div class="screen active" id="intro-screen">
+  <h1>What's Your<br><span>OH Score?</span></h1>
+  <p class="subtitle">Two phases. One complete picture. First we score your 5 foundational SHIFT habits, then we route you to the research compounds that match your biology.</p>
+
+  <!-- Phase indicator -->
+  <div class="phase-indicator" style="margin-bottom:32px">
+    <div class="phase-dot active">1</div>
+    <div class="phase-line"><div class="fill" style="width:0%"></div></div>
+    <div class="phase-dot">2</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px">
+      <div style="font-size:11px;color:var(--purple);font-family:var(--mono);font-weight:700;letter-spacing:1.5px;margin-bottom:8px">PHASE 1</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">OH Score™</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.5">10 questions across the 5 SHIFT pillars. Get your score, tier, and weakest pillar identified.</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px">
+      <div style="font-size:11px;color:var(--green);font-family:var(--mono);font-weight:700;letter-spacing:1.5px;margin-bottom:8px">PHASE 2</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">Protocol Finder</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.5">Symptom-based routing to the exact research compounds from our 17-SKU inventory.</div>
+    </div>
+  </div>
+
+  <div style="font-size:12px;color:var(--text3);margin-bottom:8px;font-weight:600">THE 5 SHIFT HABITS</div>
+  <div class="habit-grid">
+    <div class="habit-card"><div class="ic">👟</div><div><h3>Steps</h3><p>8,000+ daily</p></div></div>
+    <div class="habit-card"><div class="ic">💧</div><div><h3>Hydration</h3><p>75oz + electrolytes</p></div></div>
+    <div class="habit-card"><div class="ic">🧠</div><div><h3>Identity Input</h3><p>Daily development</p></div></div>
+    <div class="habit-card"><div class="ic">🥗</div><div><h3>Fuel</h3><p>Macro bowls, colors</p></div></div>
+    <div class="habit-card full"><div class="ic">🏋️</div><div><h3>Training</h3><p>Daily resistance training</p></div></div>
+  </div>
+
+  <button class="btn-cta" onclick="startAssessment()">Begin Assessment →</button>
+  <p style="font-size:12px;color:var(--text4);margin-top:10px">Takes about 3 minutes. No fluff.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 2: SHIFT ASSESSMENT (10 Questions)
+     ══════════════════════════════════════════════ -->
+<div class="screen" id="assessment-screen">
+  <div class="phase-indicator">
+    <div class="phase-dot active" id="p1dot">1</div>
+    <div class="phase-line"><div class="fill" id="p1fill" style="width:0%"></div></div>
+    <div class="phase-dot" id="p2dot">2</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="plabel" id="pillar-label">Steps</span>
+      <span class="pcount" id="progress-count">1 / 10</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:10%"></div></div>
+  </div>
+
+  <div id="pillar-badge-wrap"></div>
+  <h2 id="question-text"></h2>
+  <div id="options-wrap" style="margin-top:20px"></div>
+
+  <div class="nav-row">
+    <button class="btn-back" id="back-btn" onclick="prevAssessment()">← Back</button>
+    <button class="btn-next" id="next-btn" onclick="nextAssessment()">Next →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 3: EMAIL GATE
+     ══════════════════════════════════════════════ -->
+<div class="screen" id="gate-screen">
+  <div class="gate-card">
+    <div class="label-tag">PHASE 1 COMPLETE</div>
+    <h2>Your OH Score Is Ready</h2>
+    <div class="blurred-score" id="blurred-score">??</div>
+    <p>Your weakest SHIFT pillar is costing you more than you think. Drop your info to see which one — and get matched to the exact compounds that address it.</p>
+    <div class="input-group">
+      <input type="text" id="gate-name" placeholder="First name" autocomplete="given-name">
+      <input type="email" id="gate-email" placeholder="Email address" autocomplete="email">
+    </div>
+    <button class="btn-cta" onclick="submitGate()" style="width:100%;max-width:360px;justify-content:center">Unlock My Results</button>
+    <p class="gate-fine">No spam. Just your breakdown + protocol match.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 4: OH SCORE RESULTS
+     ══════════════════════════════════════════════ -->
+<div class="screen" id="results-screen">
+  <div class="phase-indicator">
+    <div class="phase-dot done">✓</div>
+    <div class="phase-line"><div class="fill" style="width:100%"></div></div>
+    <div class="phase-dot active">2</div>
+  </div>
+
+  <div class="label-tag">YOUR OH SCORE™</div>
+
+  <div class="score-ring-wrap">
+    <div class="score-ring">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <circle class="bg-ring" cx="100" cy="100" r="85"/>
+        <circle class="fg-ring" id="score-arc" cx="100" cy="100" r="85" stroke-dasharray="534" stroke-dashoffset="534"/>
+      </svg>
+      <div class="score-center">
+        <div class="score-number" id="score-display">0</div>
+        <div class="score-of">/ 100</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:24px">
+    <div class="tier-badge" id="tier-badge"></div>
+  </div>
+  <p id="tier-message" style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px;text-align:center;max-width:540px;margin-left:auto;margin-right:auto"></p>
+
+  <!-- Pillar Breakdown -->
+  <div style="font-size:12px;color:var(--text3);font-weight:600;margin-bottom:14px">PILLAR BREAKDOWN</div>
+  <div id="pillar-breakdown"></div>
+
+  <!-- Ascension Ladder -->
+  <div style="font-size:12px;color:var(--text3);font-weight:600;margin:32px 0 14px">YOUR NEXT STEP</div>
+  <div class="ladder" id="ladder"></div>
+
+  <!-- Share -->
+  <div style="display:flex;gap:12px;margin:24px 0;flex-wrap:wrap">
+    <button class="btn-outline" onclick="copyScore()">📋 Copy My Score</button>
+    <button class="btn-outline" onclick="retake()">↻ Retake</button>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- Transition to Phase 2 -->
+  <div style="text-align:center;padding:32px 0">
+    <div class="label-tag" style="color:var(--green)">PHASE 2: PROTOCOL FINDER</div>
+    <h2 style="margin-bottom:8px">Now let's match your biology.</h2>
+    <p class="subtitle" style="max-width:480px;margin-left:auto;margin-right:auto">Based on your score, answer a few more questions about specific symptoms to get matched to the research compounds most relevant to your optimization goals.</p>
+    <button class="btn-cta" onclick="startProtocol()">Find My Protocol →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 5: PROTOCOL QUESTIONNAIRE
+     ══════════════════════════════════════════════ -->
+<div class="screen" id="protocol-screen">
+  <div class="phase-indicator">
+    <div class="phase-dot done">✓</div>
+    <div class="phase-line"><div class="fill" style="width:100%"></div></div>
+    <div class="phase-dot active">2</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="plabel" id="p-label">Protocol Finder</span>
+      <span class="pcount" id="p-count">1 / 4</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="p-fill" style="width:25%"></div></div>
+  </div>
+
+  <h2 id="p-question"></h2>
+  <p class="subtitle" id="p-subtitle"></p>
+  <div id="p-options"></div>
+
+  <div class="nav-row">
+    <button class="btn-back" id="p-back" onclick="prevProtocol()">← Back</button>
+    <button class="btn-next" id="p-next" onclick="nextProtocol()">Continue →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 6: FINAL COMBINED RESULTS
+     ══════════════════════════════════════════════ -->
+<div class="screen" id="final-screen">
+  <div class="phase-indicator">
+    <div class="phase-dot done">✓</div>
+    <div class="phase-line"><div class="fill" style="width:100%"></div></div>
+    <div class="phase-dot done">✓</div>
+  </div>
+
+  <div class="label-tag" style="color:var(--green)">YOUR COMPLETE PROTOCOL MATCH</div>
+  <h2 id="final-heading"></h2>
+  <p class="subtitle" id="final-subtitle">Based on your OH Score and symptom profile, these research compounds are most relevant to your stated areas of interest.</p>
+
+  <div class="cost-bar" id="cost-bar"></div>
+  <div id="compound-cards"></div>
+
+  <div class="cta-box">
+    <h3>Ready to explore further?</h3>
+    <p>All products include published Certificates of Analysis. Browse our full catalog or verify purity data before placing a research order.</p>
+    <div class="btns">
+      <a href="https://theoptimizedhumanproject.com" target="_blank" class="btn-cta" style="font-size:13px;padding:12px 24px">Shop All Products</a>
+      <a href="https://damon-imp.github.io/toh-coa/" target="_blank" class="btn-outline">View COAs</a>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+    <button class="btn-back" onclick="backToResults()">← Back to OH Score</button>
+    <button class="btn-outline" onclick="restartAll()">↻ Start Over</button>
+  </div>
+
+  <div class="final-disclaimer">
+    <p><strong>IMPORTANT:</strong> This tool provides educational research orientation only. It does not constitute medical advice, diagnosis, or treatment recommendations. All compounds referenced are sold for laboratory research use only — not for human or animal consumption. No claims of therapeutic benefit are made or implied. Always consult a licensed healthcare professional before making decisions about your health. The Optimized Human LLC assumes no liability for the use or misuse of any information provided herein. All products are third-party tested with published Certificates of Analysis available at theoptimizedhumanproject.com.</p>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
+
+// ─── SHIFT ASSESSMENT QUESTIONS ───
+const shiftQuestions = [
+  {pillar:'S',pillarName:'Steps',icon:'👟',text:'How many steps are you averaging per day?',options:[
+    {label:'Under 3,000 — mostly sedentary',score:0},{label:'3,000–5,000 — moving, but not enough',score:1},{label:'5,000–8,000 — getting there',score:2},{label:'8,000+ consistently — dialed in',score:3}
+  ]},
+  {pillar:'S',pillarName:'Steps',icon:'👟',text:'How intentional is your daily movement outside of workouts?',options:[
+    {label:"I don't think about it at all",score:0},{label:"I try but it's inconsistent",score:1},{label:'I take walks or park farther when I remember',score:2},{label:'Movement is built into my day — walks, standing, active commute',score:3}
+  ]},
+  {pillar:'H',pillarName:'Hydration',icon:'💧',text:'How much water are you actually drinking daily?',options:[
+    {label:"No idea — I drink when I'm thirsty",score:0},{label:'Maybe 30–40 oz on a good day',score:1},{label:'Around 50–70 oz — decent but not locked in',score:2},{label:'75+ oz daily with electrolytes — non-negotiable',score:3}
+  ]},
+  {pillar:'H',pillarName:'Hydration',icon:'💧',text:'Are you supplementing electrolytes (sodium, potassium, magnesium)?',options:[
+    {label:'No — I just drink plain water',score:0},{label:'Occasionally, when I feel off',score:1},{label:'Most days, but not consistently',score:2},{label:"Every day — it's part of my hydration protocol",score:3}
+  ]},
+  {pillar:'I',pillarName:'Identity Input',icon:'🧠',text:'How often do you consume personal development content (books, podcasts, courses)?',options:[
+    {label:'Rarely or never',score:0},{label:"Once in a while when I'm motivated",score:1},{label:'A few times a week',score:2},{label:'Daily — I feed my mind every single day',score:3}
+  ]},
+  {pillar:'I',pillarName:'Identity Input',icon:'🧠',text:"Do you have a clear identity statement — who you're becoming?",options:[
+    {label:"No — I'm just trying to get through the day",score:0},{label:'I have vague goals but nothing concrete',score:1},{label:"I know what I want but haven't written it down",score:2},{label:'I have a clear vision and I revisit it regularly',score:3}
+  ]},
+  {pillar:'F',pillarName:'Fuel',icon:'🥗',text:'How would you describe your daily nutrition?',options:[
+    {label:"Fast food, convenience, whatever's easy",score:0},{label:"I eat okay but don't track or plan anything",score:1},{label:'I meal prep sometimes and try to hit protein',score:2},{label:'Macro bowls, high protein, colorful plates — dialed in',score:3}
+  ]},
+  {pillar:'F',pillarName:'Fuel',icon:'🥗',text:'How many servings of vegetables and colorful whole foods are you eating daily?',options:[
+    {label:'Basically none — maybe a side salad occasionally',score:0},{label:"1–2 servings if I'm being generous",score:1},{label:"3–4 servings — I'm aware but not consistent",score:2},{label:'5+ servings — every plate looks like a garden',score:3}
+  ]},
+  {pillar:'T',pillarName:'Training',icon:'🏋️',text:'How consistently are you resistance training?',options:[
+    {label:"I'm not — or maybe once a week at best",score:0},{label:'2–3 times per week, no real program',score:1},{label:'3–4 times per week with some structure',score:2},{label:'4–5+ days per week on a structured program',score:3}
+  ]},
+  {pillar:'T',pillarName:'Training',icon:'🏋️',text:'Are you progressively overloading — adding weight, reps, or volume over time?',options:[
+    {label:'I have no idea what that means',score:0},{label:'I just do the same thing every time',score:1},{label:"I try to push harder but don't track it",score:2},{label:'Yes — I log everything and progress systematically',score:3}
+  ]}
+];
+
+const pillarColors = {S:'#3B82F6',H:'#06B6D4',I:'#AC66A7',F:'#34D399',T:'#F97316'};
+const pillarNames = {S:'Steps',H:'Hydration',I:'Identity Input',F:'Fuel',T:'Training'};
+const pillarIcons = {S:'👟',H:'💧',I:'🧠',F:'🥗',T:'🏋️'};
+
+// ─── COMPOUND DATABASE (17 SKUs) ───
+const COMPOUNDS = {
+  bpc157:{name:'BPC-157',content:'10mg',form:'Lyophilized',price:64.99,cat:'Recovery',desc:'Body Protection Compound studied for tissue repair, gut lining support, and musculoskeletal injury recovery.'},
+  tb500:{name:'TB-500',content:'10mg',form:'Lyophilized',price:64.99,cat:'Recovery',desc:'Thymosin Beta-4 fragment studied for accelerated healing, inflammation reduction, and connective tissue repair.'},
+  kpv:{name:'KPV',content:'10mg',form:'Lyophilized',price:49.99,cat:'Recovery',desc:'Anti-inflammatory tripeptide studied for gut inflammation, skin conditions, and immune modulation.'},
+  ksptn:{name:'KSPTN',content:'10mg',form:'Lyophilized',price:44.99,cat:'Recovery',desc:'Peptide fragment studied for inflammatory response modulation and tissue recovery support.'},
+  glp3r:{name:'GLP-3R',content:'10mg',form:'Lyophilized',price:89.99,cat:'Metabolic',desc:'GLP receptor agonist studied for appetite regulation, metabolic signaling, and body composition.'},
+  tesamorelin:{name:'Tesamorelin',content:'10mg',form:'Lyophilized',price:74.99,cat:'Metabolic',desc:'GHRH analog studied for visceral fat reduction and metabolic optimization.'},
+  amino5:{name:'5-Amino-1MQ',content:'20mg',form:'Lyophilized',price:79.99,cat:'Metabolic',desc:'NNMT inhibitor studied for fat cell regulation, metabolic rate enhancement, and cellular energy.'},
+  ipamorelin:{name:'Ipamorelin',content:'10mg',form:'Lyophilized',price:59.99,cat:'Metabolic',desc:'Selective GH secretagogue studied for growth hormone pulsatility, sleep quality, and recovery.'},
+  nad:{name:'NAD+',content:'500mg',form:'Lyophilized',price:59.99,cat:'Longevity',desc:'Nicotinamide adenine dinucleotide studied for cellular energy, mitochondrial function, and anti-aging.'},
+  epithalon:{name:'Epithalon',content:'10mg',form:'Lyophilized',price:42.99,cat:'Longevity',desc:'Telomerase activator studied for telomere elongation, circadian regulation, and cellular longevity.'},
+  motsc:{name:'MOTS-c',content:'10mg',form:'Lyophilized',price:55.99,cat:'Longevity',desc:'Mitochondrial-derived peptide studied for metabolic homeostasis and exercise-mimetic effects.'},
+  selank:{name:'Selank (N-Acetyl)',content:'10mg',form:'Lyophilized',price:79.99,cat:'Cognitive',desc:'Synthetic tuftsin analog studied for anxiolytic effects, cognitive enhancement, and BDNF modulation.'},
+  methblue:{name:'Methylene Blue 1%',content:'60ml',form:'Liquid',price:33.99,cat:'Cognitive',desc:'Studied for mitochondrial electron transport, neuroprotection, and cognitive performance.'},
+  ghkcu:{name:'GHK-Cu',content:'50mg',form:'Lyophilized',price:54.99,cat:'Aesthetic',desc:'Copper peptide studied for skin remodeling, collagen synthesis, wound healing, and hair follicle support.'},
+  glutathione:{name:'Glutathione',content:'600mg',form:'Lyophilized',price:38.99,cat:'Detox',desc:'Master antioxidant studied for oxidative stress reduction, liver detoxification, and skin brightening.'},
+  ta1:{name:'Thymosin Alpha-1',content:'5mg',form:'Lyophilized',price:49.99,cat:'Immune',desc:'Thymic peptide studied for immune system modulation, T-cell activation, and pathogen defense.'},
+  b12:{name:'B12 (Methylated)',content:'10mg',form:'Liquid',price:67.99,cat:'Foundation',desc:'Bioavailable methylcobalamin studied for energy metabolism, nervous system function, and methylation.'}
+};
+
+// ─── PROTOCOL QUESTIONS ───
+const protocolQuestions = [
+  {
+    id:'focus',
+    question:'What is your primary area of research interest?',
+    subtitle:'Select the category that best describes your focus.',
+    multi:false,
+    options:[
+      {id:'fat_loss',label:'Metabolic & Body Composition',icon:'🔥',desc:'Fat metabolism, appetite signaling, metabolic rate'},
+      {id:'recovery',label:'Recovery & Tissue Repair',icon:'🩹',desc:'Injury healing, inflammation, joint & connective tissue'},
+      {id:'longevity',label:'Longevity & Cellular Health',icon:'🧬',desc:'Anti-aging, mitochondria, telomeres, cellular energy'},
+      {id:'cognitive',label:'Cognitive & Neurological',icon:'🧠',desc:'Focus, memory, neuroprotection, mood regulation'},
+      {id:'aesthetic',label:'Skin, Hair & Aesthetics',icon:'✨',desc:'Collagen, wound healing, skin quality, hair growth'},
+      {id:'immune',label:'Immune & Detox Support',icon:'🛡️',desc:'Immune modulation, oxidative stress, liver support'}
+    ]
+  },
+  {
+    id:'symptoms_fat_loss',condition:a=>a.focus==='fat_loss',
+    question:'Which metabolic symptoms are you most interested in researching?',subtitle:'Select all that apply.',multi:true,
+    options:[
+      {id:'stubborn_fat',label:'Stubborn visceral / abdominal fat'},
+      {id:'appetite',label:'Appetite regulation & satiety signaling'},
+      {id:'slow_metabolism',label:'Sluggish metabolic rate / low energy expenditure'},
+      {id:'poor_sleep_gh',label:'Poor sleep affecting growth hormone output'},
+      {id:'insulin_resistance',label:'Blood sugar instability / insulin sensitivity'},
+      {id:'low_energy',label:'Low energy & fatigue despite adequate sleep'}
+    ]
+  },
+  {
+    id:'symptoms_recovery',condition:a=>a.focus==='recovery',
+    question:'Which recovery concerns are most relevant to your research?',subtitle:'Select all that apply.',multi:true,
+    options:[
+      {id:'joint_pain',label:'Joint pain & connective tissue damage'},
+      {id:'muscle_injury',label:'Muscle strains & soft tissue injuries'},
+      {id:'gut_inflammation',label:'Gut inflammation & digestive issues'},
+      {id:'chronic_inflammation',label:'Chronic systemic inflammation'},
+      {id:'slow_healing',label:'Slow wound / surgical recovery'},
+      {id:'post_training',label:'Poor post-training recovery & soreness'}
+    ]
+  },
+  {
+    id:'symptoms_longevity',condition:a=>a.focus==='longevity',
+    question:'Which longevity markers are you most focused on?',subtitle:'Select all that apply.',multi:true,
+    options:[
+      {id:'cellular_aging',label:'Cellular aging & telomere shortening'},
+      {id:'mitochondria',label:'Mitochondrial dysfunction & low cellular energy'},
+      {id:'nad_decline',label:'NAD+ decline & sirtuin activity'},
+      {id:'metabolic_aging',label:'Metabolic aging & insulin dysregulation'},
+      {id:'oxidative_stress',label:'Oxidative stress & free radical damage'},
+      {id:'sleep_circadian',label:'Circadian rhythm disruption & poor sleep'}
+    ]
+  },
+  {
+    id:'symptoms_cognitive',condition:a=>a.focus==='cognitive',
+    question:'Which cognitive symptoms interest your research?',subtitle:'Select all that apply.',multi:true,
+    options:[
+      {id:'brain_fog',label:'Brain fog & poor mental clarity'},
+      {id:'anxiety',label:'Anxiety & stress-related cognitive decline'},
+      {id:'memory',label:'Memory & learning impairment'},
+      {id:'focus',label:'Poor focus & attention span'},
+      {id:'neurodegeneration',label:'Neuroprotection & neurodegeneration concerns'},
+      {id:'low_energy_brain',label:'Mental fatigue & low cognitive energy'}
+    ]
+  },
+  {
+    id:'symptoms_aesthetic',condition:a=>a.focus==='aesthetic',
+    question:'Which aesthetic concerns are you researching?',subtitle:'Select all that apply.',multi:true,
+    options:[
+      {id:'skin_aging',label:'Skin aging, wrinkles & elasticity loss'},
+      {id:'hair_thinning',label:'Hair thinning & follicle health'},
+      {id:'wound_scarring',label:'Wound healing & scar tissue'},
+      {id:'skin_tone',label:'Uneven skin tone & hyperpigmentation'},
+      {id:'collagen_loss',label:'Collagen breakdown & structural decline'}
+    ]
+  },
+  {
+    id:'symptoms_immune',condition:a=>a.focus==='immune',
+    question:'Which immune / detox areas interest your research?',subtitle:'Select all that apply.',multi:true,
+    options:[
+      {id:'frequent_illness',label:'Frequent illness & weak immune response'},
+      {id:'autoimmune',label:'Autoimmune markers & immune dysregulation'},
+      {id:'liver_detox',label:'Liver support & detoxification pathways'},
+      {id:'oxidative_load',label:'High oxidative load & free radical damage'},
+      {id:'low_energy_immune',label:'Chronic fatigue with immune component'}
+    ]
+  },
+  {
+    id:'experience',question:'What is your experience level with research peptides?',subtitle:'This helps calibrate protocol complexity.',multi:false,
+    options:[
+      {id:'beginner',label:'Beginner',desc:'New to peptide research'},
+      {id:'intermediate',label:'Intermediate',desc:'Have researched 1–3 compounds'},
+      {id:'advanced',label:'Advanced',desc:'Extensive research experience'}
+    ]
+  },
+  {
+    id:'budget',question:'What is your approximate monthly research budget?',subtitle:'This helps prioritize compound recommendations.',multi:false,
+    options:[
+      {id:'under100',label:'Under $100/mo',desc:'Single compound focus'},
+      {id:'100_200',label:'$100 – $200/mo',desc:'2–3 compound stack'},
+      {id:'200_plus',label:'$200+/mo',desc:'Full protocol stack'}
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let assessCurrent = 0;
+let assessAnswers = new Array(shiftQuestions.length).fill(null);
+let leadData = {};
+let protocolStep = 0;
+let protocolAnswers = {};
+
+// ═══════════════════════════════════════════════════
+//  UTILITY
+// ═══════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════
+//  PHASE 1: SHIFT ASSESSMENT
+// ═══════════════════════════════════════════════════
+function startAssessment() {
+  show('assessment-screen');
+  renderAssessment();
+}
+
+function renderAssessment() {
+  const q = shiftQuestions[assessCurrent];
+  document.getElementById('pillar-label').textContent = q.pillarName;
+  document.getElementById('progress-count').textContent = `${assessCurrent+1} / ${shiftQuestions.length}`;
+  document.getElementById('progress-fill').style.width = `${((assessCurrent+1)/shiftQuestions.length)*100}%`;
+  document.getElementById('pillar-badge-wrap').innerHTML = `<div class="pillar-badge pillar-${q.pillar}">${q.icon} ${q.pillarName}</div>`;
+  document.getElementById('question-text').textContent = q.text;
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (assessAnswers[assessCurrent] === i ? ' selected' : '');
+    div.innerHTML = `<div class="dot"></div><span>${opt.label}</span>`;
+    div.onclick = () => { assessAnswers[assessCurrent] = i; renderAssessment(); };
+    wrap.appendChild(div);
+  });
+
+  document.getElementById('back-btn').style.visibility = assessCurrent === 0 ? 'hidden' : 'visible';
+  document.getElementById('next-btn').textContent = assessCurrent === shiftQuestions.length - 1 ? 'See My Score →' : 'Next →';
+  document.getElementById('next-btn').disabled = assessAnswers[assessCurrent] === null;
+}
+
+function nextAssessment() {
+  if (assessAnswers[assessCurrent] === null) return;
+  if (assessCurrent < shiftQuestions.length - 1) {
+    assessCurrent++;
+    renderAssessment();
+  } else {
+    // Show email gate
+    const score = calcScore();
+    document.getElementById('blurred-score').textContent = score;
+    show('gate-screen');
+  }
+}
+
+function prevAssessment() {
+  if (assessCurrent > 0) { assessCurrent--; renderAssessment(); }
+  else show('intro-screen');
+}
+
+function calcScore() {
+  let total = 0;
+  assessAnswers.forEach((a, i) => { if (a !== null) total += shiftQuestions[i].options[a].score; });
+  return Math.round((total / (shiftQuestions.length * 3)) * 100);
+}
+
+function calcPillarScores() {
+  const pillars = {};
+  shiftQuestions.forEach((q, i) => {
+    if (!pillars[q.pillar]) pillars[q.pillar] = { total: 0, max: 0 };
+    pillars[q.pillar].max += 3;
+    if (assessAnswers[i] !== null) pillars[q.pillar].total += q.options[assessAnswers[i]].score;
+  });
+  const pct = {};
+  for (const p in pillars) pct[p] = Math.round((pillars[p].total / pillars[p].max) * 100);
+  return pct;
+}
+
+// ─── EMAIL GATE ───
+function submitGate() {
+  const name = document.getElementById('gate-name').value.trim();
+  const email = document.getElementById('gate-email').value.trim();
+  if (!name || !email || !email.includes('@')) {
+    alert('Please enter your name and a valid email.');
+    return;
+  }
+  leadData = { name, email };
+
+  // 🔌 CONNECT GHL WEBHOOK HERE
+  // fetch('YOUR_GHL_WEBHOOK_URL', {
+  //   method: 'POST', headers: {'Content-Type':'application/json'},
+  //   body: JSON.stringify({ name, email, score: calcScore(), tier: getTier(calcScore()).name, weakestPillar: getWeakestPillar() })
+  // });
+
+  showResults();
+}
+
+function getTier(score) {
+  if (score < 40) return { name: 'Depleted', css: 'tier-depleted', rung: 0, msg: "Your body is running on fumes. The good news? You don't need a complete overhaul — you need the 5 SHIFT habits installed. Start the free challenge, build the floor, then we build on top of it.", cta: 'Start the Free SHIFT Challenge', url: '#SHIFT_CHALLENGE_URL' };
+  if (score < 60) return { name: 'Struggling', css: 'tier-struggling', rung: 0, msg: "You've got awareness but no system. You're making moves, just not the right ones consistently. The SHIFT Challenge locks in the non-negotiables. Once those are habits, labs show you exactly what to optimize next.", cta: 'Start the Free SHIFT Challenge', url: '#SHIFT_CHALLENGE_URL' };
+  if (score < 78) return { name: 'Functional', css: 'tier-functional', rung: 1, msg: "You're not broken — you're leaving performance on the table. Your foundation is decent. Now it's time to get precise. Labs and targeted supplementation will close the gap between 'fine' and 'optimized.'", cta: 'Book Your Lab Review', url: '#LAB_REVIEW_URL' };
+  return { name: 'Optimized', css: 'tier-optimized', rung: 2, msg: "You're in the top tier. Habits dialed, inputs clean. The next level is biological fine-tuning — peptides, hormone optimization, and 1:1 coaching to squeeze out the remaining edge.", cta: 'Book a Strategy Call', url: '#STRATEGY_CALL_URL' };
+}
+
+function getWeakestPillar() {
+  const pct = calcPillarScores();
+  let min = 100, minP = 'S';
+  for (const p in pct) { if (pct[p] < min) { min = pct[p]; minP = p; } }
+  return minP;
+}
+
+function showResults() {
+  show('results-screen');
+  const score = calcScore();
+  const tier = getTier(score);
+  const pct = calcPillarScores();
+
+  // Animate score ring
+  const arc = document.getElementById('score-arc');
+  const circumference = 534;
+  setTimeout(() => { arc.style.strokeDashoffset = circumference - (circumference * score / 100); }, 100);
+
+  // Animate number
+  const numEl = document.getElementById('score-display');
+  let n = 0;
+  const interval = setInterval(() => { n += 2; if (n >= score) { n = score; clearInterval(interval); } numEl.textContent = n; }, 20);
+
+  // Tier
+  document.getElementById('tier-badge').className = 'tier-badge ' + tier.css;
+  document.getElementById('tier-badge').textContent = '⬤ ' + tier.name;
+  document.getElementById('tier-message').textContent = tier.msg;
+
+  // Pillar breakdown
+  const bd = document.getElementById('pillar-breakdown');
+  bd.innerHTML = '';
+  const sorted = Object.entries(pct).sort((a, b) => a[1] - b[1]);
+  const lowest2 = sorted.slice(0, 2).map(s => s[0]);
+
+  for (const [p, val] of Object.entries(pct)) {
+    const isFocus = lowest2.includes(p) && val < 70;
+    bd.innerHTML += `<div class="pillar-row">
+      <div class="pillar-row-top">
+        <span class="pillar-name">${pillarIcons[p]} ${pillarNames[p]}</span>
+        ${isFocus ? '<span class="focus-tag">Focus Area</span>' : ''}
+        <span class="pillar-pct" style="color:${pillarColors[p]}">${val}%</span>
+      </div>
+      <div class="pillar-bar"><div class="pillar-bar-fill" style="background:${pillarColors[p]};width:${val}%"></div></div>
+    </div>`;
+  }
+
+  // Ladder
+  const rungs = [
+    { name: 'Free SHIFT Challenge', desc: 'Build the 5 daily habits. No cost. Pure momentum.' },
+    { name: 'Labs & Supplement Protocols', desc: 'Bloodwork, targeted stacks, precision nutrition.' },
+    { name: 'Peptides & Hormone Optimization', desc: 'Biological fine-tuning. NP consultations. Custom protocols.' },
+    { name: '1:1 Elite Coaching', desc: 'Full done-for-you optimization. Direct access to Jay.' }
+  ];
+  const ladder = document.getElementById('ladder');
+  ladder.innerHTML = '';
+  rungs.forEach((r, i) => {
+    const hl = i === tier.rung;
+    ladder.innerHTML += `<div class="rung ${hl ? 'highlighted' : ''}">
+      ${hl ? '<span class="your-step">← Your Next Step</span>' : ''}
+      <span class="rung-number">${i + 1}</span>
+      <div><div class="rung-name">${r.name}</div><div class="rung-desc">${r.desc}</div></div>
+    </div>`;
+  });
+}
+
+function copyScore() {
+  const score = calcScore();
+  const text = `I scored ${score}/100 on the OH Score™ — where do you stack up?\n\nTake it free: [YOUR_QUIZ_URL]`;
+  navigator.clipboard.writeText(text).then(() => {
+    event.target.textContent = '✓ Copied!';
+    setTimeout(() => event.target.textContent = '📋 Copy My Score', 1500);
+  });
+}
+
+function retake() {
+  assessCurrent = 0;
+  assessAnswers = new Array(shiftQuestions.length).fill(null);
+  protocolStep = 0;
+  protocolAnswers = {};
+  show('intro-screen');
+}
+
+// ═══════════════════════════════════════════════════
+//  PHASE 2: PROTOCOL FINDER
+// ═══════════════════════════════════════════════════
+function getVisibleProtocolQuestions() {
+  return protocolQuestions.filter(q => !q.condition || q.condition(protocolAnswers));
+}
+
+function startProtocol() {
+  protocolStep = 0;
+  protocolAnswers = {};
+  show('protocol-screen');
+  renderProtocol();
+}
+
+function renderProtocol() {
+  const visible = getVisibleProtocolQuestions();
+  const q = visible[protocolStep];
+  if (!q) return;
+
+  document.getElementById('p-label').textContent = 'Protocol Finder';
+  document.getElementById('p-count').textContent = `${protocolStep + 1} / ${visible.length}`;
+  document.getElementById('p-fill').style.width = `${((protocolStep + 1) / visible.length) * 100}%`;
+  document.getElementById('p-question').textContent = q.question;
+  document.getElementById('p-subtitle').textContent = q.subtitle;
+
+  const wrap = document.getElementById('p-options');
+  wrap.innerHTML = '';
+
+  if (q.multi) {
+    const selected = protocolAnswers[q.id] || [];
+    q.options.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = 'multi-option' + (selected.includes(opt.id) ? ' selected' : '');
+      div.innerHTML = `<div class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><div class="label">${opt.icon || ''} ${opt.label}</div>${opt.desc ? '<div class="desc">' + opt.desc + '</div>' : ''}</div>`;
+      div.onclick = () => {
+        const arr = protocolAnswers[q.id] || [];
+        protocolAnswers[q.id] = arr.includes(opt.id) ? arr.filter(x => x !== opt.id) : [...arr, opt.id];
+        renderProtocol();
+      };
+      wrap.appendChild(div);
+    });
+    document.getElementById('p-next').disabled = !(protocolAnswers[q.id]?.length > 0);
+    document.getElementById('p-next').textContent = protocolStep === visible.length - 1 ? 'See My Compounds →' : 'Continue →';
+  } else {
+    q.options.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = 'option' + (protocolAnswers[q.id] === opt.id ? ' selected' : '');
+      div.innerHTML = `<div class="dot"></div><div><span style="font-weight:600">${opt.icon || ''} ${opt.label}</span>${opt.desc ? '<div style="font-size:12px;color:var(--text3);margin-top:3px">' + opt.desc + '</div>' : ''}</div>`;
+      div.onclick = () => {
+        protocolAnswers[q.id] = opt.id;
+        // Auto-advance for single-select
+        setTimeout(() => nextProtocol(), 250);
+      };
+      wrap.appendChild(div);
+    });
+    document.getElementById('p-next').disabled = !protocolAnswers[q.id];
+    document.getElementById('p-next').textContent = protocolStep === visible.length - 1 ? 'See My Compounds →' : 'Continue →';
+  }
+
+  document.getElementById('p-back').style.visibility = protocolStep === 0 ? 'hidden' : 'visible';
+}
+
+function nextProtocol() {
+  const visible = getVisibleProtocolQuestions();
+  const q = visible[protocolStep];
+  if (q.multi && !(protocolAnswers[q.id]?.length > 0)) return;
+  if (!q.multi && !protocolAnswers[q.id]) return;
+
+  if (protocolStep < visible.length - 1) {
+    protocolStep++;
+    renderProtocol();
+  } else {
+    showFinalResults();
+  }
+}
+
+function prevProtocol() {
+  if (protocolStep > 0) { protocolStep--; renderProtocol(); }
+  else show('results-screen');
+}
+
+// ═══════════════════════════════════════════════════
+//  COMPOUND ROUTING ENGINE
+// ═══════════════════════════════════════════════════
+function getCompoundRecommendations() {
+  const results = [];
+  const focus = protocolAnswers.focus;
+  const getSymptoms = id => protocolAnswers[id] || [];
+
+  if (focus === 'fat_loss') {
+    const d = getSymptoms('symptoms_fat_loss');
+    if (d.includes('stubborn_fat')) results.push({ key: 'tesamorelin', p: 1, reason: 'Studied for targeted visceral fat reduction via GH pathway' });
+    if (d.includes('appetite')) results.push({ key: 'glp3r', p: 1, reason: 'GLP receptor agonist studied for appetite regulation and satiety signaling' });
+    if (d.includes('slow_metabolism')) results.push({ key: 'amino5', p: 1, reason: 'NNMT inhibitor studied for metabolic rate enhancement and fat cell regulation' });
+    if (d.includes('poor_sleep_gh')) results.push({ key: 'ipamorelin', p: 1, reason: 'Selective GH secretagogue studied for sleep-dependent growth hormone release' });
+    if (d.includes('insulin_resistance')) results.push({ key: 'motsc', p: 2, reason: 'Mitochondrial peptide studied for metabolic homeostasis and insulin sensitivity' });
+    if (d.includes('low_energy')) { results.push({ key: 'nad', p: 2, reason: 'Studied for cellular energy production and mitochondrial function' }); results.push({ key: 'b12', p: 3, reason: 'Methylated B12 studied for energy metabolism and methylation support' }); }
+    if (!results.find(r => r.key === 'motsc')) results.push({ key: 'motsc', p: 3, reason: 'Exercise-mimetic peptide studied for broad metabolic optimization' });
+  }
+
+  if (focus === 'recovery') {
+    const d = getSymptoms('symptoms_recovery');
+    if (d.includes('joint_pain') || d.includes('muscle_injury') || d.includes('slow_healing')) {
+      results.push({ key: 'bpc157', p: 1, reason: 'Studied for accelerated tissue repair and musculoskeletal injury recovery' });
+      results.push({ key: 'tb500', p: 1, reason: 'Studied for connective tissue healing, inflammation reduction, and joint support' });
+    }
+    if (d.includes('gut_inflammation')) {
+      results.push({ key: 'bpc157', p: 1, reason: 'Studied for gut lining repair and GI inflammatory conditions' });
+      results.push({ key: 'kpv', p: 1, reason: 'Anti-inflammatory tripeptide studied for gut and intestinal inflammation' });
+    }
+    if (d.includes('chronic_inflammation')) {
+      results.push({ key: 'kpv', p: 1, reason: 'Studied for broad anti-inflammatory and immune modulation effects' });
+      results.push({ key: 'ksptn', p: 2, reason: 'Studied for inflammatory response modulation and tissue recovery' });
+    }
+    if (d.includes('post_training')) {
+      results.push({ key: 'tb500', p: 1, reason: 'Studied for accelerated post-exercise recovery and repair' });
+      results.push({ key: 'ipamorelin', p: 2, reason: 'GH secretagogue studied for recovery enhancement and sleep quality' });
+    }
+    if (!results.find(r => r.key === 'bpc157')) results.push({ key: 'bpc157', p: 2, reason: 'Foundational recovery peptide for broad tissue repair' });
+  }
+
+  if (focus === 'longevity') {
+    const d = getSymptoms('symptoms_longevity');
+    if (d.includes('cellular_aging')) results.push({ key: 'epithalon', p: 1, reason: 'Studied for telomerase activation and telomere elongation' });
+    if (d.includes('mitochondria')) results.push({ key: 'motsc', p: 1, reason: 'Mitochondrial-derived peptide studied for cellular energy and metabolic resilience' });
+    if (d.includes('nad_decline')) results.push({ key: 'nad', p: 1, reason: 'Direct NAD+ precursor studied for sirtuin activation and cellular repair' });
+    if (d.includes('metabolic_aging')) results.push({ key: 'motsc', p: 1, reason: 'Studied for metabolic homeostasis and age-related decline' });
+    if (d.includes('oxidative_stress')) results.push({ key: 'glutathione', p: 1, reason: 'Master antioxidant studied for oxidative stress reduction' });
+    if (d.includes('sleep_circadian')) {
+      results.push({ key: 'epithalon', p: 1, reason: 'Studied for circadian rhythm regulation and melatonin production' });
+      results.push({ key: 'ipamorelin', p: 2, reason: 'Studied for sleep-quality enhancement via GH pulsatility' });
+    }
+    if (!results.find(r => r.key === 'nad')) results.push({ key: 'nad', p: 2, reason: 'Foundational longevity compound for cellular energy support' });
+    if (!results.find(r => r.key === 'epithalon')) results.push({ key: 'epithalon', p: 3, reason: 'Core anti-aging peptide for telomere and circadian support' });
+  }
+
+  if (focus === 'cognitive') {
+    const d = getSymptoms('symptoms_cognitive');
+    if (d.includes('anxiety')) results.push({ key: 'selank', p: 1, reason: 'Studied for anxiolytic effects and GABA modulation without sedation' });
+    if (d.includes('brain_fog') || d.includes('focus')) {
+      results.push({ key: 'selank', p: 1, reason: 'Studied for cognitive clarity and BDNF-mediated focus enhancement' });
+      results.push({ key: 'methblue', p: 1, reason: 'Studied for mitochondrial electron transport and acute cognitive boost' });
+    }
+    if (d.includes('memory')) results.push({ key: 'selank', p: 1, reason: 'Studied for memory consolidation and hippocampal BDNF expression' });
+    if (d.includes('neurodegeneration')) {
+      results.push({ key: 'methblue', p: 1, reason: 'Studied for neuroprotective effects and tau aggregation inhibition' });
+      results.push({ key: 'nad', p: 2, reason: 'Studied for neuronal NAD+ support and DNA repair in brain tissue' });
+    }
+    if (d.includes('low_energy_brain')) {
+      results.push({ key: 'methblue', p: 1, reason: 'Studied for mitochondrial energy production in neural tissue' });
+      results.push({ key: 'b12', p: 2, reason: 'Studied for nervous system function and cognitive energy metabolism' });
+    }
+  }
+
+  if (focus === 'aesthetic') {
+    const d = getSymptoms('symptoms_aesthetic');
+    if (d.includes('skin_aging') || d.includes('collagen_loss')) results.push({ key: 'ghkcu', p: 1, reason: 'Copper peptide studied for collagen synthesis, elastin production, and skin remodeling' });
+    if (d.includes('hair_thinning')) results.push({ key: 'ghkcu', p: 1, reason: 'Studied for hair follicle stimulation and Wnt pathway activation' });
+    if (d.includes('wound_scarring')) {
+      results.push({ key: 'ghkcu', p: 1, reason: 'Studied for wound healing acceleration and scar tissue remodeling' });
+      results.push({ key: 'bpc157', p: 2, reason: 'Studied for tissue repair cascades and wound healing support' });
+    }
+    if (d.includes('skin_tone')) results.push({ key: 'glutathione', p: 1, reason: 'Studied for melanin modulation and skin brightening effects' });
+    if (!results.find(r => r.key === 'ghkcu')) results.push({ key: 'ghkcu', p: 1, reason: 'Core aesthetic peptide for skin and tissue quality' });
+    results.push({ key: 'tb500', p: 3, reason: 'Studied for tissue regeneration complementary to aesthetic protocols' });
+  }
+
+  if (focus === 'immune') {
+    const d = getSymptoms('symptoms_immune');
+    if (d.includes('frequent_illness') || d.includes('autoimmune')) results.push({ key: 'ta1', p: 1, reason: 'Studied for T-cell activation, immune modulation, and pathogen defense' });
+    if (d.includes('liver_detox') || d.includes('oxidative_load')) results.push({ key: 'glutathione', p: 1, reason: 'Master antioxidant studied for liver detoxification and oxidative stress' });
+    if (d.includes('low_energy_immune')) {
+      results.push({ key: 'nad', p: 2, reason: 'Studied for immune cell energy and cellular repair mechanisms' });
+      results.push({ key: 'b12', p: 2, reason: 'Studied for immune-supportive energy metabolism' });
+    }
+    if (!results.find(r => r.key === 'ta1')) results.push({ key: 'ta1', p: 1, reason: 'Core immune peptide for broad immune support' });
+    if (!results.find(r => r.key === 'glutathione')) results.push({ key: 'glutathione', p: 2, reason: 'Foundational antioxidant for detoxification and immune support' });
+  }
+
+  // Deduplicate
+  const deduped = {};
+  results.forEach(r => { if (!deduped[r.key] || r.p < deduped[r.key].p) deduped[r.key] = r; });
+  let sorted = Object.values(deduped).sort((a, b) => a.p - b.p);
+
+  // Budget filter
+  const budget = protocolAnswers.budget;
+  if (budget === 'under100') sorted = sorted.slice(0, 2);
+  else if (budget === '100_200') sorted = sorted.slice(0, 4);
+  else sorted = sorted.slice(0, 6);
+
+  return sorted;
+}
+
+// ═══════════════════════════════════════════════════
+//  FINAL COMBINED RESULTS
+// ═══════════════════════════════════════════════════
+function showFinalResults() {
+  show('final-screen');
+  const recs = getCompoundRecommendations();
+
+  document.getElementById('final-heading').textContent = `${recs.length} Compound${recs.length !== 1 ? 's' : ''} Identified`;
+
+  const totalCost = recs.reduce((sum, r) => sum + (COMPOUNDS[r.key]?.price || 0), 0);
+  document.getElementById('cost-bar').innerHTML = `
+    <div style="flex:1"><div class="cost-label">Estimated research investment</div><div class="amount">$${totalCost.toFixed(2)}</div></div>
+    <div class="cost-right">${recs.length} compound${recs.length !== 1 ? 's' : ''}<br>${recs.filter(r => r.p === 1).length} primary · ${recs.filter(r => r.p > 1).length} supporting</div>`;
+
+  const cards = document.getElementById('compound-cards');
+  cards.innerHTML = '';
+  recs.forEach(r => {
+    const c = COMPOUNDS[r.key];
+    if (!c) return;
+    const tierLabel = r.p === 1 ? 'PRIMARY' : r.p === 2 ? 'SUPPORTING' : 'COMPLEMENTARY';
+    const tierColor = r.p === 1 ? 'var(--purple)' : r.p === 2 ? 'var(--green)' : 'var(--text2)';
+    cards.innerHTML += `
+      <div class="compound-card ${r.p === 1 ? 'primary' : ''}">
+        <div class="compound-head">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span class="compound-tier-tag" style="color:${tierColor}">${tierLabel}</span>
+              <span class="compound-cat-tag">${c.cat}</span>
+            </div>
+            <div class="compound-name">${c.name}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="compound-price">$${c.price.toFixed(2)}</div>
+            <div class="compound-meta">${c.content} · ${c.form}</div>
+          </div>
+        </div>
+        <div class="compound-body">
+          <p class="compound-desc">${c.desc}</p>
+          <div class="compound-reason">
+            <span class="arrow">→</span>
+            <span>${r.reason}</span>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function backToResults() { show('results-screen'); }
+function restartAll() { retake(); }
+</script>
+
+</body>
+</html>
