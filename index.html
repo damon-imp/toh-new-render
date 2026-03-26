@@ -111,11 +111,10 @@ img { max-width:100%; display:block; }
 .product-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
 .product-card { background:var(--bg2); border:1px solid var(--t4); border-radius:var(--radius); overflow:hidden; transition:all .3s; }
 .product-card:hover { border-color:var(--accent); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.3); }
-.product-img { height:200px; background:var(--bg3); display:flex; align-items:center; justify-content:center; position:relative; }
-.product-img .vial-placeholder { width:50px; height:90px; background:linear-gradient(180deg, rgba(172,102,167,.15), rgba(172,102,167,.05)); border:1px solid var(--t4); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px; }
-.product-img .vial-placeholder .dot { width:8px; height:8px; background:var(--accent); border-radius:50%; opacity:.5; }
-.product-img .vial-placeholder .line { width:20px; height:2px; background:var(--t4); }
-.product-img .badge { position:absolute; top:12px; right:12px; background:var(--accent); color:var(--white); font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.5px; }
+.product-img { height:220px; background:var(--bg3); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.product-img img { width:100%; height:100%; object-fit:cover; transition:transform .3s; }
+.product-card:hover .product-img img { transform:scale(1.05); }
+.product-img .badge { position:absolute; top:12px; right:12px; background:var(--accent); color:var(--white); font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.5px; z-index:2; }
 .product-body { padding:16px 18px 20px; }
 .product-body .form-tag { font-size:10px; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
 .product-body h3 { font-size:15px; font-weight:600; color:var(--white); margin-bottom:4px; }
@@ -174,10 +173,10 @@ img { max-width:100%; display:block; }
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="shop.html">Shop</a>
-      <a href="coa.html">COA</a>
       <a href="about.html">About</a>
       <a href="partners.html">Partners</a>
       <a href="contact.html">Contact</a>
+      <a href="assessment.html" style="color:var(--accent);font-weight:700">OH Score™</a>
     </div>
     <div class="nav-cart" onclick="toggleCart()">
       <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -198,7 +197,7 @@ img { max-width:100%; display:block; }
         <p>Third-party tested. 99%+ purity verified. Same-day shipping on every order. Built for researchers who demand precision.</p>
         <div class="hero-btns">
           <a href="shop.html" class="btn btn-primary">Shop All Products</a>
-          <a href="coa.html" class="btn btn-outline">View COAs</a>
+          <a href="assessment.html" class="btn btn-outline">Get Your OH Score™</a>
         </div>
       </div>
       <div class="hero-visual fade-up fade-up-d2">
@@ -297,13 +296,16 @@ img { max-width:100%; display:block; }
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta">
+<!-- CTA: ASSESSMENT -->
+<section class="cta" style="padding-bottom:0">
   <div class="container">
-    <div class="cta-box fade-up">
-      <h2>Every Batch. Verified.</h2>
-      <p>Full third-party certificates of analysis available for every product we sell. HPLC purity, mass spectrometry, batch data.</p>
-      <a href="coa.html" class="btn btn-primary">View All COAs</a>
+    <div class="cta-box fade-up" style="border-color:var(--accent);background:linear-gradient(135deg,var(--bg2) 0%,rgba(172,102,167,.08) 100%)">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(172,102,167,.15);border:1px solid rgba(172,102,167,.3);border-radius:20px;padding:6px 16px;margin-bottom:20px;position:relative">
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace;letter-spacing:1px">NEW</span>
+      </div>
+      <h2>What's Your OH Score?</h2>
+      <p>10 questions. 3 minutes. Get your optimization score across the 5 SHIFT pillars, then get matched to the exact research compounds for your biology.</p>
+      <a href="assessment.html" class="btn btn-primary" style="position:relative">Take the Assessment →</a>
     </div>
   </div>
 </section>
@@ -329,6 +331,7 @@ img { max-width:100%; display:block; }
         <a href="coa.html">Certificates</a>
         <a href="partners.html">Partners</a>
         <a href="contact.html">Contact</a>
+        <a href="assessment.html">OH Score™</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
@@ -369,11 +372,19 @@ const PRODUCTS = [
 // Featured = products with badges + top sellers
 const featured = PRODUCTS.filter(p => p.badge || ['bpc','tb500','nad','glp3r','tesa','amino5','motsc','ghkcu'].includes(p.id)).slice(0,8);
 
+// Image map: product id -> image filename
+const IMG_MAP = {
+  kpv:'kpv', ksptn:'ksptn', methblue:'methblue', tesa:'tesamorelin',
+  amino5:'amino5', selank:'selank', ta1:'ta1', b12:'b12', glut:'glutathione',
+  motsc:'motsc', epi:'epithalon', tb500:'tb500', nad:'nad', ipa:'ipamorelin',
+  bpc:'bpc157', ghkcu:'ghkcu', glp3r:'glp3r'
+};
+
 function renderProductCard(p) {
-  const abbr = p.name.replace(/[^A-Z0-9]/g,'').slice(0,3) || p.name.slice(0,3).toUpperCase();
+  const img = IMG_MAP[p.id] || p.id;
   return `<div class="product-card fade-up">
     <div class="product-img">
-      <div class="vial-placeholder"><div class="dot"></div><div class="line"></div><div class="dot"></div></div>
+      <img src="images/${img}.png" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">
       ${p.badge ? `<div class="badge">${p.badge}</div>` : ''}
     </div>
     <div class="product-body">

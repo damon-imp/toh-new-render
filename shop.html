@@ -23,11 +23,10 @@
 .product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-bottom:80px}
 .product-card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden;transition:all .3s}
 .product-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.product-img{height:200px;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative}
-.product-img .vial-placeholder{width:50px;height:90px;background:linear-gradient(180deg,rgba(172,102,167,.15),rgba(172,102,167,.05));border:1px solid var(--t4);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
-.product-img .vial-placeholder .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;opacity:.5}
-.product-img .vial-placeholder .line{width:20px;height:2px;background:var(--t4)}
-.product-img .badge{position:absolute;top:12px;right:12px;background:var(--accent);color:var(--white);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.product-img{height:220px;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.product-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.product-card:hover .product-img img{transform:scale(1.05)}
+.product-img .badge{position:absolute;top:12px;right:12px;background:var(--accent);color:var(--white);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;z-index:2}
 .product-body{padding:16px 18px 20px}
 .product-body .form-tag{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .product-body h3{font-size:15px;font-weight:600;color:var(--white);margin-bottom:4px}
@@ -48,7 +47,7 @@
 <body>
 <nav class="nav"><div class="nav-inner">
   <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
-  <div class="nav-links"><a href="index.html">Home</a><a href="shop.html" class="active">Shop</a><a href="coa.html">COA</a><a href="about.html">About</a><a href="partners.html">Partners</a><a href="contact.html">Contact</a></div>
+  <div class="nav-links"><a href="index.html">Home</a><a href="shop.html" class="active">Shop</a><a href="about.html">About</a><a href="partners.html">Partners</a><a href="contact.html">Contact</a><a href="assessment.html" style="color:var(--accent);font-weight:700">OH Score™</a></div>
   <div class="nav-cart" onclick="toggleCart()"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><div class="cart-count" id="cartCount">0</div></div>
 </div></nav>
 
@@ -99,10 +98,18 @@ const PRODUCTS = [
 
 let activeFilter = 'all';
 
+const IMG_MAP = {
+  kpv:'kpv', ksptn:'ksptn', methblue:'methblue', tesa:'tesamorelin',
+  amino5:'amino5', selank:'selank', ta1:'ta1', b12:'b12', glut:'glutathione',
+  motsc:'motsc', epi:'epithalon', tb500:'tb500', nad:'nad', ipa:'ipamorelin',
+  bpc:'bpc157', ghkcu:'ghkcu', glp3r:'glp3r'
+};
+
 function renderCard(p) {
+  const img = IMG_MAP[p.id] || p.id;
   return `<div class="product-card" data-category="${p.category}" data-name="${p.name.toLowerCase()}">
     <div class="product-img">
-      <div class="vial-placeholder"><div class="dot"></div><div class="line"></div><div class="dot"></div></div>
+      <img src="images/${img}.png" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">
       ${p.badge ? `<div class="badge">${p.badge}</div>` : ''}
     </div>
     <div class="product-body">
