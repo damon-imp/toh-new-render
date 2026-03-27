@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reconstitution Calculator | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0D0D;--surface:#161616;--card:#1C1C1C;--card-hover:#252525;--purple:#AC66A7;--purple-light:#c88cc4;--purple-glow:rgba(172,102,167,.15);--purple-dim:rgba(172,102,167,.08);--green:#34D399;--orange:#F59E0B;--cyan:#06B6D4;--red:#EF4444;--text:#F5F5F5;--text2:#999;--text3:#666;--text4:#444;--border:rgba(255,255,255,.06);--font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+a{color:var(--purple);text-decoration:none}
+
+.wrap{max-width:720px;margin:0 auto;padding:32px 20px 80px}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.logo .mark{font-weight:900;font-size:28px;color:var(--purple);letter-spacing:-1px}
+.logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--text2);letter-spacing:2px;text-transform:uppercase}
+.logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--text)}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text3);margin-bottom:24px;transition:color .2s}
+.back-link:hover{color:var(--purple)}
+
+h1{font-size:clamp(28px,5vw,42px);font-weight:800;color:#fff;line-height:1.15;margin-bottom:8px}
+h1 span{color:var(--purple)}
+.subtitle{font-size:14px;color:var(--text3);margin-bottom:32px;line-height:1.6}
+.label-tag{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+
+/* Disclaimer */
+.disclaimer-bar{background:var(--surface);border:1px solid var(--text4);border-radius:8px;padding:12px 16px;margin-bottom:32px}
+.disclaimer-bar p{font-size:11px;color:var(--text3);line-height:1.6;margin:0}
+.disclaimer-bar strong{color:var(--text2)}
+
+/* Tabs */
+.calc-tabs{display:flex;border:1px solid var(--text4);border-radius:10px;overflow:hidden;margin-bottom:32px}
+.calc-tab{flex:1;padding:14px 8px;background:var(--surface);color:var(--text3);font-family:var(--font);font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;text-align:center}
+.calc-tab.active{background:var(--purple);color:#fff}
+.calc-tab:not(:last-child){border-right:1px solid var(--text4)}
+@media(max-width:500px){.calc-tab{font-size:11px;padding:12px 4px}}
+
+/* Calculator panels */
+.calc-panel{display:none}
+.calc-panel.active{display:block}
+
+/* Input groups */
+.input-group{margin-bottom:20px}
+.input-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px}
+.input-label .unit{color:var(--text3);font-weight:400}
+.input-row{display:flex;gap:12px}
+.input-row .input-group{flex:1}
+.calc-input{width:100%;background:var(--surface);border:1px solid var(--text4);border-radius:8px;padding:14px 16px;color:#fff;font-family:var(--mono);font-size:16px;font-weight:600;outline:none;transition:border-color .2s}
+.calc-input:focus{border-color:var(--purple)}
+.calc-input::placeholder{color:var(--text4);font-weight:400}
+
+/* Quick presets */
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.preset-btn{background:var(--surface);border:1px solid var(--text4);border-radius:6px;padding:6px 12px;color:var(--text3);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+.preset-btn:hover,.preset-btn.active{background:var(--purple-dim);border-color:var(--purple);color:var(--purple-light)}
+
+/* Results */
+.results-card{background:var(--surface);border:1px solid var(--text4);border-radius:14px;padding:28px 24px;margin-top:28px}
+.results-card h3{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:20px;text-transform:uppercase;letter-spacing:1px;font-family:var(--mono)}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
+.result-row:last-child{border-bottom:none}
+.result-label{font-size:14px;color:var(--text2)}
+.result-value{font-family:var(--mono);font-size:20px;font-weight:700;color:#fff}
+.result-value.highlight{color:var(--purple);font-size:24px}
+.result-value.green{color:var(--green)}
+.result-sub{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+
+/* Syringe visual */
+.syringe-visual{background:var(--card);border:1px solid var(--text4);border-radius:12px;padding:20px;margin-top:20px;text-align:center}
+.syringe-visual .label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-family:var(--mono)}
+.syringe-bar-wrap{position:relative;width:100%;max-width:400px;margin:0 auto;height:32px;background:var(--surface);border-radius:6px;overflow:hidden;border:1px solid var(--text4)}
+.syringe-bar-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple-light));border-radius:6px;transition:width .4s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+.syringe-bar-fill span{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff}
+.syringe-marks{display:flex;justify-content:space-between;max-width:400px;margin:6px auto 0;padding:0 2px}
+.syringe-marks span{font-size:9px;color:var(--text4);font-family:var(--mono)}
+
+/* Info box */
+.info-box{background:var(--purple-dim);border:1px solid rgba(172,102,167,.2);border-radius:10px;padding:16px 20px;margin-top:20px}
+.info-box p{font-size:12px;color:var(--text2);line-height:1.6;margin:0}
+.info-box strong{color:var(--purple-light)}
+
+/* Compound quick-select */
+.compound-select{width:100%;background:var(--surface);border:1px solid var(--text4);border-radius:8px;padding:12px 16px;color:#fff;font-family:var(--font);font-size:14px;outline:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;transition:border-color .2s}
+.compound-select:focus{border-color:var(--purple)}
+.compound-select option{background:var(--surface);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Logo -->
+<div class="logo">
+  <div class="mark">OH</div>
+  <div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div>
+</div>
+
+<a href="protocols.html" class="back-link">← Back to Protocols</a>
+
+<!-- Disclaimer -->
+<div class="disclaimer-bar">
+  <p><strong>DISCLAIMER:</strong> This calculator is for <strong>educational and research reference only</strong>. It is not medical advice. All compounds are sold for laboratory research purposes only and are not intended for human or animal consumption. Consult a qualified professional before making any decisions.</p>
+</div>
+
+<h1>Research<br><span>Calculator</span></h1>
+<p class="subtitle">Three tools in one. Reconstitution math, dose-per-syringe conversion, and vial duration estimates for research planning.</p>
+
+<!-- Tabs -->
+<div class="calc-tabs">
+  <button class="calc-tab active" onclick="switchCalc('recon')">Reconstitution</button>
+  <button class="calc-tab" onclick="switchCalc('dose')">Dose Calculator</button>
+  <button class="calc-tab" onclick="switchCalc('vial')">Vial Duration</button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PANEL 1: RECONSTITUTION
+     ═══════════════════════════════════════ -->
+<div class="calc-panel active" id="panel-recon">
+  <div class="label-tag">QUICK SELECT COMPOUND</div>
+  <select class="compound-select" id="recon-compound" onchange="applyReconPreset()">
+    <option value="">Select a compound (or enter manually below)</option>
+    <option value="5-10">BPC-157 (5mg vial)</option>
+    <option value="10-10">BPC-157 (10mg vial)</option>
+    <option value="10-10">TB-500 (10mg vial)</option>
+    <option value="10-10">Ipamorelin (10mg vial)</option>
+    <option value="10-10">Tesamorelin (10mg vial)</option>
+    <option value="10-10">KPV (10mg vial)</option>
+    <option value="10-10">MOTS-c (10mg vial)</option>
+    <option value="10-10">Epithalon (10mg vial)</option>
+    <option value="10-10">Selank (10mg vial)</option>
+    <option value="5-10">Thymosin Alpha-1 (5mg vial)</option>
+    <option value="10-10">GLP-3R (10mg vial)</option>
+    <option value="50-10">GHK-Cu (50mg vial)</option>
+    <option value="500-10">NAD+ (500mg vial)</option>
+    <option value="20-10">5-Amino-1MQ (20mg vial)</option>
+    <option value="10-10">KSPTN (10mg vial)</option>
+  </select>
+
+  <div style="height:20px"></div>
+
+  <div class="input-row">
+    <div class="input-group">
+      <label class="input-label">Peptide Amount <span class="unit">(mg)</span></label>
+      <input type="number" class="calc-input" id="recon-mg" placeholder="10" oninput="calcRecon()">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Bac Water Added <span class="unit">(mL)</span></label>
+      <input type="number" class="calc-input" id="recon-water" placeholder="2" oninput="calcRecon()">
+    </div>
+  </div>
+
+  <div class="label-tag" style="margin-top:8px">COMMON WATER VOLUMES</div>
+  <div class="presets">
+    <button class="preset-btn" onclick="setWater(1)">1 mL</button>
+    <button class="preset-btn" onclick="setWater(2)">2 mL</button>
+    <button class="preset-btn active" onclick="setWater(3)">3 mL</button>
+    <button class="preset-btn" onclick="setWater(5)">5 mL</button>
+  </div>
+
+  <div class="results-card" id="recon-results" style="display:none">
+    <h3>Concentration</h3>
+    <div class="result-row">
+      <span class="result-label">Concentration</span>
+      <div>
+        <div class="result-value highlight" id="recon-conc-mg">--</div>
+        <div class="result-sub" id="recon-conc-mcg"></div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Per 1 unit on syringe (0.01 mL)</span>
+      <div>
+        <div class="result-value" id="recon-per-unit">--</div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Per 10 units on syringe (0.1 mL)</span>
+      <div>
+        <div class="result-value" id="recon-per-10">--</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <p><strong>How to use:</strong> Draw the bacteriostatic water into a syringe. Inject slowly down the side of the peptide vial. Do not shake. Let it dissolve gently. Store refrigerated after mixing.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PANEL 2: DOSE CALCULATOR
+     ═══════════════════════════════════════ -->
+<div class="calc-panel" id="panel-dose">
+  <div class="input-row">
+    <div class="input-group">
+      <label class="input-label">Vial Size <span class="unit">(mg)</span></label>
+      <input type="number" class="calc-input" id="dose-vial-mg" placeholder="10" oninput="calcDose()">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Bac Water <span class="unit">(mL)</span></label>
+      <input type="number" class="calc-input" id="dose-water" placeholder="3" oninput="calcDose()">
+    </div>
+  </div>
+  <div class="input-group">
+    <label class="input-label">Desired Dose <span class="unit">(mcg)</span></label>
+    <input type="number" class="calc-input" id="dose-target" placeholder="250" oninput="calcDose()">
+  </div>
+
+  <div class="label-tag" style="margin-top:8px">COMMON DOSES</div>
+  <div class="presets">
+    <button class="preset-btn" onclick="setDose(100)">100 mcg</button>
+    <button class="preset-btn" onclick="setDose(200)">200 mcg</button>
+    <button class="preset-btn" onclick="setDose(250)">250 mcg</button>
+    <button class="preset-btn" onclick="setDose(300)">300 mcg</button>
+    <button class="preset-btn" onclick="setDose(500)">500 mcg</button>
+    <button class="preset-btn" onclick="setDose(1000)">1 mg</button>
+    <button class="preset-btn" onclick="setDose(2000)">2 mg</button>
+  </div>
+
+  <div class="results-card" id="dose-results" style="display:none">
+    <h3>Syringe Reading</h3>
+    <div class="result-row">
+      <span class="result-label">Draw to this mark</span>
+      <div>
+        <div class="result-value highlight" id="dose-units">--</div>
+        <div class="result-sub">units on a 100-unit (1mL) insulin syringe</div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Volume to inject</span>
+      <div>
+        <div class="result-value" id="dose-ml">--</div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Concentration</span>
+      <div>
+        <div class="result-value" id="dose-conc">--</div>
+      </div>
+    </div>
+
+    <div class="syringe-visual">
+      <div class="label">SYRINGE VISUALIZATION (100 UNIT)</div>
+      <div class="syringe-bar-wrap">
+        <div class="syringe-bar-fill" id="syringe-fill" style="width:0%"><span id="syringe-label"></span></div>
+      </div>
+      <div class="syringe-marks">
+        <span>0</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PANEL 3: VIAL DURATION
+     ═══════════════════════════════════════ -->
+<div class="calc-panel" id="panel-vial">
+  <div class="input-row">
+    <div class="input-group">
+      <label class="input-label">Vial Size <span class="unit">(mg)</span></label>
+      <input type="number" class="calc-input" id="vial-mg" placeholder="10" oninput="calcVial()">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Dose Per Use <span class="unit">(mcg)</span></label>
+      <input type="number" class="calc-input" id="vial-dose" placeholder="250" oninput="calcVial()">
+    </div>
+  </div>
+  <div class="input-group">
+    <label class="input-label">Frequency <span class="unit">(times per day)</span></label>
+    <input type="number" class="calc-input" id="vial-freq" placeholder="1" value="1" oninput="calcVial()">
+  </div>
+
+  <div class="label-tag" style="margin-top:8px">COMMON FREQUENCIES</div>
+  <div class="presets">
+    <button class="preset-btn active" onclick="setFreq(1)">1x/day</button>
+    <button class="preset-btn" onclick="setFreq(2)">2x/day</button>
+    <button class="preset-btn" onclick="setFreq(0.5)">Every other day</button>
+    <button class="preset-btn" onclick="setFreq(0.29)">2x/week</button>
+    <button class="preset-btn" onclick="setFreq(0.14)">1x/week</button>
+  </div>
+
+  <div class="results-card" id="vial-results" style="display:none">
+    <h3>Vial Duration</h3>
+    <div class="result-row">
+      <span class="result-label">Total doses per vial</span>
+      <div>
+        <div class="result-value highlight" id="vial-doses">--</div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Vial lasts</span>
+      <div>
+        <div class="result-value green" id="vial-days">--</div>
+        <div class="result-sub" id="vial-weeks"></div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Vials needed for 30 days</span>
+      <div>
+        <div class="result-value" id="vial-30">--</div>
+      </div>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Vials needed for 90 days</span>
+      <div>
+        <div class="result-value" id="vial-90">--</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Final disclaimer -->
+<div class="disclaimer-bar" style="margin-top:40px">
+  <p><strong>RESEARCH USE ONLY:</strong> This calculator provides mathematical reference for research planning. It does not constitute dosing advice, medical guidance, or instructions for human use. All products sold by The Optimized Human are for laboratory research purposes only. Consult a licensed professional for any health-related decisions.</p>
+</div>
+
+<div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+  <a href="protocols.html" style="background:var(--purple);color:#fff;padding:12px 24px;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none">View Protocol Bundles</a>
+  <a href="shop.html" style="background:transparent;border:1px solid var(--purple);color:var(--purple);padding:12px 24px;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none">Shop All Products</a>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ─── TAB SWITCHING ───
+function switchCalc(panel) {
+  document.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + panel).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ─── RECONSTITUTION ───
+function applyReconPreset() {
+  const val = document.getElementById('recon-compound').value;
+  if (!val) return;
+  const [mg, water] = val.split('-').map(Number);
+  document.getElementById('recon-mg').value = mg;
+  // Don't override water - let them choose
+  calcRecon();
+}
+
+function setWater(ml) {
+  document.getElementById('recon-water').value = ml;
+  document.querySelectorAll('#panel-recon .preset-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  calcRecon();
+}
+
+function calcRecon() {
+  const mg = parseFloat(document.getElementById('recon-mg').value);
+  const water = parseFloat(document.getElementById('recon-water').value);
+  const card = document.getElementById('recon-results');
+
+  if (!mg || !water || mg <= 0 || water <= 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  const concMg = mg / water; // mg per mL
+  const concMcg = concMg * 1000; // mcg per mL
+  const perUnit = concMcg / 100; // mcg per unit (0.01 mL)
+  const per10 = concMcg / 10; // mcg per 10 units
+
+  document.getElementById('recon-conc-mg').textContent = concMg.toFixed(2) + ' mg/mL';
+  document.getElementById('recon-conc-mcg').textContent = concMcg.toFixed(0) + ' mcg/mL';
+  document.getElementById('recon-per-unit').textContent = perUnit.toFixed(1) + ' mcg';
+  document.getElementById('recon-per-10').textContent = per10.toFixed(0) + ' mcg';
+}
+
+// ─── DOSE CALCULATOR ───
+function setDose(mcg) {
+  document.getElementById('dose-target').value = mcg;
+  document.querySelectorAll('#panel-dose .preset-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  calcDose();
+}
+
+function calcDose() {
+  const vialMg = parseFloat(document.getElementById('dose-vial-mg').value);
+  const water = parseFloat(document.getElementById('dose-water').value);
+  const targetMcg = parseFloat(document.getElementById('dose-target').value);
+  const card = document.getElementById('dose-results');
+
+  if (!vialMg || !water || !targetMcg || vialMg <= 0 || water <= 0 || targetMcg <= 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  const concMcgPerMl = (vialMg * 1000) / water;
+  const mlNeeded = targetMcg / concMcgPerMl;
+  const units = mlNeeded * 100;
+
+  document.getElementById('dose-units').textContent = units.toFixed(1) + ' units';
+  document.getElementById('dose-ml').textContent = mlNeeded.toFixed(3) + ' mL';
+  document.getElementById('dose-conc').textContent = (vialMg / water).toFixed(2) + ' mg/mL';
+
+  // Syringe visual
+  const pct = Math.min(units, 100);
+  document.getElementById('syringe-fill').style.width = pct + '%';
+  document.getElementById('syringe-label').textContent = units.toFixed(1);
+
+  if (units > 100) {
+    document.getElementById('syringe-fill').style.background = 'linear-gradient(90deg, var(--red), #ff6b6b)';
+  } else {
+    document.getElementById('syringe-fill').style.background = 'linear-gradient(90deg, var(--purple), var(--purple-light))';
+  }
+}
+
+// ─── VIAL DURATION ───
+function setFreq(f) {
+  document.getElementById('vial-freq').value = f;
+  document.querySelectorAll('#panel-vial .preset-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  calcVial();
+}
+
+function calcVial() {
+  const mg = parseFloat(document.getElementById('vial-mg').value);
+  const doseMcg = parseFloat(document.getElementById('vial-dose').value);
+  const freq = parseFloat(document.getElementById('vial-freq').value);
+  const card = document.getElementById('vial-results');
+
+  if (!mg || !doseMcg || !freq || mg <= 0 || doseMcg <= 0 || freq <= 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  const totalMcg = mg * 1000;
+  const totalDoses = totalMcg / doseMcg;
+  const days = totalDoses / freq;
+  const weeks = days / 7;
+
+  document.getElementById('vial-doses').textContent = Math.floor(totalDoses) + ' doses';
+  document.getElementById('vial-days').textContent = Math.floor(days) + ' days';
+  document.getElementById('vial-weeks').textContent = '~' + weeks.toFixed(1) + ' weeks';
+  document.getElementById('vial-30').textContent = Math.ceil(30 / days) + ' vial' + (Math.ceil(30 / days) > 1 ? 's' : '');
+  document.getElementById('vial-90').textContent = Math.ceil(90 / days) + ' vial' + (Math.ceil(90 / days) > 1 ? 's' : '');
+}
+</script>
+</body>
+</html>

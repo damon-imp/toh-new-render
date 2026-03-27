@@ -173,6 +173,14 @@ h2{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;line-height:1.3;m
 .compound-reason{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:var(--purple-dim);border-radius:8px;border:1px solid rgba(172,102,167,.15)}
 .compound-reason .arrow{color:var(--purple);font-size:14px;margin-top:1px}
 .compound-reason span{font-size:12px;color:var(--purple-light);line-height:1.5}
+.compound-cart-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:10px;background:var(--purple-dim);border:1px solid rgba(172,102,167,.25);border-radius:8px;color:var(--purple-light);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.compound-cart-btn:hover{background:var(--purple);color:#fff;border-color:var(--purple)}
+.compound-cart-btn.added{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.3);color:var(--green);cursor:default}
+.add-all-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;background:var(--purple);border:none;border-radius:10px;color:#fff;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:16px}
+.add-all-btn:hover{background:var(--purple-light);transform:translateY(-1px)}
+.add-all-btn.added{background:var(--green);cursor:default}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#000;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:1000;transform:translateY(80px);opacity:0;transition:all .3s ease}
+.toast.show{transform:translateY(0);opacity:1}
 
 /* ─── COST SUMMARY ─── */
 .cost-bar{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--surface);border:1px solid var(--text4);border-radius:10px;margin-bottom:28px}
@@ -399,14 +407,16 @@ h2{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;line-height:1.3;m
   <p class="subtitle" id="final-subtitle">Based on your OH Score and symptom profile, these research compounds are most relevant to your stated areas of interest.</p>
 
   <div class="cost-bar" id="cost-bar"></div>
+  <button class="add-all-btn" id="addAllBtn" onclick="addAllToCart()">Add All Compounds to Cart</button>
   <div id="compound-cards"></div>
 
   <div class="cta-box">
-    <h3>Ready to explore further?</h3>
-    <p>All products include published Certificates of Analysis. Browse our full catalog or verify purity data before placing a research order.</p>
+    <h3>Want to browse more?</h3>
+    <p>All products include published Certificates of Analysis. Browse our full catalog or check out protocol bundles.</p>
     <div class="btns">
-      <a href="https://theoptimizedhumanproject.com" target="_blank" class="btn-cta" style="font-size:13px;padding:12px 24px">Shop All Products</a>
-      <a href="https://damon-imp.github.io/toh-coa/" target="_blank" class="btn-outline">View COAs</a>
+      <a href="shop.html" class="btn-cta" style="font-size:13px;padding:12px 24px">Shop All Products</a>
+      <a href="protocols.html" class="btn-outline">View Protocol Bundles</a>
+      <a href="calculator.html" class="btn-outline">Reconstitution Calculator</a>
     </div>
   </div>
 
@@ -422,6 +432,9 @@ h2{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;line-height:1.3;m
 
 </div><!-- /wrap -->
 
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════
 //  DATA
@@ -983,6 +996,7 @@ function getCompoundRecommendations() {
 function showFinalResults() {
   show('final-screen');
   const recs = getCompoundRecommendations();
+  lastRecs = recs; // store for addAll
 
   document.getElementById('final-heading').textContent = `${recs.length} Compound${recs.length !== 1 ? 's' : ''} Identified`;
 
@@ -1019,10 +1033,80 @@ function showFinalResults() {
             <span class="arrow">→</span>
             <span>${r.reason}</span>
           </div>
+          <button class="compound-cart-btn" id="cartbtn-${r.key}" onclick="addOneToCart('${r.key}')">+ Add to Cart</button>
         </div>
       </div>`;
   });
 }
+
+// ═══════════════════════════════════════════════════
+//  SUPABASE CART
+// ═══════════════════════════════════════════════════
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyb3pqYm1pbXpjd2Vnem9scHRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTQ1NDgsImV4cCI6MjA5MDEzMDU0OH0.JmmgwESE5BB3PMUFeWTJcX1G3iSVWr8-Sc57p3NNezw';
+
+let sbClient, sbUser, lastRecs = [];
+
+// Map assessment compound keys to shop product IDs
+const SHOP_ID_MAP = {
+  bpc157:'bpc', tb500:'tb500', kpv:'kpv', ksptn:'ksptn',
+  glp3r:'glp3r', tesamorelin:'tesa', amino5:'amino5', ipamorelin:'ipa',
+  nad:'nad', epithalon:'epi', motsc:'motsc',
+  selank:'selank', methblue:'methblue',
+  ghkcu:'ghkcu', glutathione:'glut', ta1:'ta1', b12:'b12'
+};
+
+async function initSbCart() {
+  if (typeof window.supabase !== 'undefined') {
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (session) sbUser = session.user;
+  }
+}
+
+async function addOneToCart(compoundKey) {
+  if (!sbUser) { window.location.href = 'shop.html'; return; }
+  const shopId = SHOP_ID_MAP[compoundKey] || compoundKey;
+  try {
+    // Get current qty
+    const { data } = await sbClient.from('cart_items').select('quantity').eq('user_id', sbUser.id).eq('product_id', shopId).single();
+    const newQty = (data ? data.quantity : 0) + 1;
+    await sbClient.from('cart_items').upsert({
+      user_id: sbUser.id, product_id: shopId, quantity: newQty, updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,product_id' });
+  } catch(e) {}
+
+  const btn = document.getElementById('cartbtn-' + compoundKey);
+  if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); setTimeout(() => { btn.textContent = '+ Add to Cart'; btn.classList.remove('added'); }, 2000); }
+  showToast(COMPOUNDS[compoundKey]?.name + ' added to cart');
+}
+
+async function addAllToCart() {
+  if (!sbUser) { window.location.href = 'shop.html'; return; }
+  for (const r of lastRecs) {
+    const shopId = SHOP_ID_MAP[r.key] || r.key;
+    try {
+      const { data } = await sbClient.from('cart_items').select('quantity').eq('user_id', sbUser.id).eq('product_id', shopId).single();
+      const newQty = (data ? data.quantity : 0) + 1;
+      await sbClient.from('cart_items').upsert({
+        user_id: sbUser.id, product_id: shopId, quantity: newQty, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,product_id' });
+    } catch(e) {}
+  }
+  const btn = document.getElementById('addAllBtn');
+  if (btn) { btn.textContent = '✓ All Added to Cart'; btn.classList.add('added'); }
+  showToast(lastRecs.length + ' compounds added to cart');
+}
+
+function showToast(m) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = m;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+initSbCart();
 
 function backToResults() { show('results-screen'); }
 function restartAll() { retake(); }
