@@ -377,6 +377,7 @@ img { max-width:100%; display:block; }
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // Mobile Nav
 function toggleMobileNav(){
@@ -438,21 +439,42 @@ function renderProductCard(p) {
 
 document.getElementById('featuredGrid').innerHTML = featured.map(renderProductCard).join('');
 
-// Simple cart (placeholder until Snipcart)
-let cart = JSON.parse(localStorage.getItem('toh_cart') || '[]');
-function updateCartCount() {
-  document.getElementById('cartCount').textContent = cart.reduce((s,i) => s+i.qty, 0);
-}
-function addToCart(id) {
-  const p = PRODUCTS.find(x => x.id === id);
-  const existing = cart.find(x => x.id === id);
-  if (existing) existing.qty++;
-  else cart.push({id, name:p.name+' '+p.content, price:p.price, qty:1});
-  localStorage.setItem('toh_cart', JSON.stringify(cart));
+// SUPABASE CART
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyb3pqYm1pbXpjd2Vnem9scHRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTQ1NDgsImV4cCI6MjA5MDEzMDU0OH0.JmmgwESE5BB3PMUFeWTJcX1G3iSVWr8-Sc57p3NNezw';
+let sb, currentUser, cart = [];
+
+async function initCart() {
+  if (typeof window.supabase !== 'undefined') {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      try {
+        const { data } = await sb.from('cart_items').select('*').eq('user_id', currentUser.id);
+        if (data) cart = data.map(r => ({ id: r.product_id, qty: r.quantity, price: PRODUCTS.find(p=>p.id===r.product_id)?.price||0, name: PRODUCTS.find(p=>p.id===r.product_id)?.name||'' }));
+      } catch(e) {}
+    }
+  }
   updateCartCount();
 }
+
+function updateCartCount() {
+  const el = document.getElementById('cartCount');
+  if (el) el.textContent = cart.reduce((s,i) => s + i.qty, 0);
+}
+
+async function addToCart(id) {
+  if (!currentUser) { window.location.href = 'shop.html'; return; }
+  const p = PRODUCTS.find(x => x.id === id);
+  const existing = cart.find(x => x.id === id);
+  if (existing) { existing.qty++; } else { cart.push({id, name:p.name+' '+p.content, price:p.price, qty:1}); }
+  updateCartCount();
+  try { await sb.from('cart_items').upsert({ user_id: currentUser.id, product_id: id, quantity: existing ? existing.qty : 1, updated_at: new Date().toISOString() }, { onConflict: 'user_id,product_id' }); } catch(e) {}
+}
+
 function toggleCart() { window.location.href = 'cart.html'; }
-updateCartCount();
+initCart();
 </script>
 </body>
 </html>
