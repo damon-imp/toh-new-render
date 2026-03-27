@@ -237,9 +237,10 @@ async function loadCart(){
         return{id:r.product_id,name:p?p.name:r.product_id,content:p?p.content:'',form:p?p.form:'',price:p?p.price:0,qty:r.quantity};
       });
     }else{
-      cart=JSON.parse(localStorage.getItem('toh_cart')||'[]');
+      cart=[];
     }
-  }catch(e){cart=JSON.parse(localStorage.getItem('toh_cart')||'[]');}
+  }catch(e){cart=[];}
+  localStorage.removeItem('toh_cart');
   renderCart();
 }
 
@@ -248,14 +249,14 @@ async function updateQty(id,newQty){
   const item=cart.find(x=>x.id===id);
   if(item)item.qty=newQty;
   try{await sb.from('cart_items').upsert({user_id:currentUser.id,product_id:id,quantity:newQty,updated_at:new Date().toISOString()},{onConflict:'user_id,product_id'});}
-  catch(e){localStorage.setItem('toh_cart',JSON.stringify(cart));}
+  catch(e){}
   renderCart();
 }
 
 async function removeItem(id){
   cart=cart.filter(x=>x.id!==id);
   try{await sb.from('cart_items').delete().eq('user_id',currentUser.id).eq('product_id',id);}
-  catch(e){localStorage.setItem('toh_cart',JSON.stringify(cart));}
+  catch(e){}
   renderCart();
   showToast('Item removed');
 }

@@ -328,21 +328,22 @@ function filterProducts(){
   if(v===0)document.getElementById('productGrid').insertAdjacentHTML('beforeend','<div class="no-results">No products match your search.</div>');
 }
 
-// ─── CART (Supabase-persisted with localStorage fallback) ───
+// ─── CART (Supabase only) ───
 let cart=[];
 async function loadCart(){
   if(!currentUser)return;
   try{
     const{data,error}=await sb.from('cart_items').select('*').eq('user_id',currentUser.id);
     if(!error&&data){cart=data.map(r=>({id:r.product_id,name:(PRODUCTS.find(p=>p.id===r.product_id)?.name||r.product_id),price:(PRODUCTS.find(p=>p.id===r.product_id)?.price||0),qty:r.quantity}));}
-    else cart=JSON.parse(localStorage.getItem('toh_cart')||'[]');
-  }catch(e){cart=JSON.parse(localStorage.getItem('toh_cart')||'[]');}
+    else cart=[];
+  }catch(e){cart=[];}
+  localStorage.removeItem('toh_cart');
   updateCartCount();
 }
 async function saveCartItem(pid,qty){
   if(!currentUser)return;
   try{await sb.from('cart_items').upsert({user_id:currentUser.id,product_id:pid,quantity:qty,updated_at:new Date().toISOString()},{onConflict:'user_id,product_id'});}
-  catch(e){localStorage.setItem('toh_cart',JSON.stringify(cart));}
+  catch(e){}
 }
 function addToCart(id){
   const p=PRODUCTS.find(x=>x.id===id);const ex=cart.find(x=>x.id===id);
