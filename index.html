@@ -55,19 +55,6 @@ img { max-width:100%; display:block; }
   .nav-mobile { display:block; }
 }
 
-/* Mobile Menu */
-.mobile-menu{position:fixed;top:0;right:-100%;width:280px;height:100vh;background:var(--bg2);border-left:1px solid rgba(255,255,255,.06);z-index:200;transition:right .3s ease;padding:80px 32px 40px;display:flex;flex-direction:column;gap:0}
-.mobile-menu.open{right:0}
-.mobile-menu a{display:block;padding:16px 0;color:var(--t2);font-size:15px;font-weight:500;border-bottom:1px solid rgba(255,255,255,.04);transition:color .2s;text-decoration:none}
-.mobile-menu a:hover,.mobile-menu a.active{color:var(--white)}
-.mobile-menu .mobile-login{display:inline-block;background:var(--accent);color:#fff;padding:12px 24px;border-radius:8px;font-weight:700;font-size:13px;text-align:center;margin-top:16px;letter-spacing:.5px}
-.mobile-menu .mobile-cart{display:flex;align-items:center;gap:10px;padding:16px 0;color:var(--t2);font-size:15px;font-weight:500;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer}
-.mobile-menu .mobile-cart svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5}
-.mobile-close{position:absolute;top:20px;right:20px;background:none;border:none;cursor:pointer;padding:8px}
-.mobile-close svg{width:24px;height:24px;stroke:var(--t2);fill:none;stroke-width:2}
-.mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;display:none}
-.mobile-overlay.open{display:block}
-
 /* ===== HERO ===== */
 .hero { padding:160px 0 100px; position:relative; overflow:hidden; min-height:90vh; display:flex; align-items:center; }
 .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 20% 50%, var(--accent-glow) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(172,102,167,.06) 0%, transparent 50%); pointer-events:none; }
@@ -84,10 +71,10 @@ img { max-width:100%; display:block; }
 .btn-outline:hover { border-color:var(--accent); color:var(--accent); }
 .hero-visual { display:flex; justify-content:center; align-items:center; }
 .hero-product-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.hero-vial { background:var(--bg3); border:1px solid var(--t4); border-radius:var(--radius); padding:20px 16px; text-align:center; transition:all .3s; overflow:hidden; }
+.hero-vial { background:var(--bg3); border:1px solid var(--t4); border-radius:var(--radius); padding:32px 24px; text-align:center; transition:all .3s; }
 .hero-vial:hover { border-color:var(--accent); transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,.4); }
-.hero-vial .hero-vial-img { width:100%; height:140px; object-fit:cover; border-radius:8px; margin-bottom:12px; transition:transform .3s; }
-.hero-vial:hover .hero-vial-img { transform:scale(1.05); }
+.hero-vial .vial-icon { width:48px; height:80px; margin:0 auto 16px; background:linear-gradient(135deg, var(--accent-glow2), rgba(255,255,255,.05)); border-radius:6px; border:1px solid var(--t4); display:flex; align-items:center; justify-content:center; }
+.hero-vial .vial-icon span { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); font-weight:700; }
 .hero-vial h3 { font-size:14px; font-weight:600; color:var(--white); margin-bottom:4px; }
 .hero-vial p { font-size:12px; color:var(--t3); }
 
@@ -124,10 +111,11 @@ img { max-width:100%; display:block; }
 .product-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
 .product-card { background:var(--bg2); border:1px solid var(--t4); border-radius:var(--radius); overflow:hidden; transition:all .3s; }
 .product-card:hover { border-color:var(--accent); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.3); }
-.product-img { height:220px; background:var(--bg3); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-.product-img img { width:100%; height:100%; object-fit:cover; transition:transform .3s; }
-.product-card:hover .product-img img { transform:scale(1.05); }
-.product-img .badge { position:absolute; top:12px; right:12px; background:var(--accent); color:var(--white); font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.5px; z-index:2; }
+.product-img { height:200px; background:var(--bg3); display:flex; align-items:center; justify-content:center; position:relative; }
+.product-img .vial-placeholder { width:50px; height:90px; background:linear-gradient(180deg, rgba(172,102,167,.15), rgba(172,102,167,.05)); border:1px solid var(--t4); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px; }
+.product-img .vial-placeholder .dot { width:8px; height:8px; background:var(--accent); border-radius:50%; opacity:.5; }
+.product-img .vial-placeholder .line { width:20px; height:2px; background:var(--t4); }
+.product-img .badge { position:absolute; top:12px; right:12px; background:var(--accent); color:var(--white); font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.5px; }
 .product-body { padding:16px 18px 20px; }
 .product-body .form-tag { font-size:10px; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
 .product-body h3 { font-size:15px; font-weight:600; color:var(--white); margin-bottom:4px; }
@@ -186,13 +174,13 @@ img { max-width:100%; display:block; }
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="shop.html">Shop</a>
+      <a href="protocols.html">Protocols</a>
+      <a href="coa.html">COA</a>
       <a href="about.html">About</a>
       <a href="partners.html">Partners</a>
       <a href="contact.html">Contact</a>
-      <a href="assessment.html" style="color:var(--accent);font-weight:700">OH Score™</a>
-      <a href="shop.html" style="background:var(--accent);color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;letter-spacing:.5px">LOG IN</a>
     </div>
-    <div class="nav-cart" onclick="window.location.href='cart.html'">
+    <div class="nav-cart" onclick="toggleCart()">
       <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       <div class="cart-count" id="cartCount">0</div>
     </div>
@@ -201,20 +189,6 @@ img { max-width:100%; display:block; }
     </div>
   </div>
 </nav>
-
-<!-- MOBILE MENU -->
-<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileNav()"></div>
-<div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-close" onclick="toggleMobileNav()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  <a href="index.html" class="active">Home</a>
-  <a href="shop.html">Shop</a>
-  <a href="about.html">About</a>
-  <a href="partners.html">Partners</a>
-  <a href="contact.html">Contact</a>
-  <a href="assessment.html" style="color:var(--accent)">OH Score™</a>
-  <div class="mobile-cart" onclick="window.location.href='cart.html'"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Cart</div>
-  <a href="shop.html" class="mobile-login">LOG IN / SIGN UP</a>
-</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -225,28 +199,28 @@ img { max-width:100%; display:block; }
         <p>Third-party tested. 99%+ purity verified. Same-day shipping on every order. Built for researchers who demand precision.</p>
         <div class="hero-btns">
           <a href="shop.html" class="btn btn-primary">Shop All Products</a>
-          <a href="assessment.html" class="btn btn-outline">Get Your OH Score™</a>
+          <a href="coa.html" class="btn btn-outline">View COAs</a>
         </div>
       </div>
       <div class="hero-visual fade-up fade-up-d2">
         <div class="hero-product-grid">
           <div class="hero-vial">
-            <img src="images/glp3r.png" alt="GLP-3R" class="hero-vial-img">
+            <div class="vial-icon"><span>GLP</span></div>
             <h3>GLP-3R</h3>
             <p>10mg Lyophilized</p>
           </div>
           <div class="hero-vial">
-            <img src="images/bpc157.png" alt="BPC-157" class="hero-vial-img">
+            <div class="vial-icon"><span>BPC</span></div>
             <h3>BPC-157</h3>
             <p>10mg Lyophilized</p>
           </div>
           <div class="hero-vial">
-            <img src="images/nad.png" alt="NAD+" class="hero-vial-img">
+            <div class="vial-icon"><span>NAD</span></div>
             <h3>NAD+</h3>
             <p>500mg Lyophilized</p>
           </div>
           <div class="hero-vial">
-            <img src="images/ghkcu.png" alt="GHK-Cu" class="hero-vial-img">
+            <div class="vial-icon"><span>GHK</span></div>
             <h3>GHK-Cu</h3>
             <p>50mg Lyophilized</p>
           </div>
@@ -310,6 +284,39 @@ img { max-width:100%; display:block; }
   </div>
 </section>
 
+<!-- PROTOCOL FRAMEWORKS CTA -->
+<section class="protocols-cta" style="padding:80px 0;">
+  <div class="container">
+    <div style="background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:60px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,var(--accent-glow) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;position:relative;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">New — Protocol Frameworks</div>
+          <h2 style="font-size:clamp(24px,3vw,34px);font-weight:800;color:var(--white);margin-bottom:12px;">Stop Buying Single Vials.<br>Run Complete Protocols.</h2>
+          <p style="font-size:15px;color:var(--t3);max-width:500px;line-height:1.7;">7 goal-based research frameworks with the exact compounds, quantities, and durations needed for a full cycle. One click adds everything to your cart.</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
+            <div style="background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:16px 12px;text-align:center;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--accent);">7</div>
+              <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;">Protocols</div>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:16px 12px;text-align:center;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--accent);">8–12</div>
+              <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;">Weeks</div>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:16px 12px;text-align:center;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--green);">17</div>
+              <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;">SKUs Used</div>
+            </div>
+          </div>
+          <a href="protocols.html" class="btn btn-primary" style="width:100%;">View Protocol Frameworks</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FEATURED PRODUCTS -->
 <section class="featured">
   <div class="container">
@@ -324,16 +331,13 @@ img { max-width:100%; display:block; }
   </div>
 </section>
 
-<!-- CTA: ASSESSMENT -->
-<section class="cta" style="padding-bottom:0">
+<!-- CTA -->
+<section class="cta">
   <div class="container">
-    <div class="cta-box fade-up" style="border-color:var(--accent);background:linear-gradient(135deg,var(--bg2) 0%,rgba(172,102,167,.08) 100%)">
-      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(172,102,167,.15);border:1px solid rgba(172,102,167,.3);border-radius:20px;padding:6px 16px;margin-bottom:20px;position:relative">
-        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace;letter-spacing:1px">NEW</span>
-      </div>
-      <h2>What's Your OH Score?</h2>
-      <p>10 questions. 3 minutes. Get your optimization score across the 5 SHIFT pillars, then get matched to the exact research compounds for your biology.</p>
-      <a href="assessment.html" class="btn btn-primary" style="position:relative">Take the Assessment →</a>
+    <div class="cta-box fade-up">
+      <h2>Every Batch. Verified.</h2>
+      <p>Full third-party certificates of analysis available for every product we sell. HPLC purity, mass spectrometry, batch data.</p>
+      <a href="coa.html" class="btn btn-primary">View All COAs</a>
     </div>
   </div>
 </section>
@@ -359,7 +363,6 @@ img { max-width:100%; display:block; }
         <a href="coa.html">Certificates</a>
         <a href="partners.html">Partners</a>
         <a href="contact.html">Contact</a>
-        <a href="assessment.html">OH Score™</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
@@ -376,12 +379,6 @@ img { max-width:100%; display:block; }
 </footer>
 
 <script>
-// Mobile Nav
-function toggleMobileNav(){
-  document.getElementById('mobileMenu').classList.toggle('open');
-  document.getElementById('mobileOverlay').classList.toggle('open');
-}
-
 // Product Data
 const PRODUCTS = [
   { id:"kpv", name:"KPV", content:"10mg", form:"Lyophilized", price:49.99, category:"recovery", badge:"" },
@@ -406,19 +403,11 @@ const PRODUCTS = [
 // Featured = products with badges + top sellers
 const featured = PRODUCTS.filter(p => p.badge || ['bpc','tb500','nad','glp3r','tesa','amino5','motsc','ghkcu'].includes(p.id)).slice(0,8);
 
-// Image map: product id -> image filename
-const IMG_MAP = {
-  kpv:'kpv', ksptn:'ksptn', methblue:'methblue', tesa:'tesamorelin',
-  amino5:'amino5', selank:'selank', ta1:'ta1', b12:'b12', glut:'glutathione',
-  motsc:'motsc', epi:'epithalon', tb500:'tb500', nad:'nad', ipa:'ipamorelin',
-  bpc:'bpc157', ghkcu:'ghkcu', glp3r:'glp3r'
-};
-
 function renderProductCard(p) {
-  const img = IMG_MAP[p.id] || p.id;
+  const abbr = p.name.replace(/[^A-Z0-9]/g,'').slice(0,3) || p.name.slice(0,3).toUpperCase();
   return `<div class="product-card fade-up">
     <div class="product-img">
-      <img src="images/${img}.png" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">
+      <div class="vial-placeholder"><div class="dot"></div><div class="line"></div><div class="dot"></div></div>
       ${p.badge ? `<div class="badge">${p.badge}</div>` : ''}
     </div>
     <div class="product-body">
@@ -449,7 +438,7 @@ function addToCart(id) {
   localStorage.setItem('toh_cart', JSON.stringify(cart));
   updateCartCount();
 }
-function toggleCart() { window.location.href = 'cart.html'; }
+function toggleCart() { window.location.href = 'shop.html'; }
 updateCartCount();
 </script>
 </body>

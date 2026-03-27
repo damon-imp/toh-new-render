@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Protocols | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--accent-glow:rgba(172,102,167,.12);--accent-glow2:rgba(172,102,167,.25);--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--red:#ef4444;--radius:12px;--max-w:1280px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-light)}.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:12px}.nav-logo .mark{font-weight:900;font-size:28px;color:var(--accent);letter-spacing:-1px}.nav-logo .wordmark{line-height:1.1}.nav-logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--t2);letter-spacing:2px;text-transform:uppercase}.nav-logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--white)}.nav-links{display:flex;align-items:center;gap:32px}.nav-links a{color:var(--t2);font-size:13px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}.nav-links a:hover,.nav-links a.active{color:var(--white)}.nav-cart{position:relative;cursor:pointer;padding:8px}.nav-cart svg{width:22px;height:22px;stroke:var(--t2);fill:none;stroke-width:1.5;transition:stroke .2s}.nav-cart:hover svg{stroke:var(--white)}.cart-count{position:absolute;top:2px;right:0;background:var(--accent);color:var(--bg);font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}.nav-mobile{display:none;cursor:pointer;padding:8px}.nav-mobile svg{width:24px;height:24px;stroke:var(--white);fill:none;stroke-width:2}
+@media(max-width:768px){.nav-links{display:none}.nav-mobile{display:block}}
+
+/* PAGE HEADER */
+.page-header{padding:120px 0 40px;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,var(--accent-glow) 0%,transparent 60%);pointer-events:none}
+.page-header h1{font-size:clamp(32px,4vw,52px);font-weight:800;color:var(--white);margin-bottom:8px;position:relative}
+.page-header h1 span{color:var(--accent)}
+.page-header .subtitle{font-size:17px;color:var(--t2);font-weight:300;max-width:640px;line-height:1.7;position:relative}
+
+/* HOW IT WORKS STRIP */
+.how-strip{padding:48px 0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.how-step .step-num{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.how-step .step-label{font-size:13px;color:var(--t2);font-weight:400;line-height:1.5}
+.how-step .step-label strong{color:var(--t1);font-weight:600;display:block;margin-bottom:2px}
+@media(max-width:700px){.how-grid{grid-template-columns:1fr 1fr;gap:32px}}
+
+/* FILTER TABS */
+.filter-bar{padding:32px 0 8px;display:flex;gap:10px;flex-wrap:wrap}
+.filter-tab{background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:8px 18px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+.filter-tab:hover,.filter-tab.active{background:var(--accent);color:var(--white);border-color:var(--accent)}
+
+/* PROTOCOL CARDS */
+.protocols-section{padding:32px 0 100px}
+.protocol-grid{display:flex;flex-direction:column;gap:20px}
+
+.protocol-card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden;transition:all .35s ease}
+.protocol-card:hover{border-color:rgba(172,102,167,.4)}
+.protocol-card.active{border-color:var(--accent)}
+
+.protocol-header{padding:28px 32px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .2s;gap:20px}
+.protocol-header:hover{background:rgba(172,102,167,.04)}
+
+.protocol-left{display:flex;align-items:center;gap:20px;flex:1;min-width:0}
+.protocol-icon{width:56px;height:56px;border-radius:12px;background:var(--accent-glow2);border:1px solid rgba(172,102,167,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
+.protocol-meta{min-width:0}
+.protocol-meta h3{font-size:18px;font-weight:700;color:var(--white);margin-bottom:2px}
+.protocol-meta .tagline{font-size:13px;color:var(--t3);font-weight:300}
+
+.protocol-stats{display:flex;align-items:center;gap:28px;flex-shrink:0}
+.stat-pill{text-align:center}
+.stat-pill .stat-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--accent)}
+.stat-pill .stat-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+
+.toggle-arrow{width:32px;height:32px;border-radius:8px;background:var(--bg3);border:1px solid var(--t4);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.protocol-card.active .toggle-arrow{background:var(--accent);border-color:var(--accent);transform:rotate(180deg)}
+.toggle-arrow svg{width:16px;height:16px;stroke:var(--t2);fill:none;stroke-width:2}
+.protocol-card.active .toggle-arrow svg{stroke:var(--white)}
+
+/* EXPANDED CONTENT */
+.protocol-body{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.protocol-card.active .protocol-body{max-height:1200px}
+.protocol-inner{padding:0 32px 32px;border-top:1px solid rgba(255,255,255,.04)}
+
+.compound-table{width:100%;margin-top:24px;border-collapse:separate;border-spacing:0}
+.compound-table thead th{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:0 16px 12px;text-align:left;border-bottom:1px solid var(--t4)}
+.compound-table thead th:last-child{text-align:right}
+.compound-table thead th:nth-child(4){text-align:center}
+.compound-table tbody tr{transition:background .2s}
+.compound-table tbody tr:hover{background:rgba(172,102,167,.04)}
+.compound-table tbody td{padding:14px 16px;font-size:14px;color:var(--t1);border-bottom:1px solid rgba(255,255,255,.03)}
+.compound-table tbody td:last-child{text-align:right;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent)}
+.compound-table tbody td:nth-child(4){text-align:center}
+.compound-table .compound-name{font-weight:600;color:var(--white)}
+.compound-table .compound-spec{font-size:11px;color:var(--t3);margin-top:2px}
+
+.protocol-footer{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:20px;border-top:1px solid var(--t4);flex-wrap:wrap;gap:16px}
+.protocol-total{display:flex;align-items:baseline;gap:12px}
+.protocol-total .total-label{font-size:12px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;font-weight:500}
+.protocol-total .total-price{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--green)}
+.protocol-total .total-note{font-size:11px;color:var(--t3);font-weight:300}
+
+.add-protocol-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:8px;background:var(--accent);color:var(--white);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all .25s}
+.add-protocol-btn:hover{background:var(--accent-light);transform:translateY(-1px);box-shadow:0 8px 30px var(--accent-glow2)}
+.add-protocol-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+.protocol-note{margin-top:20px;padding:16px 20px;background:rgba(172,102,167,.06);border:1px solid rgba(172,102,167,.15);border-radius:8px;font-size:12px;color:var(--t2);line-height:1.7}
+.protocol-note strong{color:var(--accent);font-weight:600}
+
+/* INDIVIDUAL ITEMS BTN */
+.add-single{background:transparent;border:1px solid var(--t4);color:var(--t2);padding:6px 14px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+.add-single:hover{border-color:var(--accent);color:var(--accent)}
+
+/* DISCLAIMER BANNER */
+.ruo-banner{padding:40px 0;border-top:1px solid rgba(255,255,255,.04)}
+.ruo-box{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:32px;text-align:center}
+.ruo-box h3{font-size:14px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.ruo-box p{font-size:12px;color:var(--t3);max-width:700px;margin:0 auto;line-height:1.7}
+
+/* FOOTER */
+.footer{padding:60px 0 40px;border-top:1px solid rgba(255,255,255,.04)}.footer-bottom{display:flex;justify-content:space-between;align-items:center}.footer-bottom p{font-size:12px;color:var(--t4)}.footer-bottom .disclaimer{font-size:10px;color:var(--t4);max-width:500px;text-align:right;line-height:1.5}
+@media(max-width:768px){.footer-bottom{flex-direction:column;gap:12px;text-align:center}.footer-bottom .disclaimer{text-align:center}}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{opacity:0;animation:fadeUp .6s ease forwards}
+.fade-up-d1{animation-delay:.1s}.fade-up-d2{animation-delay:.2s}.fade-up-d3{animation-delay:.3s}.fade-up-d4{animation-delay:.4s}.fade-up-d5{animation-delay:.5s}.fade-up-d6{animation-delay:.6s}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .protocol-header{flex-wrap:wrap;padding:20px 24px}
+  .protocol-stats{width:100%;justify-content:flex-start;gap:20px;margin-top:8px}
+  .protocol-inner{padding:0 24px 24px}
+  .compound-table{font-size:12px}
+  .compound-table thead th{padding:0 10px 10px;font-size:9px}
+  .compound-table tbody td{padding:10px}
+  .protocol-footer{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:600px){
+  .protocol-stats .stat-pill:nth-child(2){display:none}
+  .compound-table .hide-mobile{display:none}
+  .protocol-total .total-price{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav"><div class="nav-inner">
+  <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="protocols.html" class="active">Protocols</a>
+    <a href="coa.html">COA</a>
+    <a href="about.html">About</a>
+    <a href="partners.html">Partners</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="nav-cart" onclick="toggleCart()">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    <div class="cart-count" id="cartCount">0</div>
+  </div>
+  <div class="nav-mobile" onclick="toggleMobileNav()">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </div>
+</div></nav>
+
+<!-- HEADER -->
+<section class="page-header">
+  <div class="container">
+    <h1 class="fade-up">Research <span>Protocol Frameworks</span></h1>
+    <p class="subtitle fade-up fade-up-d1">Goal-based compound configurations designed for complete research cycles. Each framework specifies the exact compounds, quantities, and duration required to run a full protocol — not a partial one.</p>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-strip">
+  <div class="container">
+    <div class="how-grid">
+      <div class="how-step fade-up">
+        <div class="step-num">01</div>
+        <div class="step-label"><strong>Select Goal</strong>Choose the research objective that matches your study parameters.</div>
+      </div>
+      <div class="how-step fade-up fade-up-d1">
+        <div class="step-num">02</div>
+        <div class="step-label"><strong>Review Framework</strong>Each protocol details every compound, quantity, and timeline.</div>
+      </div>
+      <div class="how-step fade-up fade-up-d2">
+        <div class="step-num">03</div>
+        <div class="step-label"><strong>Add Full Protocol</strong>One click adds every required compound at the correct quantity.</div>
+      </div>
+      <div class="how-step fade-up fade-up-d3">
+        <div class="step-num">04</div>
+        <div class="step-label"><strong>Run Complete Cycle</strong>Sufficient supply for the full research duration. No mid-cycle gaps.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FILTER TABS -->
+<div class="container">
+  <div class="filter-bar fade-up fade-up-d4">
+    <button class="filter-tab active" onclick="filterProtocols('all')">All Protocols</button>
+    <button class="filter-tab" onclick="filterProtocols('recovery')">Recovery</button>
+    <button class="filter-tab" onclick="filterProtocols('metabolic')">Metabolic</button>
+    <button class="filter-tab" onclick="filterProtocols('longevity')">Longevity</button>
+    <button class="filter-tab" onclick="filterProtocols('cognitive')">Cognitive</button>
+    <button class="filter-tab" onclick="filterProtocols('aesthetic')">Aesthetic</button>
+  </div>
+</div>
+
+<!-- PROTOCOL CARDS -->
+<section class="protocols-section">
+  <div class="container">
+    <div class="protocol-grid" id="protocolGrid">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- RUO DISCLAIMER -->
+<section class="ruo-banner">
+  <div class="container">
+    <div class="ruo-box fade-up">
+      <h3>Research Use Only</h3>
+      <p>All compounds and protocol frameworks are provided strictly for laboratory research purposes. These materials are not intended for human or animal consumption. Protocol frameworks are reference configurations only and do not constitute medical advice, dosing instructions, or therapeutic recommendations. All products are sold in compliance with applicable research compound regulations. Third-party COAs available for every batch.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer"><div class="container">
+  <div class="footer-bottom">
+    <p>&copy; 2026 The Optimized Human LLC. All rights reserved.</p>
+    <div class="disclaimer">All products are sold strictly for laboratory research purposes only and are not intended for human or animal consumption.</div>
+  </div>
+</div></footer>
+
+<script>
+// ==========================================
+// PRODUCT DATA (mirrors shop.html)
+// ==========================================
+const PRODUCTS = {
+  kpv:      { name:"KPV", content:"10mg", form:"Lyophilized", price:49.99 },
+  ksptn:    { name:"KSPTN", content:"10mg", form:"Lyophilized", price:44.99 },
+  methblue: { name:"Methylene Blue 1%", content:"60ml", form:"Liquid", price:33.99 },
+  tesa:     { name:"Tesamorelin", content:"10mg", form:"Lyophilized", price:74.99 },
+  amino5:   { name:"5-Amino-1MQ", content:"20mg", form:"Lyophilized", price:79.99 },
+  selank:   { name:"Selank (N-Acetyl)", content:"10mg", form:"Lyophilized", price:79.99 },
+  ta1:      { name:"Thymosin Alpha-1", content:"5mg", form:"Lyophilized", price:49.99 },
+  b12:      { name:"B12 (Methylated)", content:"10mg", form:"Liquid", price:67.99 },
+  glut:     { name:"Glutathione", content:"600mg", form:"Lyophilized", price:38.99 },
+  motsc:    { name:"MOTS-c", content:"10mg", form:"Lyophilized", price:55.99 },
+  epi:      { name:"Epithalon", content:"10mg", form:"Lyophilized", price:42.99 },
+  tb500:    { name:"TB-500", content:"10mg", form:"Lyophilized", price:64.99 },
+  nad:      { name:"NAD+", content:"500mg", form:"Lyophilized", price:59.99 },
+  ipa:      { name:"Ipamorelin", content:"10mg", form:"Lyophilized", price:59.99 },
+  bpc:      { name:"BPC-157", content:"10mg", form:"Lyophilized", price:64.99 },
+  ghkcu:    { name:"GHK-Cu", content:"50mg", form:"Lyophilized", price:54.99 },
+  glp3r:    { name:"GLP-3R", content:"10mg", form:"Lyophilized", price:89.99 }
+};
+
+// ==========================================
+// PROTOCOL DEFINITIONS
+// ==========================================
+const PROTOCOLS = [
+  {
+    id: "recovery",
+    category: "recovery",
+    icon: "🔧",
+    name: "Recovery & Tissue Repair Protocol",
+    tagline: "Accelerated healing, reduced inflammation, connective tissue support",
+    duration: "8–12 wk",
+    compounds: [
+      { id:"tb500", qty:3, role:"Primary tissue repair compound" },
+      { id:"bpc",   qty:2, role:"Systemic healing & gut-tissue axis support" },
+      { id:"glut",  qty:1, role:"Antioxidant defense & cellular recovery" }
+    ],
+    note: "This is the most popular research framework. TB-500 and BPC-157 are well-documented in tissue repair literature. Running fewer than 8 weeks typically produces incomplete data. Three vials of TB-500 account for a loading phase (higher frequency weeks 1–4) followed by a maintenance phase."
+  },
+  {
+    id: "sleep-gh",
+    category: "recovery",
+    icon: "🌙",
+    name: "Sleep & GH Optimization Protocol",
+    tagline: "Growth hormone pulsatility, deep sleep architecture, recovery signaling",
+    duration: "12 wk",
+    compounds: [
+      { id:"ipa",   qty:3, role:"GH secretagogue — nightly administration" },
+      { id:"motsc",  qty:2, role:"Mitochondrial signaling & metabolic support" }
+    ],
+    note: "Ipamorelin research requires consistent 12-week administration to observe meaningful GH pulsatility data. Three vials provide sufficient supply for nightly protocols at standard research concentrations. MOTS-c supports the metabolic environment in which GH signaling is most observable."
+  },
+  {
+    id: "fat-loss",
+    category: "metabolic",
+    icon: "🔥",
+    name: "Fat Loss & Metabolic Protocol",
+    tagline: "Metabolic rate optimization, visceral fat targeting, appetite signaling",
+    duration: "12 wk",
+    compounds: [
+      { id:"glp3r",  qty:2, role:"GLP receptor agonist — appetite & metabolic signaling" },
+      { id:"tesa",   qty:2, role:"Visceral adipose tissue reduction" },
+      { id:"amino5", qty:2, role:"NNMT inhibition — metabolic rate support" }
+    ],
+    note: "This is the most comprehensive metabolic research framework in the catalog. GLP-3R and Tesamorelin target distinct metabolic pathways. 5-Amino-1MQ adds a third mechanism via nicotinamide N-methyltransferase inhibition. Twelve weeks is the minimum viable research window for body composition studies."
+  },
+  {
+    id: "longevity",
+    category: "longevity",
+    icon: "🧬",
+    name: "Longevity & Cellular Health Protocol",
+    tagline: "Telomere maintenance, mitochondrial function, NAD+ restoration",
+    duration: "12 wk",
+    compounds: [
+      { id:"nad",   qty:2, role:"NAD+ precursor — cellular energy & sirtuin activation" },
+      { id:"epi",   qty:3, role:"Telomerase activation & telomere length maintenance" },
+      { id:"motsc", qty:2, role:"Mitochondrial-derived peptide — cellular longevity signaling" }
+    ],
+    note: "Longevity research requires extended timelines. Epithalon cycles are typically studied in 10-day blocks repeated across the 12-week window — three vials cover this cadence. NAD+ and MOTS-c support the mitochondrial and epigenetic environment under observation."
+  },
+  {
+    id: "gut-inflammation",
+    category: "recovery",
+    icon: "🛡️",
+    name: "Gut & Inflammation Reset Protocol",
+    tagline: "Intestinal barrier repair, inflammatory cascade reduction, mucosal healing",
+    duration: "8 wk",
+    compounds: [
+      { id:"bpc",  qty:2, role:"Gastric & intestinal mucosal repair" },
+      { id:"kpv",  qty:2, role:"Anti-inflammatory — NF-kB pathway modulation" },
+      { id:"glut", qty:1, role:"Glutathione — oxidative stress reduction" }
+    ],
+    note: "BPC-157 has the most published GI-tract research of any peptide in this catalog. KPV targets the NF-kB inflammatory pathway specifically. This is an 8-week framework — shorter than most protocols because GI tissue turnover is faster than musculoskeletal tissue."
+  },
+  {
+    id: "cognitive",
+    category: "cognitive",
+    icon: "🧠",
+    name: "Cognitive & Focus Protocol",
+    tagline: "Neuroprotection, anxiolytic signaling, cognitive clarity & brain energy",
+    duration: "8–12 wk",
+    compounds: [
+      { id:"selank",   qty:2, role:"Anxiolytic peptide — GABA modulation & cognitive function" },
+      { id:"methblue", qty:2, role:"Mitochondrial electron transport chain support" },
+      { id:"nad",      qty:1, role:"Neuronal NAD+ replenishment & neuroprotection" }
+    ],
+    note: "Selank is one of the most studied nootropic peptides, with research spanning anxiolytic and cognitive enhancement pathways. Methylene Blue at research concentrations supports mitochondrial complex IV activity in neuronal tissue. NAD+ provides the cellular energy substrate for sustained cognitive function research."
+  },
+  {
+    id: "skin-aesthetics",
+    category: "aesthetic",
+    icon: "✨",
+    name: "Skin & Aesthetics Protocol",
+    tagline: "Collagen synthesis, skin remodeling, immune-mediated tissue renewal",
+    duration: "12 wk",
+    compounds: [
+      { id:"ghkcu", qty:2, role:"Copper peptide — collagen synthesis & skin remodeling" },
+      { id:"ta1",   qty:2, role:"Immune modulation & systemic tissue renewal signaling" },
+      { id:"epi",   qty:1, role:"Telomerase — cellular renewal at the epigenetic level" }
+    ],
+    note: "GHK-Cu is the most researched copper peptide for skin and tissue remodeling. Two vials of the 50mg concentration cover a full 12-week topical or subcutaneous research framework. Thymosin Alpha-1 supports the immune signaling environment that drives tissue renewal."
+  }
+];
+
+// ==========================================
+// RENDER PROTOCOLS
+// ==========================================
+function calcProtocol(p) {
+  let totalVials = 0, totalCost = 0;
+  p.compounds.forEach(c => {
+    totalVials += c.qty;
+    totalCost += c.qty * PRODUCTS[c.id].price;
+  });
+  return { totalVials, totalCost };
+}
+
+function renderProtocol(p, idx) {
+  const { totalVials, totalCost } = calcProtocol(p);
+  const rows = p.compounds.map(c => {
+    const prod = PRODUCTS[c.id];
+    const lineTotal = (c.qty * prod.price).toFixed(2);
+    return `<tr>
+      <td><div class="compound-name">${prod.name}</div><div class="compound-spec">${prod.content} · ${prod.form}</div></td>
+      <td class="hide-mobile">${c.role}</td>
+      <td style="text-align:center">${c.qty}</td>
+      <td>$${prod.price.toFixed(2)}</td>
+      <td>$${lineTotal}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="protocol-card fade-up fade-up-d${Math.min(idx,6)}" data-category="${p.category}" data-id="${p.id}">
+    <div class="protocol-header" onclick="toggleProtocol('${p.id}')">
+      <div class="protocol-left">
+        <div class="protocol-icon">${p.icon}</div>
+        <div class="protocol-meta">
+          <h3>${p.name}</h3>
+          <div class="tagline">${p.tagline}</div>
+        </div>
+      </div>
+      <div class="protocol-stats">
+        <div class="stat-pill">
+          <div class="stat-val">${p.duration}</div>
+          <div class="stat-lbl">Duration</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val">${totalVials}</div>
+          <div class="stat-lbl">Vials</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val">$${totalCost.toFixed(2)}</div>
+          <div class="stat-lbl">Total</div>
+        </div>
+      </div>
+      <div class="toggle-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="protocol-body">
+      <div class="protocol-inner">
+        <table class="compound-table">
+          <thead><tr>
+            <th>Compound</th>
+            <th class="hide-mobile">Research Application</th>
+            <th style="text-align:center">Qty</th>
+            <th>Unit Price</th>
+            <th style="text-align:right">Subtotal</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="protocol-footer">
+          <div class="protocol-total">
+            <span class="total-label">Protocol Total</span>
+            <span class="total-price">$${totalCost.toFixed(2)}</span>
+            <span class="total-note">${totalVials} vials · ${p.duration} supply</span>
+          </div>
+          <button class="add-protocol-btn" onclick="addProtocolToCart('${p.id}')">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Protocol to Cart
+          </button>
+        </div>
+        <div class="protocol-note">
+          <strong>Research Note:</strong> ${p.note}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAll() {
+  const grid = document.getElementById('protocolGrid');
+  grid.innerHTML = PROTOCOLS.map((p,i) => renderProtocol(p,i)).join('');
+}
+
+// ==========================================
+// INTERACTIONS
+// ==========================================
+function toggleProtocol(id) {
+  const card = document.querySelector(`[data-id="${id}"]`);
+  if (!card) return;
+  const wasActive = card.classList.contains('active');
+  // Close all
+  document.querySelectorAll('.protocol-card.active').forEach(c => c.classList.remove('active'));
+  // Open clicked (if it wasn't already open)
+  if (!wasActive) card.classList.add('active');
+}
+
+function filterProtocols(category) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.protocol-card').forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+      card.classList.remove('active');
+    }
+  });
+}
+
+// ==========================================
+// CART SYSTEM (shared with shop.html via localStorage)
+// ==========================================
+let cart = JSON.parse(localStorage.getItem('toh_cart') || '[]');
+
+function updateCartCount() {
+  const el = document.getElementById('cartCount');
+  if (el) el.textContent = cart.reduce((s,i) => s + i.qty, 0);
+}
+
+function addToCart(id, qty) {
+  const prod = PRODUCTS[id];
+  if (!prod) return;
+  const existing = cart.find(x => x.id === id);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cart.push({ id, name: prod.name + ' ' + prod.content, price: prod.price, qty });
+  }
+  localStorage.setItem('toh_cart', JSON.stringify(cart));
+  updateCartCount();
+}
+
+function addProtocolToCart(protocolId) {
+  const protocol = PROTOCOLS.find(p => p.id === protocolId);
+  if (!protocol) return;
+  
+  // Add each compound at the specified quantity
+  protocol.compounds.forEach(c => {
+    addToCart(c.id, c.qty);
+  });
+  
+  // Visual feedback
+  const btn = event.target.closest('.add-protocol-btn');
+  if (btn) {
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="20 6 9 17 4 12"/></svg> Added to Cart';
+    btn.style.background = '#34D399';
+    setTimeout(() => {
+      btn.innerHTML = origHTML;
+      btn.style.background = '';
+    }, 2000);
+  }
+}
+
+function toggleCart() {
+  // Navigate to shop for full cart view
+  window.location.href = 'shop.html';
+}
+
+// Init
+renderAll();
+updateCartCount();
+</script>
+</body>
+</html>
