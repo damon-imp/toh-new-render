@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affiliate Admin | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--accent-glow:rgba(172,102,167,.12);--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--red:#EF4444;--yellow:#FBBF24;--radius:12px;--max-w:1400px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+
+.admin-gate{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.admin-gate .box{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:48px 40px;width:100%;max-width:400px;text-align:center}
+.admin-gate .box h2{font-size:20px;color:var(--white);margin-bottom:20px}
+.admin-gate .box input{width:100%;background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;margin-bottom:12px;outline:none}
+.admin-gate .box button{width:100%;background:var(--accent);color:var(--white);border:none;border-radius:8px;padding:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+
+.admin{display:none;padding:40px 0}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.admin-header h1{font-size:28px;font-weight:800;color:var(--white)}
+.admin-header h1 span{color:var(--accent)}
+
+.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:4px;width:fit-content}
+.tab{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .2s}
+.tab.active{background:var(--accent);color:var(--white)}
+.tab:hover:not(.active){color:var(--white)}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:28px}
+.mini-stat{background:var(--bg2);border:1px solid var(--t4);border-radius:10px;padding:16px 20px}
+.mini-stat .l{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.mini-stat .v{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--white)}
+.mini-stat .v.g{color:var(--green)}
+.mini-stat .v.a{color:var(--accent)}
+@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+
+.tbl-wrap{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);overflow-x:auto;margin-bottom:24px}
+table{width:100%;border-collapse:collapse;min-width:700px}
+thead{background:var(--bg3)}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--t4);white-space:nowrap}
+td{padding:10px 14px;font-size:12px;color:var(--t2);border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap}
+.mono{font-family:'JetBrains Mono',monospace}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;text-transform:uppercase}
+.badge.active{background:rgba(52,211,153,.15);color:var(--green)}
+.badge.pending{background:rgba(251,191,36,.15);color:var(--yellow)}
+.badge.suspended{background:rgba(239,68,68,.15);color:var(--red)}
+.badge.approved{background:rgba(52,211,153,.15);color:var(--green)}
+.badge.paid{background:rgba(172,102,167,.15);color:var(--accent)}
+.badge.rejected{background:rgba(239,68,68,.15);color:var(--red)}
+
+.act-btn{background:var(--bg3);border:1px solid var(--t4);color:var(--t2);padding:4px 10px;border-radius:4px;font-size:10px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;margin-right:4px}
+.act-btn:hover{border-color:var(--accent);color:var(--accent)}
+.act-btn.green:hover{border-color:var(--green);color:var(--green)}
+.act-btn.red:hover{border-color:var(--red);color:var(--red)}
+
+.record-form{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:24px;margin-bottom:24px}
+.record-form h3{font-size:16px;color:var(--white);margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.form-row input,.form-row select,.form-row textarea{width:100%;background:var(--bg3);border:1px solid var(--t4);border-radius:6px;padding:8px 12px;color:var(--white);font-family:'Outfit',sans-serif;font-size:13px;outline:none}
+.form-row textarea{grid-column:span 4;height:60px;resize:vertical}
+.form-row label{font-size:11px;color:var(--t3);margin-bottom:2px;display:block}
+.form-group{display:flex;flex-direction:column}
+.submit-btn{background:var(--green);color:var(--bg);border:none;border-radius:8px;padding:10px 24px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.submit-btn:hover{opacity:.9}
+@media(max-width:768px){.form-row{grid-template-columns:1fr 1fr}}
+
+.empty{padding:40px;text-align:center;color:var(--t3);font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- ADMIN GATE -->
+<div class="admin-gate" id="gate">
+  <div class="box">
+    <h2>Admin Access</h2>
+    <input type="password" id="adminPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkAdmin()">
+    <button onclick="checkAdmin()">Enter</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin" id="adminPanel">
+  <div class="container">
+    <div class="admin-header">
+      <h1>Affiliate <span>Admin</span></h1>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('overview',this)">Overview</div>
+      <div class="tab" onclick="switchTab('affiliates',this)">Affiliates</div>
+      <div class="tab" onclick="switchTab('conversions',this)">Conversions</div>
+      <div class="tab" onclick="switchTab('record',this)">Record Sale</div>
+      <div class="tab" onclick="switchTab('payouts',this)">Payouts</div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="panel active" id="panel-overview">
+      <div class="stats-row">
+        <div class="mini-stat"><div class="l">Total Affiliates</div><div class="v" id="oAffiliates">0</div></div>
+        <div class="mini-stat"><div class="l">Active</div><div class="v a" id="oActive">0</div></div>
+        <div class="mini-stat"><div class="l">Total Revenue</div><div class="v" id="oRevenue">$0</div></div>
+        <div class="mini-stat"><div class="l">Total Commission</div><div class="v g" id="oCommission">$0</div></div>
+        <div class="mini-stat"><div class="l">Unpaid Commission</div><div class="v" id="oUnpaid" style="color:var(--yellow)">$0</div></div>
+      </div>
+    </div>
+
+    <!-- AFFILIATES -->
+    <div class="panel" id="panel-affiliates">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Ref Code</th><th>Rate</th><th>Clicks</th><th>Conv</th><th>Revenue</th><th>Commission</th><th>Paid</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="affBody"><tr><td colspan="11" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONVERSIONS -->
+    <div class="panel" id="panel-conversions">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Affiliate</th><th>Customer</th><th>Items</th><th>Total</th><th>Rate</th><th>Commission</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="convBody"><tr><td colspan="9" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RECORD SALE -->
+    <div class="panel" id="panel-record">
+      <div class="record-form">
+        <h3>Manually Record an Affiliate Sale</h3>
+        <p style="font-size:13px;color:var(--t3);margin-bottom:20px">Use this when you receive and confirm a manual invoice payment for an order that had affiliate attribution.</p>
+        <div class="form-row">
+          <div class="form-group"><label>Affiliate Ref Code</label><input type="text" id="recRefCode" placeholder="e.g. john1a2b"></div>
+          <div class="form-group"><label>Customer Email</label><input type="email" id="recEmail" placeholder="customer@email.com"></div>
+          <div class="form-group"><label>Order Total ($)</label><input type="number" id="recTotal" step="0.01" placeholder="194.97"></div>
+          <div class="form-group"><label>&nbsp;</label><button class="submit-btn" onclick="recordManualSale()">Record Conversion</button></div>
+        </div>
+        <div class="form-row">
+          <textarea id="recItems" placeholder='Order items JSON (optional): [{"product_id":"bpc","name":"BPC-157 10mg","qty":2,"price":64.99}]'></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYOUTS -->
+    <div class="panel" id="panel-payouts">
+      <div class="record-form">
+        <h3>Record a Payout</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Affiliate Ref Code</label><input type="text" id="payRefCode" placeholder="e.g. john1a2b"></div>
+          <div class="form-group"><label>Amount ($)</label><input type="number" id="payAmount" step="0.01" placeholder="150.00"></div>
+          <div class="form-group"><label>Payment Reference</label><input type="text" id="payRef" placeholder="Zelle conf #, check #, etc"></div>
+          <div class="form-group"><label>&nbsp;</label><button class="submit-btn" onclick="recordPayout()">Record Payout</button></div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Affiliate</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead>
+          <tbody id="payBody"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ============================================================
+// CONFIG
+// IMPORTANT: This page uses the SERVICE ROLE key to bypass RLS.
+// In production, protect this page behind proper admin auth,
+// or move these operations to a server-side function.
+// ============================================================
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_SERVICE_KEY = 'YOUR_SERVICE_ROLE_KEY_HERE'; // <-- service_role key
+const ADMIN_PASSWORD = 'CHANGE_THIS_PASSWORD'; // Simple gate -- change this
+
+let sb = null; // initialized after admin gate
+
+function checkAdmin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    loadAll();
+  } else {
+    alert('Wrong password.');
+  }
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadAll() {
+  await Promise.all([loadOverview(), loadAffiliates(), loadConversions(), loadPayoutHistory()]);
+}
+
+async function loadOverview() {
+  const { data: affs } = await sb.from('affiliates').select('*');
+  if (!affs) return;
+
+  const active = affs.filter(a => a.status === 'active').length;
+  const totalRev = affs.reduce((s, a) => s + parseFloat(a.total_revenue || 0), 0);
+  const totalComm = affs.reduce((s, a) => s + parseFloat(a.total_commission || 0), 0);
+  const totalPaid = affs.reduce((s, a) => s + parseFloat(a.total_paid || 0), 0);
+
+  document.getElementById('oAffiliates').textContent = affs.length;
+  document.getElementById('oActive').textContent = active;
+  document.getElementById('oRevenue').textContent = '$' + totalRev.toLocaleString(undefined, {minimumFractionDigits:2});
+  document.getElementById('oCommission').textContent = '$' + totalComm.toLocaleString(undefined, {minimumFractionDigits:2});
+  document.getElementById('oUnpaid').textContent = '$' + (totalComm - totalPaid).toLocaleString(undefined, {minimumFractionDigits:2});
+}
+
+async function loadAffiliates() {
+  const { data, error } = await sb.from('affiliates').select('*').order('created_at', { ascending: false });
+  if (error || !data) return;
+
+  const tbody = document.getElementById('affBody');
+  if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="11" class="empty">No affiliates yet.</td></tr>'; return; }
+
+  tbody.innerHTML = data.map(a => `<tr>
+    <td>${a.display_name}</td>
+    <td class="mono" style="font-size:11px">${a.email}</td>
+    <td class="mono">${a.ref_code}</td>
+    <td class="mono">${a.commission_rate}%</td>
+    <td class="mono">${a.total_clicks}</td>
+    <td class="mono">${a.total_conversions}</td>
+    <td class="mono">$${parseFloat(a.total_revenue).toFixed(2)}</td>
+    <td class="mono" style="color:var(--green)">$${parseFloat(a.total_commission).toFixed(2)}</td>
+    <td class="mono">$${parseFloat(a.total_paid).toFixed(2)}</td>
+    <td><span class="badge ${a.status}">${a.status}</span></td>
+    <td>
+      ${a.status === 'pending' ? `<button class="act-btn green" onclick="setStatus('${a.id}','active')">Approve</button>` : ''}
+      ${a.status === 'active' ? `<button class="act-btn red" onclick="setStatus('${a.id}','suspended')">Suspend</button>` : ''}
+      ${a.status === 'suspended' ? `<button class="act-btn green" onclick="setStatus('${a.id}','active')">Reactivate</button>` : ''}
+      <button class="act-btn" onclick="editRate('${a.id}', ${a.commission_rate})">Rate</button>
+    </td>
+  </tr>`).join('');
+}
+
+async function loadConversions() {
+  const { data, error } = await sb
+    .from('referral_conversions')
+    .select('*, affiliates!inner(display_name, ref_code)')
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if (error || !data) return;
+
+  const tbody = document.getElementById('convBody');
+  if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="9" class="empty">No conversions yet.</td></tr>'; return; }
+
+  tbody.innerHTML = data.map(c => {
+    const date = new Date(c.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    const items = c.order_items ? (Array.isArray(c.order_items) ? c.order_items.map(i => i.name || i.product_id).join(', ') : '-') : '-';
+    return `<tr>
+      <td class="mono">${date}</td>
+      <td>${c.affiliates?.display_name || c.ref_code}</td>
+      <td class="mono" style="font-size:11px">${c.customer_email || '-'}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${items}</td>
+      <td class="mono">$${parseFloat(c.order_total).toFixed(2)}</td>
+      <td class="mono">${c.commission_rate}%</td>
+      <td class="mono" style="color:var(--green)">$${parseFloat(c.commission_amount).toFixed(2)}</td>
+      <td><span class="badge ${c.status}">${c.status}</span></td>
+      <td>
+        ${c.status === 'pending' ? `<button class="act-btn green" onclick="approveConversion('${c.id}')">Approve</button><button class="act-btn red" onclick="rejectConversion('${c.id}')">Reject</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadPayoutHistory() {
+  const { data, error } = await sb
+    .from('affiliate_payouts')
+    .select('*, affiliates!inner(display_name)')
+    .order('paid_at', { ascending: false })
+    .limit(50);
+
+  if (error || !data) return;
+  const tbody = document.getElementById('payBody');
+  if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty">No payouts recorded.</td></tr>'; return; }
+
+  tbody.innerHTML = data.map(p => {
+    const date = new Date(p.paid_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    return `<tr>
+      <td class="mono">${date}</td>
+      <td>${p.affiliates?.display_name || '-'}</td>
+      <td class="mono" style="color:var(--green)">$${parseFloat(p.amount).toFixed(2)}</td>
+      <td>${p.payment_method || '-'}</td>
+      <td class="mono">${p.payment_reference || '-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+async function setStatus(id, status) {
+  const updates = { status, updated_at: new Date().toISOString() };
+  if (status === 'active') updates.approved_at = new Date().toISOString();
+
+  await sb.from('affiliates').update(updates).eq('id', id);
+  await loadAffiliates();
+  await loadOverview();
+}
+
+async function editRate(id, currentRate) {
+  const newRate = prompt('Enter new commission rate (%):', currentRate);
+  if (newRate === null) return;
+  const rate = parseFloat(newRate);
+  if (isNaN(rate) || rate < 0 || rate > 100) { alert('Invalid rate.'); return; }
+
+  await sb.from('affiliates').update({ commission_rate: rate, updated_at: new Date().toISOString() }).eq('id', id);
+  await loadAffiliates();
+}
+
+async function approveConversion(id) {
+  await sb.from('referral_conversions').update({ status: 'approved', updated_at: new Date().toISOString() }).eq('id', id);
+  await loadConversions();
+}
+
+async function rejectConversion(id) {
+  if (!confirm('Reject this conversion? Commission will not be counted.')) return;
+  // Get the conversion to reverse affiliate totals
+  const { data: conv } = await sb.from('referral_conversions').select('*').eq('id', id).single();
+  if (conv) {
+    await sb.from('affiliates').update({
+      total_conversions: Math.max(0, (conv.affiliates?.total_conversions || 1) - 1),
+      total_revenue: Math.max(0, (conv.affiliates?.total_revenue || conv.order_total) - conv.order_total),
+      total_commission: Math.max(0, (conv.affiliates?.total_commission || conv.commission_amount) - conv.commission_amount),
+      updated_at: new Date().toISOString()
+    }).eq('id', conv.affiliate_id);
+  }
+  await sb.from('referral_conversions').update({ status: 'rejected', updated_at: new Date().toISOString() }).eq('id', id);
+  await loadConversions();
+  await loadOverview();
+}
+
+async function recordManualSale() {
+  const refCode = document.getElementById('recRefCode').value.trim();
+  const email = document.getElementById('recEmail').value.trim();
+  const total = parseFloat(document.getElementById('recTotal').value);
+  const itemsRaw = document.getElementById('recItems').value.trim();
+
+  if (!refCode || !total) { alert('Ref code and order total are required.'); return; }
+
+  let items = [];
+  if (itemsRaw) {
+    try { items = JSON.parse(itemsRaw); } catch(e) { alert('Invalid JSON for items.'); return; }
+  }
+
+  const { data, error } = await sb.rpc('record_conversion', {
+    p_ref_code: refCode,
+    p_customer_email: email || null,
+    p_order_items: items,
+    p_order_total: total
+  });
+
+  if (error) { alert('Error: ' + error.message); return; }
+  if (!data) { alert('Invalid ref code or affiliate not active.'); return; }
+
+  alert('Conversion recorded successfully.');
+  document.getElementById('recRefCode').value = '';
+  document.getElementById('recEmail').value = '';
+  document.getElementById('recTotal').value = '';
+  document.getElementById('recItems').value = '';
+  await loadConversions();
+  await loadOverview();
+  await loadAffiliates();
+}
+
+async function recordPayout() {
+  const refCode = document.getElementById('payRefCode').value.trim();
+  const amount = parseFloat(document.getElementById('payAmount').value);
+  const ref = document.getElementById('payRef').value.trim();
+
+  if (!refCode || !amount) { alert('Ref code and amount are required.'); return; }
+
+  // Look up affiliate
+  const { data: aff } = await sb.from('affiliates').select('*').eq('ref_code', refCode).single();
+  if (!aff) { alert('Affiliate not found with that ref code.'); return; }
+
+  // Insert payout
+  await sb.from('affiliate_payouts').insert({
+    affiliate_id: aff.id,
+    amount,
+    payment_method: aff.payment_method || 'manual',
+    payment_reference: ref || null
+  });
+
+  // Update affiliate total_paid
+  await sb.from('affiliates').update({
+    total_paid: parseFloat(aff.total_paid) + amount,
+    updated_at: new Date().toISOString()
+  }).eq('id', aff.id);
+
+  // Mark pending conversions as paid (up to the payout amount)
+  const { data: pendingConvs } = await sb
+    .from('referral_conversions')
+    .select('*')
+    .eq('affiliate_id', aff.id)
+    .in('status', ['pending', 'approved'])
+    .order('created_at', { ascending: true });
+
+  if (pendingConvs) {
+    let remaining = amount;
+    for (const conv of pendingConvs) {
+      if (remaining <= 0) break;
+      const commAmt = parseFloat(conv.commission_amount);
+      if (commAmt <= remaining) {
+        await sb.from('referral_conversions').update({
+          status: 'paid',
+          paid_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }).eq('id', conv.id);
+        remaining -= commAmt;
+      }
+    }
+  }
+
+  alert('Payout recorded: $' + amount.toFixed(2) + ' to ' + aff.display_name);
+  document.getElementById('payRefCode').value = '';
+  document.getElementById('payAmount').value = '';
+  document.getElementById('payRef').value = '';
+  await loadAll();
+}
+</script>
+</body>
+</html>

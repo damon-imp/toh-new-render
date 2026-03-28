@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affiliate Dashboard | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--accent-glow:rgba(172,102,167,.12);--accent-glow2:rgba(172,102,167,.25);--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--red:#EF4444;--yellow:#FBBF24;--radius:12px;--max-w:1280px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-light)}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.nav-logo .mark{font-weight:900;font-size:28px;color:var(--accent);letter-spacing:-1px}
+.nav-logo .wordmark{line-height:1.1}
+.nav-logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--t2);letter-spacing:2px;text-transform:uppercase}
+.nav-logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--white)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-status{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.nav-status.active{background:rgba(52,211,153,.15);color:var(--green)}
+.nav-status.pending{background:rgba(251,191,36,.15);color:var(--yellow)}
+.nav-status.suspended{background:rgba(239,68,68,.15);color:var(--red)}
+.nav-user{font-size:13px;color:var(--t2)}
+.nav-logout{background:none;border:1px solid var(--t4);color:var(--t2);padding:6px 16px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;transition:all .2s}
+.nav-logout:hover{border-color:var(--accent);color:var(--accent)}
+
+/* AUTH SCREEN */
+.auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.auth-box{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:48px 40px;width:100%;max-width:420px;text-align:center}
+.auth-box .mark{font-weight:900;font-size:36px;color:var(--accent);margin-bottom:8px}
+.auth-box h2{font-size:22px;font-weight:700;color:var(--white);margin-bottom:6px}
+.auth-box .sub{font-size:14px;color:var(--t3);margin-bottom:32px}
+.auth-box input{width:100%;background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;margin-bottom:12px;outline:none;transition:border-color .2s}
+.auth-box input:focus{border-color:var(--accent)}
+.auth-box input::placeholder{color:var(--t3)}
+.auth-btn{width:100%;background:var(--accent);color:var(--white);border:none;border-radius:8px;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px;text-transform:uppercase;letter-spacing:.5px}
+.auth-btn:hover{background:var(--accent-light)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);padding:10px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none}
+.auth-toggle{margin-top:20px;font-size:13px;color:var(--t3)}
+.auth-toggle a{cursor:pointer}
+
+/* DASHBOARD */
+.dashboard{padding:100px 0 60px;display:none}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+.stat-card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:24px}
+.stat-card .label{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-card .value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--white)}
+.stat-card .value.accent{color:var(--accent)}
+.stat-card .value.green{color:var(--green)}
+.stat-card .sub-value{font-size:12px;color:var(--t3);margin-top:4px}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.stats-grid{grid-template-columns:1fr}}
+
+/* REFERRAL LINK BOX */
+.ref-section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;color:var(--white);margin-bottom:16px}
+.ref-link-box{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:24px}
+.ref-link-row{display:flex;gap:12px;align-items:center;margin-bottom:16px}
+.ref-link-input{flex:1;background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:12px 16px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;cursor:text}
+.copy-btn{background:var(--accent);color:var(--white);border:none;border-radius:8px;padding:12px 20px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.copy-btn:hover{background:var(--accent-light)}
+.copy-btn.copied{background:var(--green)}
+.ref-pages{display:flex;gap:8px;flex-wrap:wrap}
+.ref-page-btn{background:var(--bg3);border:1px solid var(--t4);border-radius:6px;padding:6px 14px;font-size:12px;color:var(--t2);cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif}
+.ref-page-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* TABLES */
+.table-section{margin-bottom:40px}
+.table-wrap{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--bg3)}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--t4)}
+td{padding:12px 16px;font-size:13px;color:var(--t2);border-bottom:1px solid rgba(255,255,255,.03)}
+tr:last-child td{border-bottom:none}
+.status-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:.5px}
+.status-badge.pending{background:rgba(251,191,36,.15);color:var(--yellow)}
+.status-badge.approved{background:rgba(52,211,153,.15);color:var(--green)}
+.status-badge.paid{background:rgba(172,102,167,.15);color:var(--accent)}
+.status-badge.rejected{background:rgba(239,68,68,.15);color:var(--red)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.empty-state{padding:40px;text-align:center;color:var(--t3);font-size:14px}
+
+/* PAYMENT SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.settings-grid input,.settings-grid select{width:100%;background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:10px 14px;color:var(--white);font-family:'Outfit',sans-serif;font-size:13px;outline:none}
+.settings-grid select{cursor:pointer}
+.settings-grid label{font-size:12px;color:var(--t3);margin-bottom:4px;display:block}
+.settings-group{margin-bottom:12px}
+.save-btn{background:var(--accent);color:var(--white);border:none;border-radius:8px;padding:12px 24px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:16px}
+.save-btn:hover{background:var(--accent-light)}
+
+@media(max-width:768px){
+  .settings-grid{grid-template-columns:1fr}
+  .ref-link-row{flex-direction:column}
+  .ref-link-input{width:100%}
+}
+
+.footer{padding:40px 0;border-top:1px solid rgba(255,255,255,.04)}.footer-bottom{display:flex;justify-content:space-between;align-items:center}.footer-bottom p{font-size:12px;color:var(--t4)}.footer-bottom .disclaimer{font-size:10px;color:var(--t4);max-width:500px;text-align:right;line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- NAV (shown when logged in) -->
+<nav class="nav" id="dashNav" style="display:none"><div class="nav-inner">
+  <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
+  <div class="nav-right">
+    <span class="nav-status" id="navStatus">Active</span>
+    <span class="nav-user" id="navUser"></span>
+    <button class="nav-logout" onclick="logout()">Log Out</button>
+  </div>
+</div></nav>
+
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div class="mark">OH</div>
+    <h2 id="authTitle">Affiliate Login</h2>
+    <p class="sub" id="authSub">Access your affiliate dashboard</p>
+    <div class="auth-error" id="authError"></div>
+    <form id="authForm" onsubmit="handleAuth(event)">
+      <input type="email" id="authEmail" placeholder="Email address" required>
+      <input type="password" id="authPassword" placeholder="Password" required>
+      <button type="submit" class="auth-btn" id="authBtn">Log In</button>
+    </form>
+    <div class="auth-toggle">
+      <span id="authToggleText">Don't have an account?</span>
+      <a id="authToggleLink" onclick="toggleAuthMode()">Apply here</a>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="container">
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Total Clicks</div>
+        <div class="value" id="statClicks">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Conversions</div>
+        <div class="value accent" id="statConversions">0</div>
+        <div class="sub-value" id="statConvRate">0% conversion rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Revenue Driven</div>
+        <div class="value" id="statRevenue">$0.00</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Earnings</div>
+        <div class="value green" id="statEarnings">$0.00</div>
+        <div class="sub-value" id="statPending">$0.00 pending</div>
+      </div>
+    </div>
+
+    <!-- REFERRAL LINK -->
+    <div class="ref-section">
+      <div class="section-title">Your Referral Link</div>
+      <div class="ref-link-box">
+        <div class="ref-link-row">
+          <input type="text" class="ref-link-input" id="refLinkInput" readonly>
+          <button class="copy-btn" id="copyBtn" onclick="copyRefLink()">Copy Link</button>
+        </div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Quick links to specific pages:</div>
+        <div class="ref-pages" id="refPages"></div>
+      </div>
+    </div>
+
+    <!-- RECENT CONVERSIONS -->
+    <div class="table-section">
+      <div class="section-title">Recent Conversions</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Customer</th><th>Order Total</th><th>Commission</th><th>Status</th></tr></thead>
+          <tbody id="conversionsBody">
+            <tr><td colspan="5" class="empty-state">No conversions yet. Share your link to start earning.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAYOUTS -->
+    <div class="table-section">
+      <div class="section-title">Payout History</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead>
+          <tbody id="payoutsBody">
+            <tr><td colspan="4" class="empty-state">No payouts yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAYMENT SETTINGS -->
+    <div class="table-section">
+      <div class="section-title">Payment Settings</div>
+      <div class="ref-link-box">
+        <div class="settings-grid">
+          <div class="settings-group">
+            <label>Payment Method</label>
+            <select id="payMethod">
+              <option value="manual">Manual / Check</option>
+              <option value="paypal">PayPal</option>
+              <option value="zelle">Zelle</option>
+              <option value="crypto">Crypto</option>
+            </select>
+          </div>
+          <div class="settings-group">
+            <label>Payment Email / Address</label>
+            <input type="text" id="payEmail" placeholder="your@paypal.com or Zelle number">
+          </div>
+        </div>
+        <button class="save-btn" onclick="savePaymentSettings()">Save Settings</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer" id="dashFooter" style="display:none"><div class="container"><div class="footer-bottom">
+  <p>&copy; 2026 The Optimized Human. All rights reserved.</p>
+  <div class="disclaimer">All products are sold strictly for laboratory research purposes only and are not intended for human or animal consumption.</div>
+</div></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ============================================================
+// CONFIG -- Replace with your actual keys
+// ============================================================
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+const SITE_URL = 'https://theoptimizedhumanproject.com';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let affiliateData = null;
+let isSignup = false;
+
+// ============================================================
+// AUTH
+// ============================================================
+async function handleAuth(e) {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const btn = document.getElementById('authBtn');
+  const errorEl = document.getElementById('authError');
+
+  btn.disabled = true;
+  btn.textContent = isSignup ? 'Creating account...' : 'Logging in...';
+  errorEl.style.display = 'none';
+
+  try {
+    let result;
+    if (isSignup) {
+      result = await supabase.auth.signUp({ email, password });
+    } else {
+      result = await supabase.auth.signInWithPassword({ email, password });
+    }
+
+    if (result.error) throw result.error;
+
+    if (isSignup && result.data.user) {
+      // Check confirmation requirement
+      if (!result.data.session) {
+        errorEl.textContent = 'Check your email to confirm your account, then log in.';
+        errorEl.style.display = 'block';
+        errorEl.style.background = 'rgba(52,211,153,.1)';
+        errorEl.style.borderColor = 'rgba(52,211,153,.3)';
+        errorEl.style.color = '#34D399';
+        btn.disabled = false;
+        btn.textContent = 'Apply';
+        return;
+      }
+    }
+
+    // Auth success -- load dashboard
+    currentUser = result.data.user;
+    await loadDashboard();
+
+  } catch(err) {
+    errorEl.textContent = err.message || 'Authentication failed.';
+    errorEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = isSignup ? 'Apply' : 'Log In';
+}
+
+function toggleAuthMode() {
+  isSignup = !isSignup;
+  document.getElementById('authTitle').textContent = isSignup ? 'Become an Affiliate' : 'Affiliate Login';
+  document.getElementById('authSub').textContent = isSignup ? 'Apply for the TOH affiliate program' : 'Access your affiliate dashboard';
+  document.getElementById('authBtn').textContent = isSignup ? 'Apply' : 'Log In';
+  document.getElementById('authToggleText').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('authToggleLink').textContent = isSignup ? 'Log in' : 'Apply here';
+  document.getElementById('authError').style.display = 'none';
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  currentUser = null;
+  affiliateData = null;
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('dashNav').style.display = 'none';
+  document.getElementById('dashFooter').style.display = 'none';
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+async function loadDashboard() {
+  // Fetch affiliate record
+  const { data: aff, error } = await supabase
+    .from('affiliates')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .single();
+
+  if (error || !aff) {
+    // No affiliate record -- create one (pending status)
+    const refCode = generateRefCode(currentUser.email);
+    const { data: newAff, error: insertErr } = await supabase
+      .from('affiliates')
+      .insert({
+        user_id: currentUser.id,
+        ref_code: refCode,
+        display_name: currentUser.email.split('@')[0],
+        email: currentUser.email,
+        status: 'pending'
+      })
+      .select()
+      .single();
+
+    if (insertErr) {
+      alert('Error creating affiliate profile: ' + insertErr.message);
+      return;
+    }
+    affiliateData = newAff;
+  } else {
+    affiliateData = aff;
+  }
+
+  // Show dashboard
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('dashNav').style.display = 'block';
+  document.getElementById('dashFooter').style.display = 'block';
+
+  // Nav info
+  const statusEl = document.getElementById('navStatus');
+  statusEl.textContent = affiliateData.status;
+  statusEl.className = 'nav-status ' + affiliateData.status;
+  document.getElementById('navUser').textContent = affiliateData.display_name;
+
+  // Stats
+  document.getElementById('statClicks').textContent = affiliateData.total_clicks.toLocaleString();
+  document.getElementById('statConversions').textContent = affiliateData.total_conversions.toLocaleString();
+  const convRate = affiliateData.total_clicks > 0
+    ? ((affiliateData.total_conversions / affiliateData.total_clicks) * 100).toFixed(1)
+    : '0.0';
+  document.getElementById('statConvRate').textContent = convRate + '% conversion rate';
+  document.getElementById('statRevenue').textContent = '$' + affiliateData.total_revenue.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('statEarnings').textContent = '$' + affiliateData.total_paid.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+  const pending = (affiliateData.total_commission - affiliateData.total_paid);
+  document.getElementById('statPending').textContent = '$' + pending.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' pending';
+
+  // Referral link
+  const refLink = SITE_URL + '?ref=' + affiliateData.ref_code;
+  document.getElementById('refLinkInput').value = refLink;
+
+  // Page-specific links
+  const pages = [
+    { label: 'Shop', path: '/shop.html' },
+    { label: 'Protocols', path: '/protocols.html' },
+    { label: 'Assessment', path: '/assessment.html' },
+    { label: 'Home', path: '/' }
+  ];
+  document.getElementById('refPages').innerHTML = pages.map(p =>
+    `<button class="ref-page-btn" onclick="copyPageLink('${p.path}')">${p.label}</button>`
+  ).join('');
+
+  // Payment settings
+  document.getElementById('payMethod').value = affiliateData.payment_method || 'manual';
+  document.getElementById('payEmail').value = affiliateData.payment_email || '';
+
+  // Load conversions
+  await loadConversions();
+  await loadPayouts();
+}
+
+function generateRefCode(email) {
+  const base = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 8);
+  const rand = Math.random().toString(36).slice(2, 6);
+  return base + rand;
+}
+
+// ============================================================
+// CONVERSIONS TABLE
+// ============================================================
+async function loadConversions() {
+  const { data, error } = await supabase
+    .from('referral_conversions')
+    .select('*')
+    .eq('affiliate_id', affiliateData.id)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error || !data || data.length === 0) return;
+
+  const tbody = document.getElementById('conversionsBody');
+  tbody.innerHTML = data.map(c => {
+    const date = new Date(c.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const email = c.customer_email ? maskEmail(c.customer_email) : 'N/A';
+    return `<tr>
+      <td class="mono">${date}</td>
+      <td>${email}</td>
+      <td class="mono">$${c.order_total.toFixed(2)}</td>
+      <td class="mono" style="color:var(--green)">$${c.commission_amount.toFixed(2)}</td>
+      <td><span class="status-badge ${c.status}">${c.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function maskEmail(email) {
+  const [user, domain] = email.split('@');
+  return user.slice(0, 2) + '***@' + domain;
+}
+
+// ============================================================
+// PAYOUTS TABLE
+// ============================================================
+async function loadPayouts() {
+  const { data, error } = await supabase
+    .from('affiliate_payouts')
+    .select('*')
+    .eq('affiliate_id', affiliateData.id)
+    .order('paid_at', { ascending: false })
+    .limit(20);
+
+  if (error || !data || data.length === 0) return;
+
+  const tbody = document.getElementById('payoutsBody');
+  tbody.innerHTML = data.map(p => {
+    const date = new Date(p.paid_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    return `<tr>
+      <td class="mono">${date}</td>
+      <td class="mono" style="color:var(--green)">$${p.amount.toFixed(2)}</td>
+      <td>${p.payment_method || 'Manual'}</td>
+      <td class="mono">${p.payment_reference || '-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function copyRefLink() {
+  const input = document.getElementById('refLinkInput');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyPageLink(path) {
+  const link = SITE_URL + path + '?ref=' + affiliateData.ref_code;
+  navigator.clipboard.writeText(link).then(() => {
+    // Quick visual feedback -- could enhance with toast
+    alert('Copied: ' + link);
+  });
+}
+
+async function savePaymentSettings() {
+  const method = document.getElementById('payMethod').value;
+  const email = document.getElementById('payEmail').value.trim();
+
+  const { error } = await supabase
+    .from('affiliates')
+    .update({ payment_method: method, payment_email: email, updated_at: new Date().toISOString() })
+    .eq('id', affiliateData.id);
+
+  if (error) {
+    alert('Error saving: ' + error.message);
+  } else {
+    affiliateData.payment_method = method;
+    affiliateData.payment_email = email;
+    alert('Payment settings saved.');
+  }
+}
+
+// ============================================================
+// INIT - Check for existing session
+// ============================================================
+async function init() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session && session.user) {
+    currentUser = session.user;
+    await loadDashboard();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
