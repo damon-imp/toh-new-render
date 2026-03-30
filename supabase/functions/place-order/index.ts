@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
     const itemRowsHtml = items.map((item: any) => `
       <tr>
         <td style="padding:12px 0;border-bottom:1px solid #e5e5e5;vertical-align:middle">
-          <img src="https://theoptimizedhumanproject.com/images/${item.imgKey}.png" width="60" height="60" style="border-radius:8px;object-fit:cover;background:#f5f5f5" alt="${item.name}">
+          <img src="https://damon-imp.github.io/toh-site/images/${item.imgKey}.png" width="60" height="60" style="border-radius:8px;object-fit:cover;background:#f5f5f5" alt="${item.name}">
         </td>
         <td style="padding:12px 16px;border-bottom:1px solid #e5e5e5;vertical-align:middle">
           <div style="font-weight:600;color:#111;font-size:14px">${item.name}</div>
