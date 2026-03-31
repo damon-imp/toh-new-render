@@ -58,3 +58,22 @@ CREATE POLICY "Users can view own orders" ON orders FOR SELECT USING (auth.uid()
 
 -- 4. ADD TAX COLUMN (run this if you already ran the setup above)
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS tax NUMERIC(10,2) NOT NULL DEFAULT 0.00;
+
+-- 5. COUPONS TABLE
+CREATE TABLE IF NOT EXISTS coupons (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code TEXT UNIQUE NOT NULL,
+  discount_percent NUMERIC(5,2) NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE coupons ENABLE ROW LEVEL SECURITY;
+
+-- Allow anyone authenticated to read active coupons (for validation on checkout)
+DROP POLICY IF EXISTS "Anyone can read active coupons" ON coupons;
+CREATE POLICY "Anyone can read active coupons" ON coupons FOR SELECT USING (active = true);
+
+-- 6. ADD COUPON FIELDS TO ORDERS
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS coupon_code TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS coupon_discount NUMERIC(10,2) NOT NULL DEFAULT 0.00;

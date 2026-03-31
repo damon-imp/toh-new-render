@@ -43,6 +43,23 @@ select.field{cursor:pointer;appearance:none;background-image:url("data:image/svg
 .billing-toggle input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
 .billing-toggle label{font-size:14px;color:var(--t1);cursor:pointer;font-weight:500;text-transform:none;letter-spacing:0;margin:0}
 
+/* Coupon */
+.coupon-box{margin:24px 0}
+.coupon-row{display:flex;gap:10px}
+.coupon-input{flex:1;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s;text-transform:uppercase;letter-spacing:.5px}
+.coupon-input:focus{border-color:var(--accent)}
+.coupon-input::placeholder{color:var(--t4);text-transform:none;letter-spacing:0}
+.coupon-btn{background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:12px 20px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.coupon-btn:hover{border-color:var(--accent);color:var(--white)}
+.coupon-btn:disabled{opacity:.5;cursor:not-allowed}
+.coupon-msg{font-size:12px;margin-top:8px;line-height:1.4}
+.coupon-msg.success{color:var(--green)}
+.coupon-msg.error{color:var(--red)}
+.coupon-applied{display:flex;align-items:center;justify-content:space-between;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:8px;padding:12px 16px}
+.coupon-applied .coupon-tag{font-size:13px;color:var(--green);font-weight:600}
+.coupon-applied .coupon-remove{background:none;border:none;color:var(--t3);font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif;transition:color .2s}
+.coupon-applied .coupon-remove:hover{color:var(--red)}
+
 /* Invoice notice */
 .invoice-notice{background:rgba(172,102,167,.08);border:1px solid rgba(172,102,167,.25);border-radius:10px;padding:18px 20px;margin:24px 0}
 .invoice-notice p{font-size:13px;color:var(--t2);line-height:1.6;margin:0}
@@ -221,6 +238,20 @@ select.field{cursor:pointer;appearance:none;background-image:url("data:image/svg
         </div>
       </div>
 
+      <!-- Coupon Code -->
+      <div class="coupon-box">
+        <label>Coupon Code</label>
+        <div id="couponInput" class="coupon-row">
+          <input id="couponCode" class="coupon-input" type="text" placeholder="Enter coupon code" maxlength="30">
+          <button class="coupon-btn" id="couponBtn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div id="couponApplied" class="coupon-applied" style="display:none">
+          <span class="coupon-tag" id="couponTag"></span>
+          <button class="coupon-remove" onclick="removeCoupon()">Remove</button>
+        </div>
+        <div class="coupon-msg" id="couponMsg"></div>
+      </div>
+
       <!-- Invoice Notice -->
       <div class="invoice-notice">
         <p>📋 <strong>Your order will be invoiced separately via email.</strong> After placing your order, you'll receive an invoice from The Optimized Human labeled as "Coaching Services." Your order ships once payment is received.</p>
@@ -238,6 +269,10 @@ select.field{cursor:pointer;appearance:none;background-image:url("data:image/svg
       <div class="sidebar-row">
         <span class="label">Subtotal</span>
         <span class="value" id="sSubtotal">$0.00</span>
+      </div>
+      <div class="sidebar-row" id="sDiscountRow" style="display:none">
+        <span class="label">Discount <span id="sDiscountLabel" style="font-size:11px;color:var(--green)"></span></span>
+        <span class="value" id="sDiscount" style="color:var(--green)">-$0.00</span>
       </div>
       <div class="sidebar-row" id="sProtRow" style="display:none">
         <span class="label">Shipping Protection</span>
@@ -327,6 +362,7 @@ let currentUser = null;
 let cart = [];
 let shippingProtection = false;
 let billingSameAsShipping = true;
+let appliedCoupon = null; // { code, discount_percent }
 
 // ─── AUTH ───
 async function init() {
@@ -350,6 +386,7 @@ async function init() {
   // Live tax update when state or country changes
   document.getElementById('state').addEventListener('input', renderSidebar);
   document.getElementById('country').addEventListener('change', renderSidebar);
+  document.getElementById('couponCode').addEventListener('keydown', e => { if (e.key === 'Enter') applyCoupon(); });
 }
 
 sb.auth.onAuthStateChange((_, session) => {
@@ -376,15 +413,24 @@ async function loadCart() {
 
 function renderSidebar() {
   const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  const discount = appliedCoupon ? subtotal * (appliedCoupon.discount_percent / 100) : 0;
+  const discountedSubtotal = subtotal - discount;
   const prot = shippingProtection ? 5 : 0;
   const stateVal  = document.getElementById('state')?.value || '';
   const countryVal = document.getElementById('country')?.value || 'US';
   const taxRate = getTaxRate(stateVal, countryVal);
-  const tax = subtotal * taxRate;
-  const total = subtotal + 10 + prot + tax;
+  const tax = discountedSubtotal * taxRate;
+  const total = discountedSubtotal + 10 + prot + tax;
 
   document.getElementById('sSubtotal').textContent = '$' + subtotal.toFixed(2);
   document.getElementById('sTotal').textContent = '$' + total.toFixed(2);
+  if (appliedCoupon) {
+    document.getElementById('sDiscountRow').style.display = 'flex';
+    document.getElementById('sDiscount').textContent = '-$' + discount.toFixed(2);
+    document.getElementById('sDiscountLabel').textContent = '(' + appliedCoupon.code + ' ' + appliedCoupon.discount_percent + '% off)';
+  } else {
+    document.getElementById('sDiscountRow').style.display = 'none';
+  }
   if (tax > 0) {
     document.getElementById('sTaxRow').style.display = 'flex';
     document.getElementById('sTax').textContent = '$' + tax.toFixed(2);
@@ -450,6 +496,48 @@ function toggleBilling() {
   document.getElementById('billingSection').style.display = billingSameAsShipping ? 'none' : 'block';
 }
 
+// ─── COUPON ───
+async function applyCoupon() {
+  const input = document.getElementById('couponCode');
+  const msg = document.getElementById('couponMsg');
+  const btn = document.getElementById('couponBtn');
+  const code = input.value.trim().toUpperCase();
+  if (!code) { msg.className = 'coupon-msg error'; msg.textContent = 'Please enter a coupon code.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  msg.textContent = '';
+
+  const { data, error } = await sb.from('coupons').select('code, discount_percent').eq('code', code).eq('active', true).single();
+
+  if (error || !data) {
+    msg.className = 'coupon-msg error';
+    msg.textContent = 'Invalid or expired coupon code.';
+    btn.disabled = false;
+    btn.textContent = 'Apply';
+    return;
+  }
+
+  appliedCoupon = { code: data.code, discount_percent: Number(data.discount_percent) };
+  document.getElementById('couponInput').style.display = 'none';
+  document.getElementById('couponApplied').style.display = 'flex';
+  document.getElementById('couponTag').textContent = '✓ ' + data.code + ' — ' + data.discount_percent + '% off';
+  msg.className = 'coupon-msg success';
+  msg.textContent = 'Coupon applied!';
+  btn.disabled = false;
+  btn.textContent = 'Apply';
+  renderSidebar();
+}
+
+function removeCoupon() {
+  appliedCoupon = null;
+  document.getElementById('couponInput').style.display = 'flex';
+  document.getElementById('couponApplied').style.display = 'none';
+  document.getElementById('couponCode').value = '';
+  document.getElementById('couponMsg').textContent = '';
+  renderSidebar();
+}
+
 // ─── PLACE ORDER ───
 async function placeOrder() {
   const btn = document.getElementById('submitBtn');
@@ -488,8 +576,10 @@ async function placeOrder() {
   }
 
   const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  const discount = appliedCoupon ? subtotal * (appliedCoupon.discount_percent / 100) : 0;
+  const discountedSubtotal = subtotal - discount;
   const taxRate = getTaxRate(state, country);
-  const tax = subtotal * taxRate;
+  const tax = discountedSubtotal * taxRate;
   const refCode = localStorage.getItem('toh_ref') || null;
 
   btn.disabled = true;
@@ -511,6 +601,8 @@ async function placeOrder() {
         billingAddress,
         items: cart.map(i => ({ id: i.id, name: i.name, content: i.content, form: i.form, price: i.price, qty: i.qty, imgKey: i.imgKey })),
         subtotal,
+        couponCode: appliedCoupon?.code || null,
+        couponDiscount: discount,
         tax,
         shippingProtection,
         refCode,
@@ -527,7 +619,7 @@ async function placeOrder() {
           p_ref_code: refCode,
           p_customer_email: currentUser.email,
           p_order_items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
-          p_order_total: subtotal + 10 + tax + (shippingProtection ? 5 : 0),
+          p_order_total: discountedSubtotal + 10 + tax + (shippingProtection ? 5 : 0),
         });
       } catch(e) { /* non-blocking */ }
     }
@@ -538,9 +630,11 @@ async function placeOrder() {
       firstName,
       items: cart,
       subtotal,
+      couponCode: appliedCoupon?.code || null,
+      couponDiscount: discount,
       tax,
       shippingProtection,
-      total: subtotal + 10 + tax + (shippingProtection ? 5 : 0),
+      total: discountedSubtotal + 10 + tax + (shippingProtection ? 5 : 0),
       shippingAddress,
     }));
 

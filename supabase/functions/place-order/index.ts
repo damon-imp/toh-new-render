@@ -20,6 +20,8 @@ Deno.serve(async (req) => {
       billingAddress,
       items,
       subtotal,
+      couponCode = null,
+      couponDiscount = 0,
       shippingProtection,
       tax = 0,
       refCode,
@@ -27,8 +29,10 @@ Deno.serve(async (req) => {
 
     const shipping = 10.00;
     const protectionCost = shippingProtection ? 5.00 : 0.00;
+    const discountAmount = Number(couponDiscount) || 0;
     const taxAmount = Number(tax) || 0;
-    const total = subtotal + shipping + protectionCost + taxAmount;
+    const discountedSubtotal = subtotal - discountAmount;
+    const total = discountedSubtotal + shipping + protectionCost + taxAmount;
 
     // ── Save order to Supabase ──────────────────────────────────
     const supabase = createClient(
@@ -48,6 +52,8 @@ Deno.serve(async (req) => {
         subtotal,
         shipping,
         shipping_protection: protectionCost,
+        coupon_code: couponCode || null,
+        coupon_discount: discountAmount,
         tax: taxAmount,
         total,
         ref_code: refCode || null,
@@ -134,6 +140,7 @@ Deno.serve(async (req) => {
     </table>
     <table class="totals" width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px">
       <tr><td>Subtotal</td><td style="text-align:right">${fmt(subtotal)}</td></tr>
+      ${discountAmount > 0 ? `<tr><td>Discount (${couponCode})</td><td style="text-align:right;color:#34D399">-${fmt(discountAmount)}</td></tr>` : ""}
       ${shippingProtection ? `<tr><td>Shipping Protection</td><td style="text-align:right">${fmt(5)}</td></tr>` : ""}
       ${taxAmount > 0 ? `<tr><td>Tax</td><td style="text-align:right">${fmt(taxAmount)}</td></tr>` : ""}
       <tr><td>Shipping (Standard)</td><td style="text-align:right">${fmt(shipping)}</td></tr>
@@ -236,6 +243,7 @@ Deno.serve(async (req) => {
     </table>
     <table class="totals" width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px">
       <tr><td>Subtotal</td><td style="text-align:right">${fmt(subtotal)}</td></tr>
+      ${discountAmount > 0 ? `<tr><td>Discount (${couponCode})</td><td style="text-align:right;color:#34D399">-${fmt(discountAmount)}</td></tr>` : ""}
       ${shippingProtection ? `<tr><td>Shipping Protection</td><td style="text-align:right">${fmt(5)}</td></tr>` : ""}
       ${taxAmount > 0 ? `<tr><td>Tax</td><td style="text-align:right">${fmt(taxAmount)}</td></tr>` : ""}
       <tr><td>Shipping (Standard)</td><td style="text-align:right">${fmt(shipping)}</td></tr>

@@ -153,6 +153,10 @@
         <span class="label">Subtotal</span>
         <span class="value" id="confirmSubtotal">—</span>
       </div>
+      <div class="totals-row" id="confirmDiscountRow" style="display:none">
+        <span class="label">Discount <span id="confirmDiscountLabel" style="font-size:11px;color:var(--green)"></span></span>
+        <span class="value" id="confirmDiscount" style="color:var(--green)">-$0.00</span>
+      </div>
       <div class="totals-row" id="confirmProtRow" style="display:none">
         <span class="label">Shipping Protection</span>
         <span class="value" style="color:var(--accent)">$5.00</span>
@@ -209,6 +213,11 @@ async function init() {
   }
   if (orderData.total !== undefined) {
     document.getElementById('confirmTotal').textContent = '$' + Number(orderData.total).toFixed(2);
+  }
+  if (orderData.couponDiscount > 0) {
+    document.getElementById('confirmDiscountRow').style.display = 'flex';
+    document.getElementById('confirmDiscount').textContent = '-$' + Number(orderData.couponDiscount).toFixed(2);
+    document.getElementById('confirmDiscountLabel').textContent = '(' + (orderData.couponCode || '') + ')';
   }
   if (orderData.shippingProtection) {
     document.getElementById('confirmProtRow').style.display = 'flex';
