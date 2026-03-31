@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOH Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#0e0e0e;--bg2:#1a1a1a;--bg3:#222;--bg4:#2a2a2a;--accent:#AC66A7;--accent-light:#c88cc4;--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--red:#EF4444;--yellow:#F59E0B;--blue:#60A5FA;--radius:10px;--mono:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+
+/* LAYOUT */
+.app{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--t4);padding:24px 0;position:fixed;top:0;bottom:0;overflow-y:auto;z-index:50}
+.sidebar-logo{padding:0 20px 24px;border-bottom:1px solid var(--t4);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.sidebar-logo .mark{font-weight:900;font-size:24px;color:var(--accent)}.sidebar-logo .text{font-size:12px;color:var(--t2);font-weight:500;text-transform:uppercase;letter-spacing:1px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 20px;cursor:pointer;color:var(--t2);font-size:14px;font-weight:500;transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(172,102,167,.08);color:var(--t1)}.nav-item.active{background:rgba(172,102,167,.12);color:var(--accent);border-left-color:var(--accent)}
+.nav-item .icon{width:18px;text-align:center;font-size:16px}.nav-item .badge{margin-left:auto;background:var(--red);color:var(--white);font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.nav-section{padding:16px 20px 6px;font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.sidebar-user{position:absolute;bottom:0;left:0;right:0;padding:16px 20px;border-top:1px solid var(--t4);background:var(--bg2)}
+.sidebar-user .name{font-size:13px;color:var(--t1);font-weight:500}.sidebar-user .email{font-size:11px;color:var(--t3)}.sidebar-user .logout{font-size:11px;color:var(--accent);cursor:pointer;margin-top:4px;display:inline-block}
+
+.main{margin-left:240px;flex:1;padding:32px;min-height:100vh}
+.view{display:none}.view.active{display:block}
+
+/* HEADER */
+.page-title{font-size:28px;font-weight:800;color:var(--white);margin-bottom:4px}
+.page-sub{font-size:14px;color:var(--t3);margin-bottom:24px}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:20px}
+.stat-card .label{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.stat-card .value{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--white)}
+.stat-card .sub{font-size:12px;color:var(--t3);margin-top:4px}
+.stat-card.alert .value{color:var(--red)}.stat-card.warn .value{color:var(--yellow)}.stat-card.good .value{color:var(--green)}
+
+/* TABLES */
+.table-wrap{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden}
+.table-toolbar{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--t4);flex-wrap:wrap}
+.search-input{background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:8px 14px;color:var(--white);font-family:'Outfit',sans-serif;font-size:13px;outline:none;min-width:200px;transition:border-color .2s}.search-input:focus{border-color:var(--accent)}
+.filter-select{background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:8px 12px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:12px;outline:none;cursor:pointer}
+.toolbar-right{margin-left:auto;display:flex;gap:8px}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 16px;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;font-weight:600;border-bottom:1px solid var(--t4);background:var(--bg3)}
+td{padding:12px 16px;font-size:13px;color:var(--t1);border-bottom:1px solid rgba(255,255,255,.03)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.mono{font-family:var(--mono);font-size:12px}
+.text-right{text-align:right}
+
+/* BADGES */
+.badge-green{background:rgba(52,211,153,.12);color:var(--green);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.badge-yellow{background:rgba(245,158,11,.12);color:var(--yellow);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.badge-red{background:rgba(239,68,68,.12);color:var(--red);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.badge-blue{background:rgba(96,165,250,.12);color:var(--blue);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.badge-purple{background:rgba(172,102,167,.12);color:var(--accent);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.badge-gray{background:rgba(102,102,102,.15);color:var(--t2);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:var(--white);border-color:var(--accent)}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:var(--bg3);color:var(--t2);border-color:var(--t4)}.btn-secondary:hover{color:var(--white);border-color:var(--t3)}
+.btn-success{background:var(--green);color:var(--bg);border-color:var(--green)}.btn-success:hover{opacity:.85}
+.btn-danger{background:transparent;color:var(--red);border-color:var(--red)}.btn-danger:hover{background:var(--red);color:var(--white)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:28px;width:90%;max-width:560px;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:20px;font-weight:700;color:var(--white);margin-bottom:20px}
+.modal-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:24px}
+
+/* FORMS */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--t4);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:flex;gap:12px}.form-row .form-group{flex:1}
+.form-group select{cursor:pointer}
+.form-group input[type="number"]{font-family:var(--mono)}
+
+/* AUTH */
+.auth-container{max-width:400px;margin:15vh auto;padding:40px;background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);text-align:center}
+.auth-container h2{font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px}
+.auth-container p{color:var(--t3);font-size:14px;margin-bottom:24px}
+.auth-container input{width:100%;padding:12px 16px;background:var(--bg3);border:1px solid var(--t4);border-radius:8px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;margin-bottom:12px;outline:none}
+.auth-container input:focus{border-color:var(--accent)}
+.auth-container .btn{width:100%;justify-content:center;padding:14px}
+.auth-msg{margin-top:12px;font-size:13px;min-height:20px}.auth-msg.error{color:var(--red)}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;right:30px;background:var(--green);color:var(--bg);padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;z-index:200;transform:translateY(100px);transition:transform .3s;pointer-events:none}
+.toast.show{transform:translateY(0)}.toast.error{background:var(--red);color:var(--white)}
+
+/* LOADING */
+.loading{text-align:center;padding:60px;color:var(--t3)}.loading .spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--t4);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:768px){.sidebar{width:60px}.sidebar .nav-item span:not(.icon),.sidebar .nav-section,.sidebar-logo .text,.sidebar-user .email,.sidebar-user .logout{display:none}.sidebar-user .name{font-size:10px}.main{margin-left:60px;padding:16px}.stats{grid-template-columns:1fr 1fr}.modal{width:95%;padding:20px}}
+</style>
+</head>
+<body>
+
+<!-- DEMO MODE - NO AUTH -->
+<div style="position:fixed;top:0;left:240px;right:0;z-index:60;background:var(--accent);color:var(--white);text-align:center;padding:6px;font-size:12px;font-weight:600;letter-spacing:1px">DEMO MODE - Sample Data - No Live Database</div>
+
+<div class="app" id="appShell" style="display:flex">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><span class="mark">OH</span><span class="text">Admin</span></div>
+    <div class="nav-section">Fulfillment</div>
+    <div class="nav-item active" onclick="switchView('fulfillment',this)"><span class="icon">&#9744;</span><span>Needs Fulfillment</span><span class="badge" id="fulfillBadge" style="display:none">0</span></div>
+    <div class="nav-item" onclick="switchView('orders',this)"><span class="icon">&#9783;</span><span>All Orders</span></div>
+    <div class="nav-item" onclick="switchView('create',this)"><span class="icon">&#43;</span><span>Create Order</span></div>
+    <div class="nav-section">Inventory</div>
+    <div class="nav-item" onclick="switchView('inventory',this)"><span class="icon">&#9638;</span><span>Inventory</span></div>
+    <div class="nav-item" onclick="switchView('lowstock',this)"><span class="icon">&#9888;</span><span>Low Stock</span><span class="badge" id="lowBadge" style="display:none">0</span></div>
+    <div class="sidebar-user">
+      <div class="name" id="userName">-</div>
+      <div class="email" id="userEmail">-</div>
+      <div class="logout" onclick="doLogout()">Log Out</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- VIEW 1: NEEDS FULFILLMENT -->
+    <div class="view active" id="view-fulfillment">
+      <div class="page-title">Needs Fulfillment</div>
+      <div class="page-sub">Paid orders waiting to ship</div>
+      <div class="stats" id="fulfillStats"></div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Search orders..." oninput="filterFulfillment(this.value)">
+          <select class="filter-select" onchange="filterFulfillChannel(this.value)">
+            <option value="">All Channels</option>
+            <option value="website">Website</option>
+            <option value="dm">DM</option>
+            <option value="partner">Partner</option>
+            <option value="gym">Gym</option>
+            <option value="ghl">GHL</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Channel</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="fulfillBody"></tbody>
+        </table>
+        <div class="loading" id="fulfillLoading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: ALL ORDERS -->
+    <div class="view" id="view-orders">
+      <div class="page-title">All Orders</div>
+      <div class="page-sub">Complete order history across all channels</div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" id="orderSearch" placeholder="Search by order #, name, or email..." oninput="searchOrders()">
+          <select class="filter-select" id="orderStatusFilter" onchange="searchOrders()">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="processing">Processing</option>
+            <option value="partial_shipped">Partial Shipped</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="refunded">Refunded</option>
+          </select>
+          <select class="filter-select" id="orderChannelFilter" onchange="searchOrders()">
+            <option value="">All Channels</option>
+            <option value="website">Website</option>
+            <option value="dm">DM</option>
+            <option value="partner">Partner</option>
+            <option value="gym">Gym</option>
+            <option value="ghl">GHL</option>
+            <option value="manual">Manual</option>
+          </select>
+          <div class="toolbar-right"><button class="btn btn-primary btn-sm" onclick="switchView('create',document.querySelector('[onclick*=create]'))">+ New Order</button></div>
+        </div>
+        <table>
+          <thead><tr><th>Order #</th><th>Customer</th><th>Status</th><th>Payment</th><th>Channel</th><th>Total</th><th>Date</th><th></th></tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+        <div class="loading" id="ordersLoading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: CREATE ORDER -->
+    <div class="view" id="view-create">
+      <div class="page-title">Create Order</div>
+      <div class="page-sub">Manual entry for DM, phone, and partner orders</div>
+      <div style="max-width:680px">
+        <div style="background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:24px;margin-bottom:20px">
+          <h4 style="color:var(--white);margin-bottom:16px;font-size:15px">Customer</h4>
+          <div class="form-group"><label>Email (search existing)</label><input id="coEmail" placeholder="customer@email.com" oninput="searchCustomer()"><div id="coCustomerMatch" style="font-size:12px;color:var(--t3);margin-top:4px"></div></div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input id="coFirst"></div>
+            <div class="form-group"><label>Last Name</label><input id="coLast"></div>
+          </div>
+          <div class="form-group"><label>Phone</label><input id="coPhone" placeholder="Optional"></div>
+        </div>
+
+        <div style="background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:24px;margin-bottom:20px">
+          <h4 style="color:var(--white);margin-bottom:16px;font-size:15px">Line Items</h4>
+          <div id="coItems"></div>
+          <button class="btn btn-secondary btn-sm" onclick="addLineItem()" style="margin-top:12px">+ Add Item</button>
+          <div style="text-align:right;margin-top:16px;padding-top:16px;border-top:1px solid var(--t4)">
+            <span style="color:var(--t2);font-size:14px">Total: </span>
+            <span id="coTotal" style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--accent)">$0.00</span>
+          </div>
+        </div>
+
+        <div style="background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:24px;margin-bottom:20px">
+          <h4 style="color:var(--white);margin-bottom:16px;font-size:15px">Order Details</h4>
+          <div class="form-row">
+            <div class="form-group"><label>Channel</label>
+              <select id="coChannel"><option value="dm">DM</option><option value="partner">Partner</option><option value="gym">Gym</option><option value="ghl">GHL</option><option value="manual">Manual</option><option value="website">Website</option></select>
+            </div>
+            <div class="form-group"><label>Payment Status</label>
+              <select id="coPayment"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Shipping Address</label><textarea id="coAddress" placeholder="Full shipping address"></textarea></div>
+          <div class="form-group"><label>Notes</label><textarea id="coNotes" placeholder="Internal notes (optional)"></textarea></div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+          <button class="btn btn-secondary" onclick="resetCreateOrder()">Clear</button>
+          <button class="btn btn-primary" onclick="submitOrder()">Create Order</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: INVENTORY -->
+    <div class="view" id="view-inventory">
+      <div class="page-title">Inventory</div>
+      <div class="page-sub">Stock levels and management for all 17 SKUs</div>
+      <div class="stats" id="invStats"></div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Search products..." oninput="filterInventory(this.value)">
+          <select class="filter-select" onchange="filterInvCategory(this.value)">
+            <option value="">All Categories</option>
+            <option value="metabolic">Metabolic</option>
+            <option value="recovery">Recovery</option>
+            <option value="longevity">Longevity</option>
+            <option value="cognitive">Cognitive</option>
+            <option value="hormonal">Hormonal</option>
+            <option value="aesthetic">Aesthetic</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>Product</th><th>Content</th><th>Category</th><th>Stock</th><th>Status</th><th>Cost</th><th>Price</th><th>Margin</th><th>Actions</th></tr></thead>
+          <tbody id="invBody"></tbody>
+        </table>
+        <div class="loading" id="invLoading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- VIEW 5: LOW STOCK -->
+    <div class="view" id="view-lowstock">
+      <div class="page-title">Low Stock Alerts</div>
+      <div class="page-sub">Products that need reordering</div>
+      <div id="lowStockCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px"></div>
+      <div class="loading" id="lowLoading"><div class="spinner"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalShip">
+  <div class="modal">
+    <h3>Ship Order <span id="shipOrderNum"></span></h3>
+    <div class="form-group"><label>Tracking Number</label><input id="shipTracking" placeholder="Enter tracking number"></div>
+    <div class="form-group"><label>Carrier</label>
+      <select id="shipCarrier"><option value="usps">USPS</option><option value="ups">UPS</option><option value="fedex">FedEx</option></select>
+    </div>
+    <div id="shipItems"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalShip')">Cancel</button>
+      <button class="btn btn-success" onclick="confirmShip()">Mark Shipped</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalRestock">
+  <div class="modal">
+    <h3>Restock: <span id="restockName"></span></h3>
+    <div class="form-group"><label>Current Stock</label><div id="restockCurrent" class="mono" style="padding:8px 0;font-size:18px;color:var(--white)"></div></div>
+    <div class="form-group"><label>Quantity Received</label><input type="number" id="restockQty" min="1" value="20"></div>
+    <div class="form-group"><label>Notes (optional)</label><textarea id="restockNotes" placeholder="e.g., Ion Peptide order #12345"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalRestock')">Cancel</button>
+      <button class="btn btn-success" onclick="confirmRestock()">Add Stock</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAdjust">
+  <div class="modal">
+    <h3>Adjust: <span id="adjustName"></span></h3>
+    <div class="form-group"><label>Current Stock</label><div id="adjustCurrent" class="mono" style="padding:8px 0;font-size:18px;color:var(--white)"></div></div>
+    <div class="form-group"><label>New Stock Count</label><input type="number" id="adjustQty" min="0"></div>
+    <div class="form-group"><label>Reason (required)</label><textarea id="adjustNotes" placeholder="Why are you adjusting? e.g., Physical count correction, damaged vials, etc."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalAdjust')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAdjust()">Save Adjustment</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOrderDetail">
+  <div class="modal" style="max-width:640px">
+    <h3>Order <span id="detailOrderNum"></span></h3>
+    <div id="detailContent"></div>
+    <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalOrderDetail')">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── SUPABASE ───
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyb3pqYm1pbXpjd2Vnem9scHRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTQ1NDgsImV4cCI6MjA5MDEzMDU0OH0.JmmgwESE5BB3PMUFeWTJcX1G3iSVWr8-Sc57p3NNezw';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let products = [];
+let allOrders = [];
+let fulfillOrders = [];
+let activeShipOrder = null;
+let activeRestockProduct = null;
+let activeAdjustProduct = null;
+let matchedCustomer = null;
+
+// ─── DEMO MODE: Mock Data ───
+currentUser = { id: 'demo', email: 'amy@theoptimizedhumanproject.com', user_metadata: { first_name: 'Amy', last_name: 'Soileau' } };
+document.getElementById('userName').textContent = 'Amy Soileau';
+document.getElementById('userEmail').textContent = 'amy@theoptimizedhumanproject.com';
+
+products = [
+  {id:'kpv',name:'KPV',content:'10mg',form:'Lyophilized',category:'recovery',cost_wholesale:24.50,sale_price:49.99,badge:'',stock_on_hand:4,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'ksptn',name:'KSPTN',content:'10mg',form:'Lyophilized',category:'hormonal',cost_wholesale:19.50,sale_price:44.99,badge:'',stock_on_hand:4,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'methblue',name:'Methylene Blue 1%',content:'60ml',form:'Liquid',category:'cognitive',cost_wholesale:12.00,sale_price:33.99,badge:'',stock_on_hand:4,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'tesa',name:'Tesamorelin',content:'10mg',form:'Lyophilized',category:'metabolic',cost_wholesale:34.98,sale_price:74.99,badge:'',stock_on_hand:0,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'amino5',name:'5-Amino-1MQ',content:'20mg',form:'Lyophilized',category:'metabolic',cost_wholesale:34.50,sale_price:79.99,badge:'',stock_on_hand:5,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'selank',name:'Selank (N-Acetyl)',content:'10mg',form:'Lyophilized',category:'cognitive',cost_wholesale:24.98,sale_price:79.99,badge:'',stock_on_hand:5,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'ta1',name:'Thymosin Alpha-1',content:'5mg',form:'Lyophilized',category:'hormonal',cost_wholesale:21.00,sale_price:49.99,badge:'',stock_on_hand:5,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'b12',name:'B12 (Methylated)',content:'10mg',form:'Liquid',category:'hormonal',cost_wholesale:37.50,sale_price:67.99,badge:'',stock_on_hand:10,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'glut',name:'Glutathione',content:'600mg',form:'Lyophilized',category:'hormonal',cost_wholesale:19.50,sale_price:38.99,badge:'',stock_on_hand:11,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'motsc',name:'MOTS-c',content:'10mg',form:'Lyophilized',category:'longevity',cost_wholesale:19.00,sale_price:55.99,badge:'',stock_on_hand:13,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'epi',name:'Epithalon',content:'10mg',form:'Lyophilized',category:'longevity',cost_wholesale:17.50,sale_price:42.99,badge:'',stock_on_hand:14,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'tb500',name:'TB-500',content:'10mg',form:'Lyophilized',category:'recovery',cost_wholesale:24.50,sale_price:64.99,badge:'Best Seller',stock_on_hand:8,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'nad',name:'NAD+',content:'500mg',form:'Lyophilized',category:'longevity',cost_wholesale:22.50,sale_price:59.99,badge:'Popular',stock_on_hand:18,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'ipa',name:'Ipamorelin',content:'10mg',form:'Lyophilized',category:'metabolic',cost_wholesale:21.00,sale_price:59.99,badge:'',stock_on_hand:20,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'bpc',name:'BPC-157',content:'10mg',form:'Lyophilized',category:'recovery',cost_wholesale:19.98,sale_price:64.99,badge:'Best Seller',stock_on_hand:27,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'ghkcu',name:'GHK-Cu',content:'50mg',form:'Lyophilized',category:'aesthetic',cost_wholesale:14.50,sale_price:54.99,badge:'',stock_on_hand:28,reorder_threshold:5,reorder_qty:20,is_active:true},
+  {id:'glp3r',name:'GLP-3R',content:'10mg',form:'Lyophilized',category:'metabolic',cost_wholesale:29.25,sale_price:89.99,badge:'New',stock_on_hand:26,reorder_threshold:5,reorder_qty:20,is_active:true},
+];
+
+allOrders = [
+  {id:'demo-1',order_number:1001,status:'paid',payment_status:'paid',channel:'dm',total:194.97,shipping_address:'142 Oak St, Batesburg, SC 29006',tracking_number:null,tracking_carrier:null,notes:'Jay DM order',created_at:'2026-03-28T14:30:00Z',shipped_at:null,
+    customers:{first_name:'Marcus',last_name:'Rivera',email:'marcus.r@gmail.com'},
+    order_items:[
+      {product_id:'bpc',quantity:2,unit_price:64.99,fulfillment:'pending',products:{name:'BPC-157',content:'10mg'}},
+      {product_id:'tb500',quantity:1,unit_price:64.99,fulfillment:'pending',products:{name:'TB-500',content:'10mg'}}
+    ]},
+  {id:'demo-2',order_number:1002,status:'paid',payment_status:'paid',channel:'website',total:149.98,shipping_address:'88 Pine Rd, Columbia, SC 29201',tracking_number:null,tracking_carrier:null,notes:null,created_at:'2026-03-29T09:15:00Z',shipped_at:null,
+    customers:{first_name:'Sarah',last_name:'Chen',email:'sarah.chen@outlook.com'},
+    order_items:[
+      {product_id:'glp3r',quantity:1,unit_price:89.99,fulfillment:'pending',products:{name:'GLP-3R',content:'10mg'}},
+      {product_id:'nad',quantity:1,unit_price:59.99,fulfillment:'pending',products:{name:'NAD+',content:'500mg'}}
+    ]},
+  {id:'demo-3',order_number:1003,status:'paid',payment_status:'paid',channel:'gym',total:259.96,shipping_address:'Jugtown Fitness, 55 Main St, Batesburg, SC 29006',tracking_number:null,tracking_carrier:null,notes:'Jugtown Fitness partner order',created_at:'2026-03-30T16:45:00Z',shipped_at:null,
+    customers:{first_name:'Derek',last_name:'Thompson',email:'derek@jugtownfitness.com'},
+    order_items:[
+      {product_id:'bpc',quantity:2,unit_price:64.99,fulfillment:'pending',products:{name:'BPC-157',content:'10mg'}},
+      {product_id:'tb500',quantity:2,unit_price:64.99,fulfillment:'pending',products:{name:'TB-500',content:'10mg'}}
+    ]},
+  {id:'demo-4',order_number:1004,status:'shipped',payment_status:'paid',channel:'dm',total:64.99,shipping_address:'221 Elm Ave, Lexington, SC 29072',tracking_number:'9400111899223100012345',tracking_carrier:'usps',notes:null,created_at:'2026-03-25T11:00:00Z',shipped_at:'2026-03-26T10:00:00Z',
+    customers:{first_name:'James',last_name:'Whitfield',email:'jwhitfield22@gmail.com'},
+    order_items:[
+      {product_id:'bpc',quantity:1,unit_price:64.99,fulfillment:'shipped',products:{name:'BPC-157',content:'10mg'}}
+    ]},
+  {id:'demo-5',order_number:1005,status:'shipped',payment_status:'paid',channel:'website',total:174.97,shipping_address:'400 River Rd, Aiken, SC 29801',tracking_number:'1Z999AA10123456784',tracking_carrier:'ups',notes:null,created_at:'2026-03-24T08:30:00Z',shipped_at:'2026-03-25T14:00:00Z',
+    customers:{first_name:'Lisa',last_name:'Park',email:'lisapark88@yahoo.com'},
+    order_items:[
+      {product_id:'nad',quantity:1,unit_price:59.99,fulfillment:'shipped',products:{name:'NAD+',content:'500mg'}},
+      {product_id:'epi',quantity:1,unit_price:42.99,fulfillment:'shipped',products:{name:'Epithalon',content:'10mg'}},
+      {product_id:'motsc',quantity:1,unit_price:55.99,fulfillment:'shipped',products:{name:'MOTS-c',content:'10mg'}}
+    ]},
+];
+
+// ─── DEMO: Override Supabase calls with local operations ───
+async function loadAllData() {
+  renderInventory();
+  renderLowStock();
+  renderFulfillment();
+  renderOrders();
+}
+
+async function loadProducts() {} // data is already loaded
+async function loadOrders() {} // data is already loaded
+
+function doLogout() { toast('Demo mode -- logout disabled'); }
+
+// Override submitOrder for demo
+const _originalSubmitOrder = submitOrder;
+submitOrder = async function() {
+  const email = document.getElementById('coEmail').value.trim();
+  const first = document.getElementById('coFirst').value.trim();
+  if (!email || !first) { toast('Email and first name required', true); return; }
+
+  const items = [];
+  let total = 0;
+  document.querySelectorAll('[id^="lineItem"]').forEach(row => {
+    const idx = row.id.replace('lineItem', '');
+    const productId = document.getElementById('liProd' + idx).value;
+    const qty = parseInt(document.getElementById('liQty' + idx).value);
+    const price = parseFloat(document.getElementById('liPrice' + idx).value);
+    const prod = products.find(p => p.id === productId);
+    items.push({ product_id: productId, quantity: qty, unit_price: price, fulfillment: 'pending', products: { name: prod?.name || '?', content: prod?.content || '' } });
+    total += qty * price;
+  });
+  if (items.length === 0) { toast('Add at least one item', true); return; }
+
+  const orderNum = 1006 + allOrders.filter(o => o.order_number >= 1006).length;
+  const payStatus = document.getElementById('coPayment').value;
+  const newOrder = {
+    id: 'demo-' + orderNum, order_number: orderNum,
+    status: payStatus === 'paid' ? 'paid' : 'pending',
+    payment_status: payStatus,
+    channel: document.getElementById('coChannel').value,
+    total: total,
+    shipping_address: document.getElementById('coAddress').value.trim(),
+    tracking_number: null, tracking_carrier: null,
+    notes: document.getElementById('coNotes').value.trim(),
+    created_at: new Date().toISOString(), shipped_at: null,
+    customers: { first_name: first, last_name: document.getElementById('coLast').value.trim(), email: email },
+    order_items: items
+  };
+  allOrders.unshift(newOrder);
+
+  if (payStatus === 'paid') {
+    items.forEach(item => {
+      const prod = products.find(p => p.id === item.product_id);
+      if (prod) prod.stock_on_hand = Math.max(0, prod.stock_on_hand - item.quantity);
+    });
+  }
+
+  toast('Order TOH-' + orderNum + ' created!');
+  loadAllData();
+  switchView('fulfillment', document.querySelector('[onclick*=fulfillment]'));
+};
+
+// Override confirmShip for demo
+confirmShip = async function() {
+  if (!activeShipOrder) return;
+  const tracking = document.getElementById('shipTracking').value.trim();
+  const carrier = document.getElementById('shipCarrier').value;
+  activeShipOrder.status = 'shipped';
+  activeShipOrder.tracking_number = tracking || 'DEMO-TRACK-' + Date.now();
+  activeShipOrder.tracking_carrier = carrier;
+  activeShipOrder.shipped_at = new Date().toISOString();
+  (activeShipOrder.order_items || []).forEach(i => {
+    i.fulfillment = 'shipped';
+    const prod = products.find(p => p.id === i.product_id);
+    if (prod) prod.stock_on_hand = Math.max(0, prod.stock_on_hand - i.quantity);
+  });
+  closeModal('modalShip');
+  toast('Order TOH-' + activeShipOrder.order_number + ' shipped!');
+  loadAllData();
+};
+
+// Override confirmRestock for demo
+confirmRestock = async function() {
+  if (!activeRestockProduct) return;
+  const qty = parseInt(document.getElementById('restockQty').value);
+  if (!qty || qty <= 0) { toast('Enter a valid quantity', true); return; }
+  activeRestockProduct.stock_on_hand += qty;
+  closeModal('modalRestock');
+  toast(activeRestockProduct.name + ': +' + qty + ' units restocked');
+  loadAllData();
+};
+
+// Override confirmAdjust for demo
+confirmAdjust = async function() {
+  if (!activeAdjustProduct) return;
+  const newQty = parseInt(document.getElementById('adjustQty').value);
+  const notes = document.getElementById('adjustNotes').value.trim();
+  if (newQty < 0) { toast('Stock cannot be negative', true); return; }
+  if (!notes) { toast('Reason is required for adjustments', true); return; }
+  activeAdjustProduct.stock_on_hand = newQty;
+  closeModal('modalAdjust');
+  toast(activeAdjustProduct.name + ' adjusted to ' + newQty);
+  loadAllData();
+};
+
+// Override searchCustomer for demo
+searchCustomer = async function() {
+  const email = document.getElementById('coEmail').value.trim();
+  const match = document.getElementById('coCustomerMatch');
+  if (email.length < 3) { match.textContent = ''; matchedCustomer = null; return; }
+  const found = allOrders.find(o => o.customers?.email?.toLowerCase().includes(email.toLowerCase()));
+  if (found) {
+    matchedCustomer = { id: 'demo', ...found.customers };
+    match.innerHTML = '<span style="color:var(--green)">Found: ' + found.customers.first_name + ' ' + found.customers.last_name + ' (' + found.customers.email + ')</span>';
+    document.getElementById('coFirst').value = found.customers.first_name || '';
+    document.getElementById('coLast').value = found.customers.last_name || '';
+  } else { match.textContent = 'New customer'; matchedCustomer = null; }
+};
+
+// ─── INIT (Demo) ───
+loadAllData();
+function switchView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  if (name === 'fulfillment') renderFulfillment();
+  if (name === 'orders') renderOrders();
+  if (name === 'inventory') renderInventory();
+  if (name === 'lowstock') renderLowStock();
+  if (name === 'create') resetCreateOrder();
+}
+
+// ─── VIEW 1: FULFILLMENT ───
+function renderFulfillment() {
+  fulfillOrders = allOrders.filter(o => ['paid','processing','partial_shipped'].includes(o.status) && o.payment_status === 'paid');
+
+  const badge = document.getElementById('fulfillBadge');
+  if (fulfillOrders.length > 0) { badge.style.display = 'inline'; badge.textContent = fulfillOrders.length; }
+  else badge.style.display = 'none';
+
+  document.getElementById('fulfillStats').innerHTML = `
+    <div class="stat-card${fulfillOrders.length > 0 ? ' alert' : ' good'}"><div class="label">Awaiting Shipment</div><div class="value">${fulfillOrders.length}</div></div>
+    <div class="stat-card"><div class="label">Total Revenue (pending)</div><div class="value">$${fulfillOrders.reduce((s,o) => s + parseFloat(o.total || 0), 0).toFixed(2)}</div></div>
+  `;
+
+  document.getElementById('fulfillLoading').style.display = 'none';
+  renderFulfillTable(fulfillOrders);
+}
+
+function renderFulfillTable(orders) {
+  const body = document.getElementById('fulfillBody');
+  if (orders.length === 0) { body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:40px">No orders awaiting fulfillment</td></tr>'; return; }
+  body.innerHTML = orders.map(o => {
+    const c = o.customers || {};
+    const items = (o.order_items || []).map(i => `${i.products?.name || '?'} ${i.products?.content || ''} x${i.quantity}`).join(', ');
+    return `<tr>
+      <td class="mono">TOH-${o.order_number}</td>
+      <td>${c.first_name || ''} ${c.last_name || ''}<br><span style="font-size:11px;color:var(--t3)">${c.email || ''}</span></td>
+      <td style="max-width:200px;font-size:12px">${items}</td>
+      <td class="mono">$${parseFloat(o.total || 0).toFixed(2)}</td>
+      <td>${channelBadge(o.channel)}</td>
+      <td style="font-size:12px">${fmtDate(o.created_at)}</td>
+      <td><button class="btn btn-success btn-sm" onclick="openShipModal('${o.id}')">Ship</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterFulfillment(q) {
+  const filtered = fulfillOrders.filter(o => {
+    const c = o.customers || {};
+    const s = `TOH-${o.order_number} ${c.first_name} ${c.last_name} ${c.email}`.toLowerCase();
+    return s.includes(q.toLowerCase());
+  });
+  renderFulfillTable(filtered);
+}
+
+function filterFulfillChannel(ch) {
+  const filtered = ch ? fulfillOrders.filter(o => o.channel === ch) : fulfillOrders;
+  renderFulfillTable(filtered);
+}
+
+// ─── VIEW 2: ALL ORDERS ───
+function renderOrders() {
+  document.getElementById('ordersLoading').style.display = 'none';
+  renderOrdersTable(allOrders);
+}
+
+function renderOrdersTable(orders) {
+  const body = document.getElementById('ordersBody');
+  if (orders.length === 0) { body.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:40px">No orders found</td></tr>'; return; }
+  body.innerHTML = orders.map(o => {
+    const c = o.customers || {};
+    return `<tr>
+      <td class="mono">TOH-${o.order_number}</td>
+      <td>${c.first_name || ''} ${c.last_name || ''}<br><span style="font-size:11px;color:var(--t3)">${c.email || ''}</span></td>
+      <td>${statusBadge(o.status)}</td>
+      <td>${paymentBadge(o.payment_status)}</td>
+      <td>${channelBadge(o.channel)}</td>
+      <td class="mono">$${parseFloat(o.total || 0).toFixed(2)}</td>
+      <td style="font-size:12px">${fmtDate(o.created_at)}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openOrderDetail('${o.id}')">View</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function searchOrders() {
+  const q = document.getElementById('orderSearch').value.toLowerCase();
+  const status = document.getElementById('orderStatusFilter').value;
+  const channel = document.getElementById('orderChannelFilter').value;
+  const filtered = allOrders.filter(o => {
+    const c = o.customers || {};
+    const s = `TOH-${o.order_number} ${c.first_name} ${c.last_name} ${c.email}`.toLowerCase();
+    return (!q || s.includes(q)) && (!status || o.status === status) && (!channel || o.channel === channel);
+  });
+  renderOrdersTable(filtered);
+}
+
+function openOrderDetail(id) {
+  const o = allOrders.find(x => x.id === id);
+  if (!o) return;
+  const c = o.customers || {};
+  document.getElementById('detailOrderNum').textContent = 'TOH-' + o.order_number;
+  document.getElementById('detailContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div><span style="color:var(--t3);font-size:12px">Customer</span><br>${c.first_name || ''} ${c.last_name || ''}<br><span style="color:var(--t3);font-size:12px">${c.email || ''}</span></div>
+      <div><span style="color:var(--t3);font-size:12px">Channel</span><br>${channelBadge(o.channel)}</div>
+      <div><span style="color:var(--t3);font-size:12px">Status</span><br>${statusBadge(o.status)}</div>
+      <div><span style="color:var(--t3);font-size:12px">Payment</span><br>${paymentBadge(o.payment_status)}</div>
+      <div><span style="color:var(--t3);font-size:12px">Total</span><br><span class="mono" style="font-size:20px;color:var(--accent)">$${parseFloat(o.total || 0).toFixed(2)}</span></div>
+      <div><span style="color:var(--t3);font-size:12px">Date</span><br>${fmtDate(o.created_at)}</div>
+    </div>
+    ${o.tracking_number ? `<div style="margin-bottom:12px"><span style="color:var(--t3);font-size:12px">Tracking</span><br><span class="mono">${o.tracking_number}</span> (${o.tracking_carrier || 'N/A'})</div>` : ''}
+    ${o.shipping_address ? `<div style="margin-bottom:12px"><span style="color:var(--t3);font-size:12px">Address</span><br>${o.shipping_address}</div>` : ''}
+    ${o.notes ? `<div style="margin-bottom:12px"><span style="color:var(--t3);font-size:12px">Notes</span><br>${o.notes}</div>` : ''}
+    <div style="margin-top:16px;border-top:1px solid var(--t4);padding-top:16px"><span style="color:var(--t3);font-size:12px;text-transform:uppercase;letter-spacing:1px">Line Items</span></div>
+    <table style="margin-top:8px"><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Fulfillment</th></tr></thead><tbody>
+    ${(o.order_items || []).map(i => `<tr><td>${i.products?.name || '?'} ${i.products?.content || ''}</td><td class="mono">${i.quantity}</td><td class="mono">$${parseFloat(i.unit_price || 0).toFixed(2)}</td><td>${itemFulfillBadge(i.fulfillment)}</td></tr>`).join('')}
+    </tbody></table>
+  `;
+  showModal('modalOrderDetail');
+}
+
+// ─── VIEW 3: CREATE ORDER ───
+let lineItemCount = 0;
+
+function resetCreateOrder() {
+  document.getElementById('coEmail').value = '';
+  document.getElementById('coFirst').value = '';
+  document.getElementById('coLast').value = '';
+  document.getElementById('coPhone').value = '';
+  document.getElementById('coAddress').value = '';
+  document.getElementById('coNotes').value = '';
+  document.getElementById('coChannel').value = 'dm';
+  document.getElementById('coPayment').value = 'unpaid';
+  document.getElementById('coCustomerMatch').textContent = '';
+  document.getElementById('coItems').innerHTML = '';
+  document.getElementById('coTotal').textContent = '$0.00';
+  matchedCustomer = null;
+  lineItemCount = 0;
+  addLineItem();
+}
+
+function addLineItem() {
+  lineItemCount++;
+  const idx = lineItemCount;
+  const options = products.map(p => `<option value="${p.id}" data-price="${p.sale_price}" data-stock="${p.stock_on_hand}">${p.name} ${p.content} ($${parseFloat(p.sale_price).toFixed(2)}) [${p.stock_on_hand} in stock]</option>`).join('');
+  document.getElementById('coItems').insertAdjacentHTML('beforeend', `
+    <div class="form-row" id="lineItem${idx}" style="align-items:flex-end;margin-bottom:8px">
+      <div class="form-group" style="flex:3"><label>Product</label><select id="liProd${idx}" onchange="updateLinePrice(${idx})">${options}</select></div>
+      <div class="form-group" style="flex:1"><label>Qty</label><input type="number" id="liQty${idx}" value="1" min="1" onchange="calcTotal()"></div>
+      <div class="form-group" style="flex:1.5"><label>Price</label><input type="number" id="liPrice${idx}" step="0.01" onchange="calcTotal()"></div>
+      <div style="padding-bottom:16px"><button class="btn btn-danger btn-sm" onclick="removeLineItem(${idx})">&#10005;</button></div>
+    </div>
+  `);
+  updateLinePrice(idx);
+}
+
+function updateLinePrice(idx) {
+  const sel = document.getElementById('liProd' + idx);
+  const opt = sel.selectedOptions[0];
+  document.getElementById('liPrice' + idx).value = parseFloat(opt.dataset.price).toFixed(2);
+  calcTotal();
+}
+
+function removeLineItem(idx) {
+  const el = document.getElementById('lineItem' + idx);
+  if (el) el.remove();
+  calcTotal();
+}
+
+function calcTotal() {
+  let total = 0;
+  document.querySelectorAll('[id^="lineItem"]').forEach(row => {
+    const idx = row.id.replace('lineItem', '');
+    const qty = parseInt(document.getElementById('liQty' + idx)?.value || 0);
+    const price = parseFloat(document.getElementById('liPrice' + idx)?.value || 0);
+    total += qty * price;
+  });
+  document.getElementById('coTotal').textContent = '$' + total.toFixed(2);
+}
+
+async function searchCustomer() {
+  const email = document.getElementById('coEmail').value.trim();
+  const match = document.getElementById('coCustomerMatch');
+  if (email.length < 3) { match.textContent = ''; matchedCustomer = null; return; }
+  const { data } = await sb.from('customers').select('*').ilike('email', '%' + email + '%').limit(1);
+  if (data && data.length > 0) {
+    matchedCustomer = data[0];
+    match.innerHTML = `<span style="color:var(--green)">Found: ${matchedCustomer.first_name} ${matchedCustomer.last_name} (${matchedCustomer.email})</span>`;
+    document.getElementById('coFirst').value = matchedCustomer.first_name || '';
+    document.getElementById('coLast').value = matchedCustomer.last_name || '';
+    document.getElementById('coPhone').value = matchedCustomer.phone || '';
+  } else { match.textContent = 'New customer'; matchedCustomer = null; }
+}
+
+async function submitOrder() {
+  const email = document.getElementById('coEmail').value.trim();
+  const first = document.getElementById('coFirst').value.trim();
+  const last = document.getElementById('coLast').value.trim();
+  if (!email || !first) { toast('Email and first name required', true); return; }
+
+  // Get or create customer
+  let customerId;
+  if (matchedCustomer) { customerId = matchedCustomer.id; }
+  else {
+    const { data: newCust, error } = await sb.from('customers').insert({
+      email, first_name: first, last_name: last,
+      phone: document.getElementById('coPhone').value.trim(),
+      source: document.getElementById('coChannel').value
+    }).select().single();
+    if (error) { toast('Error creating customer: ' + error.message, true); return; }
+    customerId = newCust.id;
+  }
+
+  // Collect line items
+  const items = [];
+  let total = 0;
+  const rows = document.querySelectorAll('[id^="lineItem"]');
+  for (const row of rows) {
+    const idx = row.id.replace('lineItem', '');
+    const productId = document.getElementById('liProd' + idx).value;
+    const qty = parseInt(document.getElementById('liQty' + idx).value);
+    const price = parseFloat(document.getElementById('liPrice' + idx).value);
+    items.push({ product_id: productId, quantity: qty, unit_price: price });
+    total += qty * price;
+  }
+  if (items.length === 0) { toast('Add at least one item', true); return; }
+
+  const payStatus = document.getElementById('coPayment').value;
+
+  // Create order
+  const { data: order, error: oErr } = await sb.from('orders').insert({
+    customer_id: customerId,
+    status: payStatus === 'paid' ? 'paid' : 'pending',
+    payment_status: payStatus,
+    channel: document.getElementById('coChannel').value,
+    subtotal: total, total: total,
+    shipping_address: document.getElementById('coAddress').value.trim(),
+    notes: document.getElementById('coNotes').value.trim(),
+    paid_at: payStatus === 'paid' ? new Date().toISOString() : null
+  }).select().single();
+  if (oErr) { toast('Error creating order: ' + oErr.message, true); return; }
+
+  // Create line items
+  const lineInserts = items.map(i => ({ order_id: order.id, ...i }));
+  const { error: liErr } = await sb.from('order_items').insert(lineInserts);
+  if (liErr) { toast('Order created but line items failed: ' + liErr.message, true); return; }
+
+  // If paid, decrement stock
+  if (payStatus === 'paid') {
+    for (const item of items) {
+      await sb.rpc('decrement_stock', {
+        p_product_id: item.product_id,
+        p_quantity: item.quantity,
+        p_order_id: order.id,
+        p_action: 'sale',
+        p_created_by: currentUser.email
+      });
+    }
+  }
+
+  toast('Order TOH-' + order.order_number + ' created!');
+  await loadAllData();
+  switchView('fulfillment', document.querySelector('[onclick*=fulfillment]'));
+}
+
+// ─── VIEW 4: INVENTORY ───
+function renderInventory() {
+  document.getElementById('invLoading').style.display = 'none';
+  const totalValue = products.reduce((s, p) => s + (p.stock_on_hand * parseFloat(p.cost_wholesale)), 0);
+  const totalRetail = products.reduce((s, p) => s + (p.stock_on_hand * parseFloat(p.sale_price)), 0);
+  const outCount = products.filter(p => p.stock_on_hand <= 0).length;
+  const lowCount = products.filter(p => p.stock_on_hand > 0 && p.stock_on_hand <= p.reorder_threshold).length;
+
+  document.getElementById('invStats').innerHTML = `
+    <div class="stat-card"><div class="label">Total SKUs</div><div class="value">${products.length}</div></div>
+    <div class="stat-card"><div class="label">Inventory Cost</div><div class="value">$${totalValue.toFixed(0)}</div></div>
+    <div class="stat-card"><div class="label">Inventory Retail Value</div><div class="value">$${totalRetail.toFixed(0)}</div></div>
+    <div class="stat-card${outCount > 0 ? ' alert' : ' good'}"><div class="label">Out of Stock</div><div class="value">${outCount}</div></div>
+    <div class="stat-card${lowCount > 0 ? ' warn' : ' good'}"><div class="label">Low Stock</div><div class="value">${lowCount}</div></div>
+  `;
+  renderInvTable(products);
+}
+
+function renderInvTable(list) {
+  const body = document.getElementById('invBody');
+  // Sort: out of stock first, then low stock, then by name
+  const sorted = [...list].sort((a, b) => {
+    const aStatus = a.stock_on_hand <= 0 ? 0 : a.stock_on_hand <= a.reorder_threshold ? 1 : 2;
+    const bStatus = b.stock_on_hand <= 0 ? 0 : b.stock_on_hand <= b.reorder_threshold ? 1 : 2;
+    if (aStatus !== bStatus) return aStatus - bStatus;
+    return a.name.localeCompare(b.name);
+  });
+  body.innerHTML = sorted.map(p => {
+    const margin = ((parseFloat(p.sale_price) - parseFloat(p.cost_wholesale)) / parseFloat(p.sale_price) * 100).toFixed(0);
+    const status = p.stock_on_hand <= 0 ? '<span class="badge-red">OUT</span>' : p.stock_on_hand <= p.reorder_threshold ? '<span class="badge-yellow">LOW</span>' : '<span class="badge-green">OK</span>';
+    return `<tr>
+      <td><strong>${p.name}</strong></td>
+      <td style="font-size:12px">${p.content} ${p.form}</td>
+      <td style="font-size:12px">${p.category}</td>
+      <td class="mono" style="font-size:16px;font-weight:700;color:${p.stock_on_hand <= 0 ? 'var(--red)' : p.stock_on_hand <= p.reorder_threshold ? 'var(--yellow)' : 'var(--white)'}">${p.stock_on_hand}</td>
+      <td>${status}</td>
+      <td class="mono">$${parseFloat(p.cost_wholesale).toFixed(2)}</td>
+      <td class="mono">$${parseFloat(p.sale_price).toFixed(2)}</td>
+      <td class="mono">${margin}%</td>
+      <td>
+        <button class="btn btn-success btn-sm" onclick="openRestockModal('${p.id}')" style="margin-right:4px">+Restock</button>
+        <button class="btn btn-secondary btn-sm" onclick="openAdjustModal('${p.id}')">Adjust</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterInventory(q) {
+  const filtered = products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+  renderInvTable(filtered);
+}
+function filterInvCategory(cat) {
+  const filtered = cat ? products.filter(p => p.category === cat) : products;
+  renderInvTable(filtered);
+}
+
+// ─── VIEW 5: LOW STOCK ───
+function renderLowStock() {
+  document.getElementById('lowLoading').style.display = 'none';
+  const low = products.filter(p => p.stock_on_hand <= p.reorder_threshold);
+
+  const badge = document.getElementById('lowBadge');
+  if (low.length > 0) { badge.style.display = 'inline'; badge.textContent = low.length; }
+  else badge.style.display = 'none';
+
+  const container = document.getElementById('lowStockCards');
+  if (low.length === 0) { container.innerHTML = '<div style="text-align:center;padding:60px;color:var(--green);font-size:16px">All products are stocked above threshold.</div>'; return; }
+
+  container.innerHTML = low.sort((a, b) => a.stock_on_hand - b.stock_on_hand).map(p => {
+    const isOut = p.stock_on_hand <= 0;
+    const reorderCost = (p.reorder_qty * parseFloat(p.cost_wholesale)).toFixed(2);
+    return `<div style="background:var(--bg2);border:1px solid ${isOut ? 'var(--red)' : 'var(--yellow)'};border-radius:var(--radius);padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <strong style="font-size:16px;color:var(--white)">${p.name}</strong>
+        ${isOut ? '<span class="badge-red">OUT OF STOCK</span>' : '<span class="badge-yellow">LOW STOCK</span>'}
+      </div>
+      <div style="font-size:13px;color:var(--t3);margin-bottom:4px">${p.content} ${p.form}</div>
+      <div style="display:flex;gap:20px;margin:12px 0">
+        <div><span style="font-size:11px;color:var(--t3)">Current</span><br><span class="mono" style="font-size:22px;font-weight:700;color:${isOut ? 'var(--red)' : 'var(--yellow)'}">${p.stock_on_hand}</span></div>
+        <div><span style="font-size:11px;color:var(--t3)">Threshold</span><br><span class="mono" style="font-size:22px;color:var(--t2)">${p.reorder_threshold}</span></div>
+        <div><span style="font-size:11px;color:var(--t3)">Reorder Qty</span><br><span class="mono" style="font-size:22px;color:var(--t2)">${p.reorder_qty}</span></div>
+      </div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Est. reorder cost: <span class="mono" style="color:var(--accent)">$${reorderCost}</span></div>
+      <button class="btn btn-success btn-sm" onclick="openRestockModal('${p.id}')" style="width:100%;justify-content:center">Restock ${p.name}</button>
+    </div>`;
+  }).join('');
+}
+
+// ─── SHIP MODAL ───
+function openShipModal(orderId) {
+  activeShipOrder = allOrders.find(o => o.id === orderId);
+  if (!activeShipOrder) return;
+  document.getElementById('shipOrderNum').textContent = 'TOH-' + activeShipOrder.order_number;
+  document.getElementById('shipTracking').value = '';
+  document.getElementById('shipItems').innerHTML = '<div style="margin-top:16px;font-size:12px;color:var(--t3)"><strong>Items:</strong></div>' +
+    (activeShipOrder.order_items || []).map(i => `<div style="padding:4px 0;font-size:13px">${i.products?.name || '?'} ${i.products?.content || ''} x${i.quantity}</div>`).join('');
+  showModal('modalShip');
+}
+
+async function confirmShip() {
+  if (!activeShipOrder) return;
+  const tracking = document.getElementById('shipTracking').value.trim();
+  const carrier = document.getElementById('shipCarrier').value;
+
+  // Update order
+  const { error } = await sb.from('orders').update({
+    status: 'shipped',
+    tracking_number: tracking || null,
+    tracking_carrier: carrier,
+    shipped_at: new Date().toISOString()
+  }).eq('id', activeShipOrder.id);
+  if (error) { toast('Error: ' + error.message, true); return; }
+
+  // Update all line items to shipped
+  await sb.from('order_items').update({ fulfillment: 'shipped', tracking_number: tracking || null })
+    .eq('order_id', activeShipOrder.id);
+
+  // Decrement stock for each item
+  for (const item of (activeShipOrder.order_items || [])) {
+    await sb.rpc('decrement_stock', {
+      p_product_id: item.product_id,
+      p_quantity: item.quantity,
+      p_order_id: activeShipOrder.id,
+      p_action: 'sale',
+      p_created_by: currentUser.email
+    });
+  }
+
+  closeModal('modalShip');
+  toast('Order TOH-' + activeShipOrder.order_number + ' shipped!');
+  await loadAllData();
+}
+
+// ─── RESTOCK MODAL ───
+function openRestockModal(productId) {
+  activeRestockProduct = products.find(p => p.id === productId);
+  if (!activeRestockProduct) return;
+  document.getElementById('restockName').textContent = activeRestockProduct.name + ' ' + activeRestockProduct.content;
+  document.getElementById('restockCurrent').textContent = activeRestockProduct.stock_on_hand;
+  document.getElementById('restockQty').value = activeRestockProduct.reorder_qty;
+  document.getElementById('restockNotes').value = '';
+  showModal('modalRestock');
+}
+
+async function confirmRestock() {
+  if (!activeRestockProduct) return;
+  const qty = parseInt(document.getElementById('restockQty').value);
+  if (!qty || qty <= 0) { toast('Enter a valid quantity', true); return; }
+
+  const { error } = await sb.rpc('increment_stock', {
+    p_product_id: activeRestockProduct.id,
+    p_quantity: qty,
+    p_action: 'restock',
+    p_notes: document.getElementById('restockNotes').value.trim() || null,
+    p_created_by: currentUser.email
+  });
+  if (error) { toast('Error: ' + error.message, true); return; }
+
+  closeModal('modalRestock');
+  toast(activeRestockProduct.name + ': +' + qty + ' units restocked');
+  await loadAllData();
+}
+
+// ─── ADJUST MODAL ───
+function openAdjustModal(productId) {
+  activeAdjustProduct = products.find(p => p.id === productId);
+  if (!activeAdjustProduct) return;
+  document.getElementById('adjustName').textContent = activeAdjustProduct.name + ' ' + activeAdjustProduct.content;
+  document.getElementById('adjustCurrent').textContent = activeAdjustProduct.stock_on_hand;
+  document.getElementById('adjustQty').value = activeAdjustProduct.stock_on_hand;
+  document.getElementById('adjustNotes').value = '';
+  showModal('modalAdjust');
+}
+
+async function confirmAdjust() {
+  if (!activeAdjustProduct) return;
+  const newQty = parseInt(document.getElementById('adjustQty').value);
+  const notes = document.getElementById('adjustNotes').value.trim();
+  if (newQty < 0) { toast('Stock cannot be negative', true); return; }
+  if (!notes) { toast('Reason is required for adjustments', true); return; }
+
+  const diff = newQty - activeAdjustProduct.stock_on_hand;
+  if (diff === 0) { closeModal('modalAdjust'); return; }
+
+  if (diff > 0) {
+    await sb.rpc('increment_stock', {
+      p_product_id: activeAdjustProduct.id,
+      p_quantity: diff,
+      p_action: 'adjustment',
+      p_notes: notes,
+      p_created_by: currentUser.email
+    });
+  } else {
+    await sb.rpc('decrement_stock', {
+      p_product_id: activeAdjustProduct.id,
+      p_quantity: Math.abs(diff),
+      p_order_id: null,
+      p_action: 'adjustment',
+      p_created_by: currentUser.email
+    });
+  }
+
+  closeModal('modalAdjust');
+  toast(activeAdjustProduct.name + ' adjusted to ' + newQty);
+  await loadAllData();
+}
+
+// ─── HELPERS ───
+function showModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function toast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function fmtDate(d) {
+  if (!d) return '-';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function statusBadge(s) {
+  const map = { pending:'badge-gray',paid:'badge-blue',processing:'badge-purple',partial_shipped:'badge-yellow',shipped:'badge-green',delivered:'badge-green',cancelled:'badge-red',refunded:'badge-red' };
+  return `<span class="${map[s] || 'badge-gray'}">${(s || 'unknown').replace('_',' ')}</span>`;
+}
+
+function paymentBadge(s) {
+  const map = { unpaid:'badge-red',paid:'badge-green',partial:'badge-yellow',refunded:'badge-gray' };
+  return `<span class="${map[s] || 'badge-gray'}">${s || 'unknown'}</span>`;
+}
+
+function channelBadge(s) {
+  const map = { website:'badge-blue',dm:'badge-purple',partner:'badge-green',gym:'badge-green',ghl:'badge-yellow',manual:'badge-gray' };
+  return `<span class="${map[s] || 'badge-gray'}">${(s || 'unknown').toUpperCase()}</span>`;
+}
+
+function itemFulfillBadge(s) {
+  const map = { pending:'badge-gray',shipped:'badge-green',backordered:'badge-yellow',cancelled:'badge-red' };
+  return `<span class="${map[s] || 'badge-gray'}">${s || 'pending'}</span>`;
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+});
+
+// Demo init handled above
+</script>
+</body>
+</html>
