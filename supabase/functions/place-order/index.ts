@@ -52,8 +52,9 @@ Deno.serve(async (req) => {
       if (couponErr || !coupon) throw new Error("Invalid coupon code");
       if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) throw new Error("Coupon expired");
       if (coupon.max_uses !== null && coupon.times_used >= coupon.max_uses) throw new Error("Coupon usage limit reached");
-      if (coupon.customer_emails && coupon.customer_emails.length > 0) {
-        const allowed = coupon.customer_emails.map((e: string) => e.toLowerCase());
+      const emails = coupon.customer_emails;
+      if (emails && Array.isArray(emails) && emails.length > 0) {
+        const allowed = emails.map((e: string) => e.toLowerCase());
         if (!allowed.includes(customerEmail.toLowerCase())) throw new Error("Coupon not valid for this account");
       }
       if (coupon.first_order_only) {

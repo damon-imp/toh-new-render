@@ -533,10 +533,11 @@ async function applyCoupon() {
     btn.disabled = false; btn.textContent = 'Apply'; return;
   }
 
-  // Check email restriction
-  if (data.customer_emails && data.customer_emails.length > 0) {
+  // Check email restriction (JSONB array)
+  const emails = data.customer_emails;
+  if (emails && Array.isArray(emails) && emails.length > 0) {
     const userEmail = currentUser.email.toLowerCase();
-    const allowed = data.customer_emails.map(e => e.toLowerCase());
+    const allowed = emails.map(e => e.toLowerCase());
     if (!allowed.includes(userEmail)) {
       msg.className = 'coupon-msg error';
       msg.textContent = 'This coupon is not valid for your account.';
