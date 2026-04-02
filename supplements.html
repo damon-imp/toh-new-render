@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTC Supplement Database | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--accent-glow:rgba(172,102,167,.12);--accent-glow2:rgba(172,102,167,.25);--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--radius:12px;--max-w:1280px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-light)}img{max-width:100%;display:block}.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}.nav-logo .mark{font-weight:900;font-size:28px;color:var(--accent);letter-spacing:-1px}.nav-logo .wordmark{line-height:1.1}.nav-logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--t2);letter-spacing:2px;text-transform:uppercase}.nav-logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--white)}.nav-links{display:flex;align-items:center;gap:32px}.nav-links a{color:var(--t2);font-size:13px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}.nav-links a:hover,.nav-links a.active{color:var(--white)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:200}.hamburger span{width:22px;height:2px;background:var(--t2);transition:all .3s}.hamburger:hover span{background:var(--white)}
+.mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;bottom:0;background:rgba(17,17,17,.98);backdrop-filter:blur(20px);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:32px}.mobile-menu a{color:var(--t2);font-size:18px;font-weight:500;letter-spacing:1px;text-transform:uppercase}.mobile-menu a:hover,.mobile-menu a.active{color:var(--white)}.mobile-menu.open{display:flex}
+@media(max-width:768px){.nav-links{display:none}.hamburger{display:flex}}
+
+/* Page Header */
+.page-header{padding:120px 0 40px;border-bottom:1px solid rgba(255,255,255,.04)}.page-header h1{font-size:clamp(28px,4vw,44px);font-weight:800;color:var(--white);margin-bottom:8px}.page-header p{font-size:16px;color:var(--t3);font-weight:300}.page-header .stat-row{display:flex;gap:24px;margin-top:16px;flex-wrap:wrap}.page-header .stat{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);letter-spacing:.5px}
+
+/* Controls */
+.controls{padding:24px 0;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:20px}
+.search-box{flex:1;min-width:240px;position:relative}
+.search-box input{width:100%;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:12px 16px 12px 42px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--accent)}
+.search-box input::placeholder{color:var(--t3)}
+.search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--t3);fill:none;stroke-width:2}
+.view-toggle{display:flex;background:var(--bg2);border-radius:8px;overflow:hidden;border:1px solid var(--t4);flex-shrink:0}
+.view-toggle button{padding:8px 16px;background:transparent;border:none;color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .2s}
+.view-toggle button.active{background:var(--accent);color:var(--white)}
+.view-toggle button:hover:not(.active){color:var(--white)}
+
+/* Category Pills */
+.cat-pills{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:20px}
+.cat-pill{padding:6px 14px;border-radius:20px;border:1px solid var(--t4);background:var(--bg2);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'Outfit',sans-serif}
+.cat-pill:hover{border-color:var(--t2);color:var(--t1)}
+.cat-pill.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
+.cat-pill .cnt{opacity:.5;margin-left:4px;font-family:'JetBrains Mono',monospace;font-size:10px}
+
+/* Results */
+.results-bar{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.clear-btn{background:none;border:1px solid var(--t4);border-radius:4px;color:var(--t2);font-size:11px;padding:2px 10px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all .2s}
+.clear-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Grid Cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;padding-bottom:80px}
+.card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:all .25s;position:relative;border-left:3px solid var(--t4)}
+.card:hover{border-color:rgba(172,102,167,.4);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card.expanded{border-color:var(--accent);border-left-color:var(--accent)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-name{font-size:14px;font-weight:600;color:var(--white);line-height:1.3;flex:1}
+.card-cat{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:3px 8px;border-radius:12px;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.card-use{margin-top:8px;font-size:13px;color:var(--t2);line-height:1.5}
+.card-detail{margin-top:14px;padding:12px 14px;background:var(--bg);border-radius:8px;border:1px solid rgba(255,255,255,.04);animation:fadeIn .2s ease}
+.card-detail .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.card-detail .val{font-size:13px;color:var(--t1);line-height:1.5}
+.card-detail .form-note{margin-top:10px;font-size:12px;color:var(--t3);font-style:italic;padding-top:8px;border-top:1px solid rgba(255,255,255,.04)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* List View */
+.list-wrap{border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden;margin-bottom:80px}
+.list-header{display:grid;grid-template-columns:2.2fr 1.1fr 2.5fr 2fr 1.5fr;background:var(--bg3);padding:12px 20px;gap:12px}
+.list-header span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.list-row{display:grid;grid-template-columns:2.2fr 1.1fr 2.5fr 2fr 1.5fr;padding:10px 20px;gap:12px;border-top:1px solid rgba(255,255,255,.03);transition:background .15s;cursor:default}
+.list-row:hover{background:rgba(172,102,167,.04)}
+.list-row:nth-child(even){background:rgba(255,255,255,.01)}
+.list-row:nth-child(even):hover{background:rgba(172,102,167,.04)}
+.list-row .l-name{font-size:13px;font-weight:600;color:var(--white)}
+.list-row .l-cat{font-size:11px;font-weight:600}
+.list-row .l-use{font-size:12px;color:var(--t2);line-height:1.4}
+.list-row .l-dose{font-size:11px;color:var(--t1);font-family:'JetBrains Mono',monospace;line-height:1.4}
+.list-row .l-form{font-size:11px;color:var(--t3);font-style:italic;line-height:1.4}
+
+/* No results */
+.no-results{text-align:center;padding:80px 20px;color:var(--t3)}.no-results .icon{font-size:48px;margin-bottom:12px;opacity:.4}.no-results p{font-family:'JetBrains Mono',monospace;font-size:14px}
+
+/* Footer */
+.footer{padding:60px 0 40px;border-top:1px solid rgba(255,255,255,.04)}.footer-bottom{display:flex;justify-content:space-between;align-items:center}.footer-bottom p{font-size:12px;color:var(--t4)}.footer-bottom .disclaimer{font-size:10px;color:var(--t4);max-width:500px;text-align:right;line-height:1.5}
+
+/* Responsive */
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  .list-header,.list-row{grid-template-columns:1.8fr 1fr 2fr 1.5fr}
+  .list-header span:nth-child(5),.list-row .l-form{display:none}
+}
+@media(max-width:768px){
+  .container{padding:0 16px}
+  .grid{grid-template-columns:1fr}
+  .list-header,.list-row{grid-template-columns:1fr 1fr}
+  .list-header span:nth-child(n+3),.list-row .l-use,.list-row .l-form{display:none}
+  .list-row .l-dose{font-size:10px}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
+  .footer-bottom .disclaimer{text-align:center}
+  .page-header .stat-row{gap:12px}
+}
+@media(max-width:500px){
+  .cat-pills{gap:6px}
+  .cat-pill{font-size:11px;padding:5px 10px}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav"><div class="nav-inner">
+  <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="supplements.html" class="active">Supplements</a>
+    <a href="coa.html">COA</a>
+    <a href="about.html">About</a>
+    <a href="partners.html">Partners</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></div>
+</div></nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="shop.html">Shop</a>
+  <a href="supplements.html" class="active">Supplements</a>
+  <a href="coa.html">COA</a>
+  <a href="about.html">About</a>
+  <a href="partners.html">Partners</a>
+  <a href="contact.html">Contact</a>
+</div>
+
+<!-- Header -->
+<section class="page-header"><div class="container">
+  <h1>OTC Supplement Database</h1>
+  <p>The complete reference. Every compound, every form, every research-backed dosage.</p>
+  <div class="stat-row">
+    <span class="stat" id="totalCount"></span>
+    <span class="stat" id="catCount"></span>
+  </div>
+</div></section>
+
+<!-- Controls -->
+<section><div class="container">
+  <div class="controls">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Search 593 supplements by name, use, dosage, form..." />
+    </div>
+    <div class="view-toggle">
+      <button class="active" id="gridBtn" onclick="setView('grid')">Grid</button>
+      <button id="listBtn" onclick="setView('list')">List</button>
+    </div>
+  </div>
+  <div class="cat-pills" id="catPills"></div>
+  <div class="results-bar" id="resultsBar"></div>
+  <div id="content"></div>
+</div></section>
+
+<footer class="footer"><div class="container"><div class="footer-bottom">
+  <p>&copy; 2026 The Optimized Human. All rights reserved.</p>
+  <div class="disclaimer">Supplement information is for educational purposes only. Always consult a qualified healthcare provider before starting any supplement regimen.</div>
+</div></div></footer>
+
+<script>
+const S=[
+{n:"Vitamin A (Retinol/Retinyl Palmitate)",c:"Vitamins",u:"Vision, immune function, skin health, cell growth, reproduction",d:"700-900 mcg RAE/day (2,333-3,000 IU)",f:"Fat-soluble; preformed vitamin A"},
+{n:"Vitamin A (Beta-Carotene)",c:"Vitamins",u:"Antioxidant, provitamin A conversion, skin/eye protection",d:"3-6 mg/day (5,000-10,000 IU)",f:"Provitamin A carotenoid"},
+{n:"Vitamin B1 (Thiamine HCl)",c:"Vitamins",u:"Energy metabolism, nerve function, carbohydrate processing",d:"1.1-1.2 mg/day; therapeutic: 50-100 mg/day",f:"Water-soluble"},
+{n:"Vitamin B1 (Benfotiamine)",c:"Vitamins",u:"Fat-soluble thiamine, neuropathy, AGE reduction, blood sugar",d:"150-600 mg/day",f:"Lipid-soluble thiamine derivative"},
+{n:"Vitamin B2 (Riboflavin)",c:"Vitamins",u:"Energy production, cellular function, migraine prevention",d:"1.1-1.3 mg/day; migraine: 400 mg/day",f:"Water-soluble; yellow color"},
+{n:"Vitamin B2 (Riboflavin 5\'-Phosphate / FMN)",c:"Vitamins",u:"Active B2 form, better utilized by poor converters",d:"10-50 mg/day",f:"Coenzyme form"},
+{n:"Vitamin B3 (Niacin / Nicotinic Acid)",c:"Vitamins",u:"Cholesterol management (raises HDL), energy metabolism, skin",d:"14-16 mg NE/day; cholesterol: 1,500-2,000 mg/day (Rx)",f:"Causes flushing at high doses"},
+{n:"Vitamin B3 (Niacinamide / Nicotinamide)",c:"Vitamins",u:"Skin health, anti-inflammatory, joint support, NAD+ precursor",d:"500-1,500 mg/day in divided doses",f:"No flushing; topical for acne"},
+{n:"Vitamin B3 (Inositol Hexanicotinate)",c:"Vitamins",u:"Flush-free niacin alternative, circulation",d:"500-1,000 mg/day",f:"Slow-release niacin form"},
+{n:"Vitamin B5 (Pantothenic Acid)",c:"Vitamins",u:"Hormone synthesis, energy metabolism, wound healing, acne",d:"5 mg/day; acne: 500-1,000 mg/day",f:"Water-soluble"},
+{n:"Vitamin B5 (Pantethine)",c:"Vitamins",u:"Active B5 form, cholesterol/triglyceride reduction",d:"300-900 mg/day",f:"Coenzyme A precursor"},
+{n:"Vitamin B6 (Pyridoxine HCl)",c:"Vitamins",u:"Neurotransmitter synthesis, immune function, homocysteine",d:"1.3-2.0 mg/day; therapeutic: 25-100 mg/day",f:"Standard form; high doses risk neuropathy"},
+{n:"Vitamin B6 (Pyridoxal 5\'-Phosphate / P-5-P)",c:"Vitamins",u:"Active B6, neurotransmitter support, hormone balance",d:"25-50 mg/day",f:"Coenzyme form; bypasses liver conversion"},
+{n:"Vitamin B7 (Biotin)",c:"Vitamins",u:"Hair, skin, nail health, glucose metabolism, gene regulation",d:"30-100 mcg/day; hair/nails: 2,500-10,000 mcg/day",f:"Can interfere with lab tests"},
+{n:"Vitamin B9 (Folic Acid)",c:"Vitamins",u:"DNA synthesis, neural tube defect prevention, cell division",d:"400-800 mcg DFE/day; pregnancy: 600-800 mcg/day",f:"Synthetic form; requires conversion"},
+{n:"Vitamin B9 (L-Methylfolate / 5-MTHF)",c:"Vitamins",u:"Active folate for MTHFR variants, methylation, depression",d:"400-1,000 mcg/day; MTHFR: up to 15 mg/day",f:"Bypasses MTHFR enzyme"},
+{n:"Vitamin B9 (Folinic Acid / Leucovorin)",c:"Vitamins",u:"Non-methylated active folate, chemo rescue, autism protocols",d:"400-800 mcg/day",f:"Active but non-methyl folate form"},
+{n:"Vitamin B12 (Cyanocobalamin)",c:"Vitamins",u:"Nerve function, red blood cells, DNA synthesis",d:"2.4 mcg/day; therapeutic: 1,000-2,000 mcg/day",f:"Synthetic; requires conversion"},
+{n:"Vitamin B12 (Methylcobalamin)",c:"Vitamins",u:"Active B12, nerve repair, methylation, energy",d:"1,000-5,000 mcg/day sublingual",f:"Methyl donor form"},
+{n:"Vitamin B12 (Hydroxocobalamin)",c:"Vitamins",u:"Long-acting B12, detox, cyanide antidote precursor",d:"1,000-2,000 mcg/day",f:"Longest half-life B12"},
+{n:"Vitamin B12 (Adenosylcobalamin / Dibencozide)",c:"Vitamins",u:"Mitochondrial energy, active coenzyme form",d:"1,000-3,000 mcg/day sublingual",f:"Mitochondrial-specific B12"},
+{n:"Vitamin C (Ascorbic Acid)",c:"Vitamins",u:"Immune support, collagen synthesis, antioxidant, iron absorption",d:"500-2,000 mg/day in divided doses",f:"Water-soluble; bowel tolerance indicator"},
+{n:"Vitamin C (Sodium Ascorbate)",c:"Vitamins",u:"Buffered C, gentle on stomach, sodium source",d:"500-2,000 mg/day",f:"Non-acidic; 131 mg Na per 1g"},
+{n:"Vitamin C (Calcium Ascorbate / Ester-C)",c:"Vitamins",u:"Buffered vitamin C, immune, gentle on GI",d:"500-1,000 mg/day",f:"Patented Ester-C form"},
+{n:"Vitamin C (Liposomal)",c:"Vitamins",u:"Enhanced bioavailability, immune, skin, IV-like absorption",d:"1,000-2,000 mg/day",f:"Phospholipid-encapsulated"},
+{n:"Vitamin C (Ascorbyl Palmitate)",c:"Vitamins",u:"Fat-soluble C, skin/topical, antioxidant in lipid membranes",d:"250-500 mg/day",f:"Fat-soluble form"},
+{n:"Vitamin C (Acerola Cherry)",c:"Vitamins",u:"Whole-food C with bioflavonoids, immune",d:"500-1,000 mg/day",f:"Natural complex with cofactors"},
+{n:"Vitamin D3 (Cholecalciferol)",c:"Vitamins",u:"Bone health, immune modulation, mood, calcium absorption, hormones",d:"1,000-5,000 IU/day; deficiency: up to 10,000 IU/day",f:"Fat-soluble; pair with K2"},
+{n:"Vitamin D2 (Ergocalciferol)",c:"Vitamins",u:"Bone health, calcium metabolism (plant-derived)",d:"1,000-2,000 IU/day",f:"Less potent than D3; vegan source"},
+{n:"Vitamin D3 (Calcifediol / 25-OH D3)",c:"Vitamins",u:"Pre-converted D3, faster blood level increase",d:"10-20 mcg/day",f:"Bypasses liver hydroxylation"},
+{n:"Vitamin E (d-Alpha-Tocopherol)",c:"Vitamins",u:"Antioxidant, skin health, cardiovascular",d:"15 mg (22.4 IU)/day; therapeutic: 200-400 IU/day",f:"Natural form; synthetic is dl-alpha"},
+{n:"Vitamin E (Mixed Tocopherols)",c:"Vitamins",u:"Full-spectrum antioxidant, cardiovascular, anti-inflammatory",d:"200-400 IU/day",f:"Alpha, beta, gamma, delta forms"},
+{n:"Vitamin E (Tocotrienols)",c:"Vitamins",u:"Neuroprotection, cholesterol, antioxidant, bone health",d:"50-200 mg/day",f:"Palm/annatto-derived; distinct from tocopherols"},
+{n:"Vitamin K1 (Phylloquinone)",c:"Vitamins",u:"Blood clotting, bone metabolism",d:"90-120 mcg/day",f:"Plant-derived; leafy greens"},
+{n:"Vitamin K2 (MK-4 / Menatetrenone)",c:"Vitamins",u:"Bone health, arterial calcium regulation, short-acting",d:"1-45 mg/day",f:"Japan Rx: 45 mg for osteoporosis"},
+{n:"Vitamin K2 (MK-7 / Menaquinone-7)",c:"Vitamins",u:"Bone and cardiovascular health, long-acting calcium routing",d:"100-200 mcg/day",f:"Natto-derived; longest half-life K2"},
+{n:"Vitamin K2 (MK-9)",c:"Vitamins",u:"Cardiovascular, emerging fermented-food K2 form",d:"50-100 mcg/day",f:"Found in fermented dairy"},
+{n:"Choline (Bitartrate)",c:"Vitamins",u:"Liver health, brain, cell membranes, methylation",d:"250-500 mg/day",f:"AI: 425-550 mg/day; cheapest choline"},
+{n:"Inositol (Myo-Inositol)",c:"Vitamins",u:"PCOS, insulin sensitizer, anxiety, ovarian function, OCD",d:"2-4 g/day; anxiety: 12-18 g/day",f:"B-vitamin-like; high dose for psych"},
+{n:"PABA (Para-Aminobenzoic Acid)",c:"Vitamins",u:"UV protection (internal), Peyronie\'s, vitiligo (traditional)",d:"500-1,000 mg/day",f:"B-complex factor"},
+{n:"Calcium (Carbonate)",c:"Minerals",u:"Bone health, muscle function, nerve signaling, antacid",d:"500-600 mg/dose, up to 1,000-1,200 mg/day",f:"40% elemental Ca; take with food"},
+{n:"Calcium (Citrate)",c:"Minerals",u:"Bone health, kidney stone prevention, better empty-stomach absorption",d:"500-600 mg/dose, up to 1,000-1,200 mg/day",f:"21% elemental Ca; any time"},
+{n:"Calcium (Hydroxyapatite / MCHC)",c:"Minerals",u:"Bone health, collagen matrix, growth factors",d:"500-1,000 mg/day",f:"Whole-bone extract; most complete"},
+{n:"Calcium (Lactate)",c:"Minerals",u:"Bone health, muscle cramps, moderate absorption",d:"500-1,000 mg/day",f:"13% elemental Ca"},
+{n:"Calcium (Algae / Plant-Based)",c:"Minerals",u:"Bone health, trace minerals, whole-food calcium",d:"500-750 mg/day",f:"Lithothamnion red algae source"},
+{n:"Calcium (AEP / Calcium 2-AEP)",c:"Minerals",u:"Cell membrane integrity, autoimmune support (Nieper protocol)",d:"500-2,000 mg/day",f:"Membrane transport form"},
+{n:"Magnesium (Glycinate / Bisglycinate)",c:"Minerals",u:"Sleep, anxiety, muscle relaxation, gentle on GI",d:"200-400 mg elemental Mg/day",f:"Best tolerated; calming"},
+{n:"Magnesium (Citrate)",c:"Minerals",u:"Bowel regularity, general Mg repletion, kidney stones",d:"200-400 mg elemental Mg/day",f:"Osmotic laxative effect"},
+{n:"Magnesium (L-Threonate / Magtein)",c:"Minerals",u:"Cognitive function, brain Mg levels, memory, neuroplasticity",d:"1,000-2,000 mg threonate/day (144 mg elemental)",f:"Crosses BBB; patented Magtein"},
+{n:"Magnesium (Taurate)",c:"Minerals",u:"Cardiovascular support, blood pressure, arrhythmia",d:"200-400 mg elemental Mg/day",f:"Heart-focused; taurine synergy"},
+{n:"Magnesium (Malate)",c:"Minerals",u:"Energy production, fibromyalgia, muscle pain, fatigue",d:"200-400 mg elemental Mg/day",f:"Krebs cycle support; energizing"},
+{n:"Magnesium (Oxide)",c:"Minerals",u:"Laxative, migraine prevention, cheapest Mg source",d:"400-600 mg/day",f:"4% absorption; mostly laxative"},
+{n:"Magnesium (Chloride)",c:"Minerals",u:"Topical or oral Mg, detox, skin health",d:"200-400 mg elemental Mg/day",f:"Topical oil/bath flakes common"},
+{n:"Magnesium (Orotate)",c:"Minerals",u:"Cardiovascular, exercise performance, cellular energy",d:"200-400 mg elemental Mg/day",f:"Orotic acid supports ATP"},
+{n:"Magnesium (Sulfate / Epsom Salt)",c:"Minerals",u:"Topical muscle relaxation, bath soak, constipation (oral)",d:"300-600 g per bath; oral: 2-4 tsp",f:"Primarily topical use"},
+{n:"Magnesium (Aspartate)",c:"Minerals",u:"Energy, exercise recovery, general repletion",d:"200-400 mg elemental Mg/day",f:"Avoid in excess; aspartate concerns"},
+{n:"Magnesium (Hydroxide)",c:"Minerals",u:"Antacid, laxative (Milk of Magnesia)",d:"400-1,200 mg/day as needed",f:"OTC antacid/laxative"},
+{n:"Zinc (Picolinate)",c:"Minerals",u:"Immune function, testosterone, wound healing, taste/smell",d:"15-30 mg elemental Zn/day",f:"High bioavailability"},
+{n:"Zinc (Gluconate)",c:"Minerals",u:"Immune support, cold symptom reduction, general repletion",d:"15-30 mg elemental Zn/day",f:"Common lozenge form"},
+{n:"Zinc (Citrate)",c:"Minerals",u:"Immune, skin health, moderate bioavailability",d:"15-30 mg elemental Zn/day",f:"Well-tolerated"},
+{n:"Zinc (Carnosine / ZnC)",c:"Minerals",u:"Gut lining repair, H. pylori, gastric health, ulcers",d:"75-150 mg/day",f:"Pepzin GI brand; gut-specific"},
+{n:"Zinc (Acetate)",c:"Minerals",u:"Cold lozenges, upper respiratory immune support",d:"75 mg/day lozenge form at cold onset",f:"Ionic zinc release in throat"},
+{n:"Zinc (Monomethionine / OptiZinc)",c:"Minerals",u:"Immune, skin, antioxidant, well-absorbed",d:"15-30 mg elemental Zn/day",f:"Patented methionine-chelated"},
+{n:"Zinc (Oxide)",c:"Minerals",u:"Diaper rash, sunscreen, least bioavailable oral zinc",d:"15-30 mg/day",f:"Best for topical; low oral absorption"},
+{n:"Zinc (Sulfate)",c:"Minerals",u:"Immune, Wilson\'s disease, cheapest zinc form",d:"15-50 mg elemental/day",f:"More GI side effects"},
+{n:"Zinc (Orotate)",c:"Minerals",u:"Immune, testosterone, cellular transport",d:"15-30 mg elemental Zn/day",f:"Orotic acid carrier"},
+{n:"Iron (Ferrous Bisglycinate)",c:"Minerals",u:"Anemia, energy, gentle on stomach, high absorption",d:"18-27 mg/day; deficiency: 45-65 mg/day",f:"Chelated; least GI distress"},
+{n:"Iron (Ferrous Sulfate)",c:"Minerals",u:"Iron deficiency anemia, cheapest form",d:"325 mg (65 mg elemental) 1-3x/day",f:"Most GI side effects"},
+{n:"Iron (Ferrous Fumarate)",c:"Minerals",u:"Iron deficiency, moderate GI tolerance",d:"18-65 mg elemental/day",f:"33% elemental iron"},
+{n:"Iron (Ferrous Gluconate)",c:"Minerals",u:"Iron deficiency, gentler than sulfate",d:"18-65 mg elemental/day",f:"12% elemental iron"},
+{n:"Iron (Carbonyl Iron)",c:"Minerals",u:"Slow-release iron, lower toxicity risk, pediatric safety",d:"45-65 mg elemental/day",f:"Reduced overdose risk"},
+{n:"Iron (Polysaccharide Iron Complex)",c:"Minerals",u:"Iron repletion, less constipation, non-ionic",d:"150 mg elemental/day",f:"Niferex; non-metallic taste"},
+{n:"Iron (Lactoferrin-bound)",c:"Minerals",u:"Enhanced absorption, anti-inflammatory iron delivery",d:"25-50 mg/day",f:"Pairs iron with lactoferrin"},
+{n:"Selenium (Selenomethionine)",c:"Minerals",u:"Thyroid function, antioxidant, immune, fertility",d:"100-200 mcg/day",f:"Organic form; most studied"},
+{n:"Selenium (Sodium Selenite)",c:"Minerals",u:"Antioxidant, cheaper selenium form",d:"55-200 mcg/day",f:"Inorganic; lower retention"},
+{n:"Selenium (Methylselenocysteine)",c:"Minerals",u:"Cancer research form, detox, selenium metabolism",d:"100-200 mcg/day",f:"Found in garlic/broccoli"},
+{n:"Selenium (Selenoexcell / High-Se Yeast)",c:"Minerals",u:"Whole-food selenium, mixed selenocompounds",d:"100-200 mcg/day",f:"Yeast-bound; multi-form"},
+{n:"Chromium (Picolinate)",c:"Minerals",u:"Blood sugar regulation, insulin sensitivity, cravings",d:"200-1,000 mcg/day",f:"Most studied form"},
+{n:"Chromium (GTF / Polynicotinate)",c:"Minerals",u:"Glucose tolerance factor, insulin sensitivity",d:"200-400 mcg/day",f:"Niacin-bound chromium"},
+{n:"Chromium (Histidinate)",c:"Minerals",u:"Lean body mass, insulin sensitivity",d:"200-400 mcg/day",f:"Histidine-chelated"},
+{n:"Copper (Bisglycinate / Chelated)",c:"Minerals",u:"Iron metabolism, connective tissue, SOD cofactor, melanin",d:"1-2 mg/day (balance with zinc)",f:"Zn:Cu ratio ~15:1"},
+{n:"Copper (Sebacate)",c:"Minerals",u:"Connective tissue, joint support, anti-inflammatory",d:"1-4 mg/day",f:"Sebacic acid chelate"},
+{n:"Manganese (Chelated / Gluconate)",c:"Minerals",u:"Bone health, metabolism, antioxidant enzyme (MnSOD)",d:"1.8-2.3 mg/day; therapeutic: 5-15 mg/day",f:"Excess is neurotoxic"},
+{n:"Molybdenum (Glycinate / Chelated)",c:"Minerals",u:"Sulfite detox, enzyme cofactor, alcohol/aldehyde metabolism",d:"45-75 mcg/day; therapeutic: 150-500 mcg/day",f:"Rare deficiency"},
+{n:"Iodine (Potassium Iodide)",c:"Minerals",u:"Thyroid hormone production, metabolism, radiation protection",d:"150-300 mcg/day",f:"Standard supplemental form"},
+{n:"Iodine (Nascent / Atomic)",c:"Minerals",u:"Thyroid support, antimicrobial, bioavailable iodine",d:"150-1,000 mcg/day",f:"Electromagnetic-charged I2"},
+{n:"Iodine (Lugol\'s Solution)",c:"Minerals",u:"Thyroid, antimicrobial, breast health (traditional)",d:"1-2 drops/day (6.25 mg/drop)",f:"I2 + KI solution"},
+{n:"Iodine (Kelp-derived)",c:"Minerals",u:"Whole-food thyroid support, trace minerals",d:"150-500 mcg/day",f:"Natural seaweed source"},
+{n:"Boron (Glycinate / Fructoborate)",c:"Minerals",u:"Bone health, testosterone metabolism, joint support, D3 cofactor",d:"3-6 mg/day; therapeutic: 6-12 mg/day",f:"Calcium fructoborate patented"},
+{n:"Vanadium (Vanadyl Sulfate)",c:"Minerals",u:"Blood sugar support, insulin-mimetic effects",d:"10-50 mg/day",f:"Trace mineral; limited evidence"},
+{n:"Lithium (Orotate)",c:"Minerals",u:"Mood stabilization, neuroprotection, anti-aging brain, B12 transport",d:"5-20 mg orotate/day (~0.5-1.5 mg elemental)",f:"Micro-dose; not Rx lithium"},
+{n:"Silica (Orthosilicic Acid / OSA)",c:"Minerals",u:"Hair, skin, nails, bone density, collagen support",d:"5-10 mg OSA/day; 500 mg silica from horsetail",f:"Choline-stabilized OSA best absorbed"},
+{n:"Silica (Horsetail Extract)",c:"Minerals",u:"Hair, skin, nails, bone, connective tissue",d:"500-1,000 mg/day",f:"Traditional herb; contains silica"},
+{n:"Silica (Diatomaceous Earth / Food Grade)",c:"Minerals",u:"Detox, silica source, gut cleanse",d:"1-2 tbsp/day in water",f:"Amorphous silica; internal cleanse"},
+{n:"Potassium (Citrate)",c:"Minerals",u:"Electrolyte balance, blood pressure, kidney stone prevention",d:"99-200 mg/dose OTC; diet: 2,600-3,400 mg/day",f:"Alkalinizing; stone prevention"},
+{n:"Potassium (Chloride)",c:"Minerals",u:"Electrolyte repletion, blood pressure",d:"99 mg/dose OTC",f:"FDA-restricted per dose"},
+{n:"Potassium (Bicarbonate)",c:"Minerals",u:"Alkalizing electrolyte, acid-base balance",d:"99-200 mg/dose",f:"Effervescent tabs common"},
+{n:"Potassium (Gluconate)",c:"Minerals",u:"Electrolyte, blood pressure, gentle form",d:"99 mg/dose",f:"Low potency per tab"},
+{n:"Phosphorus (Phosphate Salts)",c:"Minerals",u:"Bone/tooth health, energy (ATP), pH balance",d:"700 mg/day",f:"Rarely supplemented; abundant in diet"},
+{n:"Strontium (Citrate)",c:"Minerals",u:"Bone density, osteoporosis support",d:"340-680 mg/day",f:"Take separately from calcium"},
+{n:"Germanium (Organic Ge-132 / Bis-carboxyethyl)",c:"Minerals",u:"Immune modulation, oxygen utilization",d:"25-100 mg/day",f:"Limited evidence; only organic form"},
+{n:"Rubidium",c:"Minerals",u:"Depression research, potassium channel modulation",d:"Experimental; no established dose",f:"Trace mineral; limited OTC"},
+{n:"Cesium (Chloride)",c:"Minerals",u:"pH therapy (alt cancer), alkalinizing",d:"Experimental; safety concerns",f:"Controversial; cardiac risk"},
+{n:"Colloidal Silver",c:"Minerals",u:"Antimicrobial (topical/oral folk use), immune",d:"1-3 tsp/day (10-30 ppm)",f:"FDA warns against; argyria risk"},
+{n:"Colloidal Gold",c:"Minerals",u:"Cognition, inflammation, mood (limited evidence)",d:"10-30 ppm; 1-2 tsp/day",f:"Minimal clinical evidence"},
+{n:"L-Theanine",c:"Amino Acids",u:"Calm focus, anxiety reduction, sleep quality, alpha brainwaves",d:"100-400 mg/day",f:"Green tea amino acid"},
+{n:"L-Tyrosine",c:"Amino Acids",u:"Dopamine precursor, focus under stress, cognitive performance",d:"500-2,000 mg/day on empty stomach",f:"Precursor to DA/NE/epinephrine"},
+{n:"N-Acetyl L-Tyrosine (NALT)",c:"Amino Acids",u:"More soluble tyrosine, dopamine support, stress resilience",d:"300-600 mg/day",f:"Better dissolved; debated absorption"},
+{n:"L-Tryptophan",c:"Amino Acids",u:"Serotonin/melatonin precursor, sleep, mood",d:"500-1,500 mg/day (evening)",f:"Competes with BCAAs for transport"},
+{n:"5-HTP (5-Hydroxytryptophan)",c:"Amino Acids",u:"Direct serotonin precursor, mood, appetite, sleep",d:"50-300 mg/day",f:"From Griffonia simplicifolia"},
+{n:"L-Glutamine",c:"Amino Acids",u:"Gut lining repair, immune fuel, muscle recovery, sugar cravings",d:"5-20 g/day",f:"Most abundant amino acid"},
+{n:"L-Glycine",c:"Amino Acids",u:"Sleep quality, collagen synthesis, neuroprotection, detox",d:"3-5 g/day before bed",f:"Inhibitory neurotransmitter"},
+{n:"L-Arginine",c:"Amino Acids",u:"Nitric oxide, blood flow, erectile function, growth hormone",d:"3-6 g/day",f:"NO precursor; first-pass metabolism"},
+{n:"L-Citrulline",c:"Amino Acids",u:"NO precursor (converts to arginine), endurance, blood pressure",d:"3-6 g/day; pump: 6-8 g pre-workout",f:"Bypasses liver; better than arginine for NO"},
+{n:"L-Citrulline Malate (2:1)",c:"Amino Acids",u:"Endurance, pump, fatigue reduction",d:"6-8 g/day pre-workout",f:"Malic acid supports Krebs cycle"},
+{n:"L-Ornithine",c:"Amino Acids",u:"Ammonia detox, growth hormone, sleep, fatigue reduction",d:"1-6 g/day",f:"Urea cycle amino acid"},
+{n:"L-Ornithine Alpha-Ketoglutarate (OKG)",c:"Amino Acids",u:"Muscle sparing, wound healing, ammonia clearance",d:"5-10 g/day",f:"Hospital/sports nutrition"},
+{n:"L-Lysine",c:"Amino Acids",u:"Cold sore prevention (herpes), collagen, calcium absorption, growth",d:"1-3 g/day; outbreak: 3-9 g/day",f:"Essential AA; opposes arginine"},
+{n:"L-Proline",c:"Amino Acids",u:"Collagen synthesis, joint/skin health, wound healing",d:"500-1,000 mg/day",f:"Non-essential; collagen building block"},
+{n:"Hydroxyproline",c:"Amino Acids",u:"Collagen structure, wound healing marker",d:"Found in collagen supplements",f:"Metabolite of proline"},
+{n:"L-Carnitine (L-Tartrate / LCLT)",c:"Amino Acids",u:"Fat metabolism, exercise recovery, mitochondrial function, fertility",d:"1-3 g/day",f:"Best for exercise/recovery"},
+{n:"Acetyl-L-Carnitine (ALCAR)",c:"Amino Acids",u:"Cognitive function, neuroprotection, fat metabolism, energy",d:"500-2,000 mg/day",f:"Crosses BBB; brain-specific"},
+{n:"L-Carnitine (GPLC / Glycine Propionyl)",c:"Amino Acids",u:"Nitric oxide support, blood flow, exercise performance",d:"1-3 g/day",f:"Peripheral blood flow focus"},
+{n:"L-Carnitine (Fumarate)",c:"Amino Acids",u:"Fat metabolism, heart energy, general carnitine repletion",d:"500-2,000 mg/day",f:"Fumaric acid Krebs support"},
+{n:"Taurine",c:"Amino Acids",u:"Cardiovascular, electrolyte balance, bile, neuroprotection, longevity",d:"1-3 g/day; longevity: up to 6 g/day",f:"Conditionally essential; not in muscle protein"},
+{n:"Beta-Alanine",c:"Amino Acids",u:"Muscle endurance, carnosine buffer, anti-fatigue",d:"3.2-6.4 g/day sustained release",f:"Causes harmless paresthesia/tingles"},
+{n:"L-Methionine",c:"Amino Acids",u:"Methylation, liver detox, sulfur donor, SAMe precursor",d:"500-1,000 mg/day",f:"Essential AA; raises homocysteine"},
+{n:"N-Acetyl Cysteine (NAC)",c:"Amino Acids",u:"Glutathione precursor, liver detox, mucolytic, mental health, NAC",d:"600-1,800 mg/day",f:"Mucinex alt; psychiatric research"},
+{n:"L-Cysteine",c:"Amino Acids",u:"Glutathione support, skin/hair, detoxification",d:"500-1,000 mg/day",f:"NAC is preferred form"},
+{n:"D-Aspartic Acid (DAA)",c:"Amino Acids",u:"Testosterone support, luteinizing hormone stimulation",d:"2-3 g/day; cycle 2-3 wk on, 1-2 wk off",f:"NMDA receptor agonist"},
+{n:"L-Leucine",c:"Amino Acids",u:"mTOR activation, muscle protein synthesis trigger",d:"2-5 g/day or per meal",f:"Most anabolic BCAA"},
+{n:"L-Isoleucine",c:"Amino Acids",u:"Glucose uptake, endurance, BCAA component",d:"Typically within BCAA blend",f:"Essential AA"},
+{n:"L-Valine",c:"Amino Acids",u:"Muscle recovery, nitrogen balance, BCAA component",d:"Typically within BCAA blend",f:"Essential AA"},
+{n:"BCAAs (Leucine/Isoleucine/Valine)",c:"Amino Acids",u:"Muscle recovery, anti-catabolic, exercise endurance",d:"5-10 g/day (2:1:1 ratio)",f:"Fasted training use case"},
+{n:"EAAs (Essential Amino Acids)",c:"Amino Acids",u:"Complete muscle protein synthesis, recovery",d:"10-15 g/day",f:"All 9 essential AAs; superior to BCAAs"},
+{n:"L-Histidine",c:"Amino Acids",u:"Histamine precursor, joint health, anemia support",d:"500-1,000 mg/day",f:"Essential AA; conditionally essential in adults"},
+{n:"L-Serine",c:"Amino Acids",u:"Nerve function, brain health, phospholipid synthesis",d:"500-2,000 mg/day",f:"ALS research; phosphatidylserine precursor"},
+{n:"DL-Phenylalanine (DLPA)",c:"Amino Acids",u:"Pain management, mood elevation, dopamine/endorphin support",d:"500-1,500 mg/day",f:"D-form inhibits enkephalinase"},
+{n:"L-Phenylalanine",c:"Amino Acids",u:"Dopamine/norepinephrine precursor, mood, focus, vitiligo",d:"500-1,500 mg/day",f:"Essential AA; avoid with PKU"},
+{n:"L-Alanine",c:"Amino Acids",u:"Blood sugar regulation, muscle energy, prostate health",d:"500-2,000 mg/day",f:"Gluconeogenesis substrate"},
+{n:"L-Aspartic Acid",c:"Amino Acids",u:"Energy, ammonia detox, mineral transport",d:"500-1,500 mg/day",f:"Non-essential; Krebs cycle"},
+{n:"L-Glutamic Acid",c:"Amino Acids",u:"Neurotransmitter precursor, GABA precursor, umami taste",d:"500-1,000 mg/day",f:"Excitatory neurotransmitter"},
+{n:"L-Threonine",c:"Amino Acids",u:"Collagen, elastin, immune (IgA), gut mucin",d:"500-1,000 mg/day",f:"Essential AA"},
+{n:"Betaine (Trimethylglycine / TMG)",c:"Amino Acids",u:"Homocysteine reduction, methylation, liver, strength, power",d:"1,500-6,000 mg/day",f:"Methyl donor; pairs with B12/folate"},
+{n:"Betaine HCl",c:"Amino Acids",u:"Low stomach acid support, protein digestion, GERD",d:"325-650 mg with protein meals",f:"Not same as TMG; digestive acid"},
+{n:"SAMe (S-Adenosyl-L-Methionine)",c:"Amino Acids",u:"Mood/depression, joint health, liver support, methylation",d:"400-1,600 mg/day on empty stomach",f:"Enteric-coated; expensive"},
+{n:"Creatine Monohydrate",c:"Amino Acids",u:"Strength, power, brain energy, cell hydration, neuroprotection",d:"3-5 g/day; loading: 20 g/day x 5 days",f:"Most studied sports supplement"},
+{n:"Creatine HCl",c:"Amino Acids",u:"Strength/power, more soluble, less water retention",d:"1.5-3 g/day",f:"pH-buffered; less bloating"},
+{n:"Creatine (Kre-Alkalyn / Buffered)",c:"Amino Acids",u:"pH-stable creatine, less conversion to creatinine",d:"1.5-3 g/day",f:"Patented buffered form"},
+{n:"Creatine Magnesium Chelate",c:"Amino Acids",u:"Creatine + Mg synergy, strength, hydration",d:"3-5 g/day",f:"Dual benefit form"},
+{n:"HMB (Beta-Hydroxy Beta-Methylbutyrate)",c:"Amino Acids",u:"Anti-catabolic, lean mass preservation, recovery",d:"3 g/day in divided doses",f:"Leucine metabolite"},
+{n:"Glutathione (Reduced / GSH)",c:"Amino Acids",u:"Master antioxidant, detox, immune, skin lightening",d:"250-1,000 mg/day",f:"Liposomal or sublingual preferred"},
+{n:"Glutathione (Liposomal)",c:"Amino Acids",u:"Enhanced absorption master antioxidant, detox",d:"250-500 mg/day",f:"Phospholipid-encapsulated"},
+{n:"Glutathione (S-Acetyl / SAG)",c:"Amino Acids",u:"Stable glutathione prodrug, oral bioavailability",d:"200-600 mg/day",f:"Acetyl group protects GSH"},
+{n:"L-Carnosine",c:"Amino Acids",u:"Anti-glycation, longevity, neuroprotection, pH buffer, anti-aging",d:"500-1,000 mg/day",f:"Beta-alanine + histidine dipeptide"},
+{n:"D-Ribose",c:"Amino Acids",u:"Heart energy (CHF), fibromyalgia, exercise recovery, ATP synthesis",d:"5-15 g/day divided",f:"Pentose sugar; not for diabetics"},
+{n:"Collagen Peptides (Type I & III)",c:"Amino Acids",u:"Skin, hair, nails, tendons, bones, gut lining",d:"10-20 g/day hydrolyzed",f:"Bovine/marine sources"},
+{n:"Collagen Type II (UC-II / Undenatured)",c:"Amino Acids",u:"Joint-specific, immune-mediated cartilage support",d:"40 mg/day undenatured",f:"Oral tolerance mechanism"},
+{n:"Collagen (Marine)",c:"Amino Acids",u:"Skin elasticity, type I collagen, highest bioavailability",d:"5-10 g/day",f:"Fish-derived; smaller peptides"},
+{n:"Collagen (Multi-Type I, II, III, V, X)",c:"Amino Acids",u:"Comprehensive connective tissue support",d:"10-15 g/day",f:"Multiple tissue targets"},
+{n:"Ashwagandha (KSM-66)",c:"Herbal & Botanical",u:"Adaptogen, cortisol reduction, anxiety, testosterone, endurance",d:"300-600 mg/day",f:"Full-spectrum root extract"},
+{n:"Ashwagandha (Sensoril)",c:"Herbal & Botanical",u:"Adaptogen, stress relief, sleep, relaxation-focused",d:"125-250 mg/day",f:"Root + leaf; higher withanolides"},
+{n:"Ashwagandha (Shoden)",c:"Herbal & Botanical",u:"High-potency ashwagandha, lower dose needed",d:"120-240 mg/day",f:"35% withanolide glycosides"},
+{n:"Rhodiola Rosea",c:"Herbal & Botanical",u:"Adaptogen, fatigue resistance, mental performance, altitude",d:"200-600 mg/day (3% rosavins, 1% salidroside)",f:"SHR-5 extract most studied"},
+{n:"Bacopa Monnieri",c:"Herbal & Botanical",u:"Memory, learning, neuroprotection, anxiolytic",d:"300-600 mg/day (50% bacosides); 8-12 weeks",f:"Slow onset; fat-soluble"},
+{n:"Ginkgo Biloba",c:"Herbal & Botanical",u:"Cerebral blood flow, memory, tinnitus, antioxidant, PVD",d:"120-240 mg/day standardized extract",f:"EGb 761 most studied"},
+{n:"Panax Ginseng (Korean Red)",c:"Herbal & Botanical",u:"Energy, cognition, immune, sexual function, adaptogen",d:"200-400 mg/day standardized",f:"Ginsenosides active compounds"},
+{n:"American Ginseng (Panax quinquefolius)",c:"Herbal & Botanical",u:"Calm energy, blood sugar support, immune modulation",d:"200-400 mg/day",f:"Cereboost extract for cognition"},
+{n:"Siberian Ginseng (Eleuthero)",c:"Herbal & Botanical",u:"Adaptogen, endurance, immune support, stress resilience",d:"300-1,200 mg/day",f:"Not true ginseng; eleutherosides"},
+{n:"Maca Root (Lepidium meyenii)",c:"Herbal & Botanical",u:"Energy, libido, hormone balance, fertility, endurance, menopause",d:"1,500-3,000 mg/day",f:"Gelatinized for digestion"},
+{n:"Tongkat Ali (Eurycoma longifolia)",c:"Herbal & Botanical",u:"Testosterone support, libido, cortisol reduction, body comp",d:"200-400 mg/day (2% eurycomanone)",f:"LJ100 extract; cycle recommended"},
+{n:"Tribulus Terrestris",c:"Herbal & Botanical",u:"Libido, urinary health, traditional testosterone support",d:"250-750 mg/day standardized",f:"Protodioscin active; libido > T"},
+{n:"Fenugreek (Testofen / Trigonella)",c:"Herbal & Botanical",u:"Testosterone, libido, blood sugar, lactation support",d:"500-600 mg/day standardized",f:"Testofen patented; furostanols"},
+{n:"Saw Palmetto (Serenoa repens)",c:"Herbal & Botanical",u:"Prostate health, DHT reduction, urinary flow, hair loss",d:"320 mg/day (85-95% fatty acids)",f:"Liposterolic extract"},
+{n:"Stinging Nettle Root (Urtica dioica)",c:"Herbal & Botanical",u:"Prostate, SHBG binding, free testosterone, anti-inflammatory, allergies",d:"300-600 mg/day",f:"Root for prostate; leaf for allergies"},
+{n:"Stinging Nettle Leaf",c:"Herbal & Botanical",u:"Seasonal allergies, inflammation, joint pain, diuretic",d:"300-600 mg/day",f:"Freeze-dried leaf for allergies"},
+{n:"Pygeum Africanum",c:"Herbal & Botanical",u:"Prostate, urinary symptoms, BPH support",d:"100-200 mg/day standardized",f:"African cherry bark"},
+{n:"Turmeric / Curcumin (Standard)",c:"Herbal & Botanical",u:"Anti-inflammatory, antioxidant, joint pain, liver support",d:"500-1,000 mg curcumin/day",f:"Requires piperine or phytosome"},
+{n:"Curcumin (Meriva / Phytosome)",c:"Herbal & Botanical",u:"Enhanced bioavailability curcumin, joint, liver",d:"500-1,000 mg/day",f:"Phosphatidylcholine-bound; 29x absorption"},
+{n:"Curcumin (Longvida)",c:"Herbal & Botanical",u:"Brain-targeted curcumin, neuroinflammation",d:"400-800 mg/day",f:"Lipid particle technology"},
+{n:"Curcumin (Theracurmin / Nano)",c:"Herbal & Botanical",u:"Ultra-bioavailable curcumin, systemic inflammation",d:"90-180 mg/day",f:"Nanoparticle form"},
+{n:"Curcumin (BCM-95 / CurQfen)",c:"Herbal & Botanical",u:"Full-spectrum curcumin with essential oils",d:"500-1,000 mg/day",f:"Turmerone synergy"},
+{n:"Boswellia Serrata",c:"Herbal & Botanical",u:"Joint pain, inflammation, IBD, 5-LOX inhibition, brain",d:"300-500 mg/day (65% boswellic acids)",f:"AKBA most active compound"},
+{n:"Boswellia (ApresFlex / Aflapin)",c:"Herbal & Botanical",u:"Enhanced boswellia, joint, gut inflammation",d:"100-250 mg/day",f:"20% AKBA; superior absorption"},
+{n:"Ginger Root (Zingiber officinale)",c:"Herbal & Botanical",u:"Nausea, digestion, anti-inflammatory, circulation, pain",d:"250-1,000 mg/day",f:"Gingerols + shogaols active"},
+{n:"Holy Basil (Tulsi / Ocimum sanctum)",c:"Herbal & Botanical",u:"Adaptogen, blood sugar, stress, respiratory, cortisol",d:"300-600 mg/day",f:"Sacred Ayurvedic herb"},
+{n:"Echinacea (purpurea/angustifolia)",c:"Herbal & Botanical",u:"Immune stimulation, cold/flu prevention and duration reduction",d:"300-500 mg 3x/day at onset",f:"Start within 24hr of symptoms"},
+{n:"Elderberry (Sambucus nigra)",c:"Herbal & Botanical",u:"Immune support, cold/flu duration reduction, antioxidant",d:"500-1,000 mg/day",f:"Sambucol brand; anthocyanins"},
+{n:"Astragalus (Astragalus membranaceus)",c:"Herbal & Botanical",u:"Immune modulation, anti-aging, kidney/liver, telomerase",d:"500-1,000 mg/day",f:"TA-65 telomerase-focused extract"},
+{n:"Andrographis (Andrographis paniculata)",c:"Herbal & Botanical",u:"Immune, cold/flu, anti-inflammatory, liver protection",d:"200-400 mg/day standardized",f:"KalmCold / AP-Bio brands"},
+{n:"Cat\'s Claw (Uncaria tomentosa)",c:"Herbal & Botanical",u:"Immune, anti-inflammatory, DNA repair, arthritis",d:"250-1,000 mg/day",f:"Amazon rainforest herb"},
+{n:"Pelargonium sidoides (Umcka)",c:"Herbal & Botanical",u:"Upper respiratory infections, bronchitis, cold/flu",d:"30-60 drops 3x/day or tabs",f:"EPs 7630 extract"},
+{n:"Olive Leaf Extract",c:"Herbal & Botanical",u:"Blood pressure, antiviral, antioxidant, immune, blood sugar",d:"500-1,000 mg/day",f:"Standardized to oleuropein"},
+{n:"Reishi Mushroom (Ganoderma lucidum)",c:"Herbal & Botanical",u:"Immune modulation, sleep, stress, longevity, liver",d:"1-3 g/day extract",f:"Triterpenes + polysaccharides"},
+{n:"Lion\'s Mane (Hericium erinaceus)",c:"Herbal & Botanical",u:"NGF/BDNF, cognition, neuroregeneration, gut health, mood",d:"500-3,000 mg/day extract",f:"Hericenones + erinacines"},
+{n:"Chaga Mushroom (Inonotus obliquus)",c:"Herbal & Botanical",u:"Antioxidant, immune, gut, anti-inflammatory, DNA protection",d:"1-3 g/day extract",f:"Highest ORAC of any food"},
+{n:"Cordyceps (Cordyceps militaris/sinensis)",c:"Herbal & Botanical",u:"Endurance, VO2max, energy, libido, lung health, ATP",d:"1-3 g/day extract",f:"CS-4 or militaris fruiting body"},
+{n:"Turkey Tail (Trametes versicolor)",c:"Herbal & Botanical",u:"Immune (PSK/PSP), gut microbiome, cancer adjunct research",d:"1-3 g/day extract",f:"Most researched medicinal mushroom"},
+{n:"Maitake Mushroom (Grifola frondosa)",c:"Herbal & Botanical",u:"Immune, blood sugar, blood pressure, weight management",d:"1-3 g/day extract",f:"D-fraction beta-glucan"},
+{n:"Shiitake Mushroom (Lentinula edodes)",c:"Herbal & Botanical",u:"Immune, cardiovascular, cholesterol, liver",d:"1-3 g/day extract",f:"Lentinan active compound"},
+{n:"Agaricus blazei (Royal Sun)",c:"Herbal & Botanical",u:"Immune stimulation, blood sugar, cholesterol, liver",d:"1-3 g/day extract",f:"High beta-glucan content"},
+{n:"Tremella Mushroom (Tremella fuciformis)",c:"Herbal & Botanical",u:"Skin hydration, beauty, antioxidant, immune",d:"1-2 g/day extract",f:"Natural hyaluronic acid effect"},
+{n:"Valerian Root (Valeriana officinalis)",c:"Herbal & Botanical",u:"Sleep, anxiety, GABA modulation, muscle relaxation",d:"300-600 mg before bed",f:"Valerenic acid active; odorous"},
+{n:"Passionflower (Passiflora incarnata)",c:"Herbal & Botanical",u:"Anxiety, sleep, GABA-A support, calming, withdrawal",d:"200-500 mg/day extract",f:"Chrysin + vitexin flavonoids"},
+{n:"Lemon Balm (Melissa officinalis)",c:"Herbal & Botanical",u:"Anxiety, sleep, herpes/cold sores, cognitive calm, thyroid",d:"300-600 mg/day",f:"Rosmarinic acid active"},
+{n:"Kava (Piper methysticum)",c:"Herbal & Botanical",u:"Anxiety, social stress, muscle relaxation, insomnia",d:"120-250 mg kavalactones/day",f:"Noble cultivars only; liver concern debated"},
+{n:"St. John\'s Wort (Hypericum perforatum)",c:"Herbal & Botanical",u:"Mild-moderate depression, SAD, nerve pain",d:"300 mg 3x/day (0.3% hypericin)",f:"MANY CYP450 drug interactions"},
+{n:"Skullcap (Scutellaria lateriflora)",c:"Herbal & Botanical",u:"Anxiety, sleep, nervousness, muscle tension",d:"350-500 mg/day",f:"American skullcap; GABAergic"},
+{n:"Hops (Humulus lupulus)",c:"Herbal & Botanical",u:"Sleep, anxiety, menopausal symptoms, paired with valerian",d:"300-500 mg/day",f:"Bitter acids + xanthohumol"},
+{n:"California Poppy (Eschscholzia californica)",c:"Herbal & Botanical",u:"Sleep, mild pain, anxiety, calming",d:"300-600 mg/day",f:"Non-opiate; mild sedative"},
+{n:"Magnolia Bark (Magnolia officinalis)",c:"Herbal & Botanical",u:"Anxiety, sleep, cortisol reduction, GABA-A modulation",d:"200-400 mg/day",f:"Honokiol + magnolol; relaxing"},
+{n:"Blue Vervain (Verbena officinalis)",c:"Herbal & Botanical",u:"Nervousness, tension, liver, digestion",d:"300-500 mg/day",f:"Traditional nervine"},
+{n:"Milk Thistle (Silymarin)",c:"Herbal & Botanical",u:"Liver protection, detox, NAFLD, hangover, hepatitis",d:"200-400 mg silymarin/day",f:"Silybin most active; Phytosome form best"},
+{n:"Berberine",c:"Herbal & Botanical",u:"Blood sugar, cholesterol, gut health, AMPK activation, SIBO",d:"500 mg 2-3x/day with meals",f:"Goldenseal/barberry active compound"},
+{n:"Berberine (Dihydroberberine / GlucoVantage)",c:"Herbal & Botanical",u:"Enhanced absorption berberine, blood sugar, 5x bioavailability",d:"100-200 mg 2-3x/day",f:"Reduced gut side effects"},
+{n:"Gymnema Sylvestre",c:"Herbal & Botanical",u:"Blood sugar, sugar craving reduction, pancreatic beta cell support",d:"200-400 mg/day standardized",f:"Gurmar = sugar destroyer"},
+{n:"Cinnamon (Ceylon / True)",c:"Herbal & Botanical",u:"Blood sugar support, insulin sensitivity, antioxidant",d:"500-2,000 mg/day",f:"Ceylon safe long-term; not cassia"},
+{n:"Bitter Melon (Momordica charantia)",c:"Herbal & Botanical",u:"Blood sugar, insulin sensitizer, metabolic support",d:"500-2,000 mg/day",f:"Charantin active compound"},
+{n:"Banaba Leaf (Lagerstroemia speciosa)",c:"Herbal & Botanical",u:"Blood sugar, glucose transport, GLUT4 activation",d:"32-48 mg/day (1% corosolic acid)",f:"GlucoHelp brand"},
+{n:"Hawthorn Berry (Crataegus)",c:"Herbal & Botanical",u:"Heart health, blood pressure, angina, antioxidant, CHF",d:"160-900 mg/day extract",f:"OPCs + vitexin active"},
+{n:"Garlic (Aged / Kyolic)",c:"Herbal & Botanical",u:"Cardiovascular, blood pressure, cholesterol, immune, biofilm",d:"600-1,200 mg/day aged extract",f:"S-allylcysteine active"},
+{n:"Garlic (Allicin-stabilized / Allimax)",c:"Herbal & Botanical",u:"Antimicrobial, immune, cardiovascular, biofilm disruption",d:"180-900 mg allicin/day",f:"Allisure process preserves allicin"},
+{n:"Green Tea Extract (EGCG)",c:"Herbal & Botanical",u:"Thermogenesis, antioxidant, metabolism, neuroprotection, cancer prev",d:"250-500 mg EGCG/day",f:"Decaf extract; take with food for liver safety"},
+{n:"Grape Seed Extract (OPC)",c:"Herbal & Botanical",u:"Antioxidant, vascular health, skin, blood pressure, edema",d:"100-300 mg/day",f:"Oligomeric proanthocyanidins"},
+{n:"Pine Bark (Pycnogenol)",c:"Herbal & Botanical",u:"Circulation, skin, ADHD, endothelial health, CVI, retinopathy",d:"50-200 mg/day",f:"French maritime pine; patented"},
+{n:"Resveratrol (trans-)",c:"Herbal & Botanical",u:"Longevity/sirtuin activation, cardiovascular, anti-inflammatory",d:"150-500 mg/day trans-resveratrol",f:"Japanese knotweed or grape source"},
+{n:"Pterostilbene",c:"Herbal & Botanical",u:"More bioavailable resveratrol analog, brain, metabolic, longevity",d:"50-150 mg/day",f:"4x bioavailability of resveratrol"},
+{n:"Quercetin",c:"Herbal & Botanical",u:"Anti-inflammatory, antihistamine, senolytic, antiviral, mast cell",d:"500-1,000 mg/day",f:"Quercetin phytosome for absorption"},
+{n:"Fisetin",c:"Herbal & Botanical",u:"Senolytic, longevity, anti-inflammatory, neuroprotection",d:"100-500 mg/day; senolytic: 1-2 g x 2 days/month",f:"Strawberry flavonoid"},
+{n:"Apigenin",c:"Herbal & Botanical",u:"Sleep, anxiolytic, CD38 inhibition, NAD+ sparing, aromatase",d:"50-100 mg/day",f:"Chamomile/celery flavonoid"},
+{n:"Luteolin",c:"Herbal & Botanical",u:"Neuroinflammation, mast cell stabilizer, brain health",d:"100-200 mg/day",f:"Celery/pepper flavonoid"},
+{n:"Rutin",c:"Herbal & Botanical",u:"Vascular health, hemorrhoids, venous insufficiency, antioxidant",d:"250-500 mg/day",f:"Buckwheat bioflavonoid"},
+{n:"Hesperidin",c:"Herbal & Botanical",u:"Vascular health, blood pressure, cholesterol, anti-inflammatory",d:"500-1,000 mg/day",f:"Citrus bioflavonoid"},
+{n:"Naringenin / Naringin",c:"Herbal & Botanical",u:"Grapefruit flavonoid, metabolism, CYP inhibitor, lipid metabolism",d:"150-500 mg/day",f:"Drug interaction potential"},
+{n:"Black Seed Oil (Nigella sativa)",c:"Herbal & Botanical",u:"Immune, anti-inflammatory, blood sugar, thymoquinone, allergies",d:"1-3 tsp/day or 500-1,000 mg 2x/day",f:"Thymoquinone active; prophetic medicine"},
+{n:"Oregano Oil (Carvacrol)",c:"Herbal & Botanical",u:"Antimicrobial, antifungal, SIBO support, Candida, parasites",d:"150-300 mg/day short-term",f:"Carvacrol + thymol; enteric-coated preferred"},
+{n:"DIM (Diindolylmethane)",c:"Herbal & Botanical",u:"Estrogen metabolism, hormone balance, detox, I3C metabolite",d:"100-200 mg/day",f:"Cruciferous vegetable compound"},
+{n:"Indole-3-Carbinol (I3C)",c:"Herbal & Botanical",u:"Estrogen metabolism, hormone detox, DIM precursor",d:"200-400 mg/day",f:"Converts to DIM in stomach"},
+{n:"Sulforaphane (Broccoli Seed Extract)",c:"Herbal & Botanical",u:"Nrf2 activation, phase II detox, cancer prevention, autism research",d:"10-50 mg sulforaphane/day",f:"Myrosinase-activated glucoraphanin"},
+{n:"Mucuna Pruriens (Velvet Bean)",c:"Herbal & Botanical",u:"Dopamine precursor (L-DOPA), mood, fertility, GH, Parkinson\'s",d:"200-500 mg/day (15-20% L-DOPA)",f:"Standardized to L-DOPA content"},
+{n:"Saffron (Crocus sativus)",c:"Herbal & Botanical",u:"Mood/depression, appetite control, eye health, PMS, libido",d:"30 mg/day standardized extract",f:"Affron / Saffr\'Activ brands"},
+{n:"Gotu Kola (Centella asiatica)",c:"Herbal & Botanical",u:"Cognitive function, wound healing, anxiety, venous health, skin",d:"500-1,000 mg/day",f:"Triterpenoids active; not kola nut"},
+{n:"Moringa (Moringa oleifera)",c:"Herbal & Botanical",u:"Nutrient-dense superfood, anti-inflammatory, blood sugar, lactation",d:"500-2,000 mg/day",f:"Leaf powder; high nutrient density"},
+{n:"Schisandra Berry",c:"Herbal & Botanical",u:"Adaptogen, liver, endurance, stress, skin, cortisol, focus",d:"500-1,000 mg/day",f:"Five-flavor berry; liver Phase I+II"},
+{n:"Licorice Root (DGL / Deglycyrrhizinated)",c:"Herbal & Botanical",u:"Gut lining repair, ulcer, adrenal, acid reflux",d:"380-760 mg DGL before meals",f:"DGL removes glycyrrhizin to avoid BP issues"},
+{n:"Licorice Root (Whole)",c:"Herbal & Botanical",u:"Adrenal support, antiviral, PCOS, skin lightening",d:"200-400 mg/day; limit to 4-6 weeks",f:"Raises cortisol; watch BP/potassium"},
+{n:"Slippery Elm (Ulmus rubra)",c:"Herbal & Botanical",u:"GI soothing, acid reflux, IBD, mucosal lining, sore throat",d:"400-1,000 mg/day",f:"Mucilage demulcent"},
+{n:"Marshmallow Root (Althaea officinalis)",c:"Herbal & Botanical",u:"GI soothing, GERD, cough, mucosal protection, UTI",d:"500-1,500 mg/day",f:"Mucilage coating; take apart from meds"},
+{n:"Aloe Vera (Inner Leaf)",c:"Herbal & Botanical",u:"GI soothing, skin, constipation (latex), immune",d:"50-200 mg/day inner leaf; juice: 1-2 oz/day",f:"Acemannan active polysaccharide"},
+{n:"Triphala",c:"Herbal & Botanical",u:"Digestion, detox, bowel regularity, antioxidant (Ayurvedic)",d:"500-1,000 mg/day before bed",f:"Amla + Haritaki + Bibhitaki"},
+{n:"Psyllium Husk (Plantago ovata)",c:"Herbal & Botanical",u:"Soluble fiber, bowel regularity, cholesterol, blood sugar",d:"5-10 g/day with water",f:"Metamucil active ingredient"},
+{n:"Acacia Fiber (Gum Arabic)",c:"Herbal & Botanical",u:"Prebiotic fiber, IBS, gentle bulk, microbiome support",d:"5-15 g/day",f:"Well-tolerated; low gas"},
+{n:"Cranberry Extract (Vaccinium macrocarpon)",c:"Herbal & Botanical",u:"UTI prevention, urinary tract health, antioxidant",d:"500-1,500 mg/day (36 mg PACs)",f:"Type-A proanthocyanidins"},
+{n:"D-Mannose",c:"Herbal & Botanical",u:"UTI prevention and treatment, E. coli adhesion blocker",d:"500-2,000 mg/day; acute: 1.5 g every 2-3 hrs",f:"Simple sugar; not metabolized"},
+{n:"Uva Ursi (Bearberry)",c:"Herbal & Botanical",u:"UTI, urinary antiseptic, diuretic",d:"400-800 mg/day short-term",f:"Arbutin converts to hydroquinone; limit 1 week"},
+{n:"Vitex / Chasteberry (Vitex agnus-castus)",c:"Herbal & Botanical",u:"PMS, menstrual regulation, prolactin modulation, fertility, acne",d:"20-40 mg/day",f:"Dopaminergic; lowers prolactin"},
+{n:"Black Cohosh (Actaea racemosa)",c:"Herbal & Botanical",u:"Menopausal hot flashes, night sweats, mood",d:"20-40 mg/day standardized",f:"Remifemin brand most studied"},
+{n:"Dong Quai (Angelica sinensis)",c:"Herbal & Botanical",u:"Menstrual support, blood tonic, menopausal symptoms (TCM)",d:"500-2,000 mg/day",f:"Female ginseng; blood mover"},
+{n:"Red Clover (Trifolium pratense)",c:"Herbal & Botanical",u:"Menopausal symptoms, bone health, cholesterol",d:"40-160 mg isoflavones/day",f:"Phytoestrogenic isoflavones"},
+{n:"Evening Primrose Oil (GLA)",c:"Herbal & Botanical",u:"PMS, eczema, breast pain, nerve (GLA source)",d:"500-1,000 mg GLA/day",f:"Gamma-linolenic acid omega-6"},
+{n:"Borage Oil (GLA)",c:"Herbal & Botanical",u:"Highest GLA content, inflammation, skin, hormones",d:"500-1,000 mg GLA/day",f:"24% GLA; pyrrolizidine-free required"},
+{n:"Shilajit (Purified Fulvic Acid Complex)",c:"Herbal & Botanical",u:"Testosterone, energy, fulvic acid, mitochondrial, mineral transport",d:"250-500 mg/day",f:"PrimaVie standardized; heavy metal-tested"},
+{n:"Fadogia Agrestis",c:"Herbal & Botanical",u:"Testosterone/LH support, libido (limited human evidence)",d:"200-600 mg/day; cycle on/off",f:"Nigerian shrub; testicular toxicity concern at high dose"},
+{n:"Cistanche (Cistanche tubulosa)",c:"Herbal & Botanical",u:"Testosterone, libido, anti-aging, cognitive, gut immunity",d:"100-300 mg/day standardized",f:"Desert ginseng; echinacoside active"},
+{n:"Horny Goat Weed (Epimedium)",c:"Herbal & Botanical",u:"Libido, erectile function, bone, PDE5 inhibition",d:"500-1,000 mg/day",f:"Icariin active compound"},
+{n:"Damiana (Turnera diffusa)",c:"Herbal & Botanical",u:"Libido, mood, aphrodisiac, anxiety",d:"400-800 mg/day",f:"Traditional Mexican herb"},
+{n:"Pine Pollen",c:"Herbal & Botanical",u:"Androgen source (DHEA, androsterone), hormonal, nutrient-dense",d:"1-3 g/day powder; tincture for hormones",f:"Raw powder = nutrition; tincture = hormonal"},
+{n:"Forskolin (Coleus forskohlii)",c:"Herbal & Botanical",u:"cAMP activation, fat loss, thyroid, blood pressure, glaucoma",d:"250 mg 2x/day (10% forskolin)",f:"Lean Body brand common"},
+{n:"Chlorella (Chlorella vulgaris)",c:"Herbal & Botanical",u:"Heavy metal detox, immune, nutrient-dense, chlorophyll, DNA repair",d:"3-10 g/day",f:"Broken cell wall for absorption"},
+{n:"Spirulina (Arthrospira platensis)",c:"Herbal & Botanical",u:"Complete protein, iron, antioxidant, immune, allergies, phycocyanin",d:"3-10 g/day",f:"Blue-green algae; phycocyanin active"},
+{n:"Chlorophyll / Chlorophyllin",c:"Herbal & Botanical",u:"Internal deodorant, detox, wound healing, antioxidant",d:"100-300 mg/day",f:"Liquid or tablet form"},
+{n:"Wheatgrass",c:"Herbal & Botanical",u:"Nutrient-dense, detox, blood building, alkalizing",d:"3-6 g/day powder or 1-2 oz juice",f:"High chlorophyll content"},
+{n:"Barley Grass",c:"Herbal & Botanical",u:"Nutrient-dense, antioxidant, cholesterol, anti-inflammatory",d:"3-6 g/day powder",f:"Young barley leaves"},
+{n:"Modified Citrus Pectin",c:"Herbal & Botanical",u:"Heavy metal chelation, galectin-3 reduction, cancer adjunct",d:"5-15 g/day",f:"PectaSol-C most studied brand"},
+{n:"Zeolite (Clinoptilolite)",c:"Herbal & Botanical",u:"Heavy metal/toxin binder, gut detox, ammonia clearance",d:"1-3 g/day",f:"Micronized/activated form only"},
+{n:"Activated Charcoal",c:"Herbal & Botanical",u:"Acute toxin binding, gas/bloating, detox support",d:"500-1,000 mg as needed",f:"Take 2hrs away from meds/supps"},
+{n:"Bentonite Clay (Internal)",c:"Herbal & Botanical",u:"Toxin/mold binder, gut detox, food poisoning",d:"1-2 tsp/day in water",f:"Calcium bentonite food grade"},
+{n:"Pygeum + Saw Palmetto Combo",c:"Herbal & Botanical",u:"Comprehensive prostate support, BPH, urinary flow",d:"Per label (combined formula)",f:"Synergistic prostate stack"},
+{n:"Butterbur (Petasites hybridus)",c:"Herbal & Botanical",u:"Migraine prevention, allergies, asthma",d:"75 mg 2x/day (PA-free extract only)",f:"Petadolex brand; MUST be PA-free"},
+{n:"Feverfew (Tanacetum parthenium)",c:"Herbal & Botanical",u:"Migraine prevention, anti-inflammatory, fever",d:"50-100 mg/day standardized",f:"Parthenolide active; 2-3 months onset"},
+{n:"White Willow Bark (Salix alba)",c:"Herbal & Botanical",u:"Natural aspirin analog, pain, inflammation, fever",d:"240 mg salicin/day",f:"Salicin + polyphenols; gentler than aspirin"},
+{n:"Devil\'s Claw (Harpagophytum procumbens)",c:"Herbal & Botanical",u:"Joint pain, back pain, anti-inflammatory, arthritis",d:"600-2,400 mg/day (50-100 mg harpagoside)",f:"African herb; comparable to NSAIDs in trials"},
+{n:"Arnica (Oral Homeopathic / Topical)",c:"Herbal & Botanical",u:"Bruising, swelling, post-surgical recovery, muscle soreness",d:"Topical gel/cream; oral: 30C pellets",f:"Topical only in herb form; oral is homeopathic"},
+{n:"Comfrey (Topical Only)",c:"Herbal & Botanical",u:"Wound healing, fracture, joint/muscle pain (topical)",d:"Topical cream/ointment",f:"NEVER internal; pyrrolizidine alkaloids toxic"},
+{n:"Cayenne / Capsaicin (Oral)",c:"Herbal & Botanical",u:"Thermogenesis, pain relief, circulation, digestion, metabolism",d:"30-120 mg capsaicin/day",f:"Capsaicinoids; enteric-coated for GI"},
+{n:"Turmeric (Whole Root Powder)",c:"Herbal & Botanical",u:"Culinary anti-inflammatory, Ayurvedic staple, general antioxidant",d:"1-3 g/day",f:"Low curcuminoid content; golden milk use"},
+{n:"Cissus Quadrangularis",c:"Herbal & Botanical",u:"Bone healing, joint, weight management, cortisol",d:"500-1,000 mg/day",f:"Traditional bone-setter herb"},
+{n:"Gymnema + Berberine Combo",c:"Herbal & Botanical",u:"Synergistic blood sugar support, cravings + AMPK",d:"Per label (combined formula)",f:"Popular glucose support stack"},
+{n:"Omega-3 Fish Oil (EPA/DHA)",c:"Fatty Acids & Lipids",u:"Cardiovascular, anti-inflammatory, brain, joint, mood",d:"1-4 g combined EPA+DHA/day",f:"Triglyceride form preferred"},
+{n:"Omega-3 (High-EPA)",c:"Fatty Acids & Lipids",u:"Depression, inflammation-focused, cardiovascular",d:"1-2 g EPA/day",f:"EPA:DHA ratio > 2:1"},
+{n:"Omega-3 (High-DHA)",c:"Fatty Acids & Lipids",u:"Brain health, cognition, eye, pregnancy, pediatric",d:"1-2 g DHA/day",f:"DHA:EPA ratio > 2:1"},
+{n:"Omega-3 (SPM-Active / Pro-Resolving)",c:"Fatty Acids & Lipids",u:"Active inflammation resolution pathway, chronic inflammation",d:"1-2 softgels/day",f:"Specialized pro-resolving mediators"},
+{n:"Krill Oil",c:"Fatty Acids & Lipids",u:"Omega-3 with astaxanthin, phospholipid-bound, joint/heart",d:"1-3 g/day",f:"Superba krill; phospholipid delivery"},
+{n:"Algal Oil (Vegan Omega-3)",c:"Fatty Acids & Lipids",u:"Plant-based DHA/EPA, brain, cardiovascular",d:"250-1,000 mg DHA/day",f:"Schizochytrium algae source"},
+{n:"Cod Liver Oil",c:"Fatty Acids & Lipids",u:"Omega-3 + vitamins A & D, immune, joint, skin, traditional",d:"1-2 tsp/day",f:"Carlson\'s / Rosita brands"},
+{n:"Omega-7 (Sea Buckthorn / Palmitoleic Acid)",c:"Fatty Acids & Lipids",u:"Mucous membrane health, skin, gut lining, metabolic",d:"210-420 mg palmitoleic acid/day",f:"Provinal brand; vaginal dryness"},
+{n:"CLA (Conjugated Linoleic Acid)",c:"Fatty Acids & Lipids",u:"Body composition, fat loss, insulin sensitivity",d:"3-6 g/day",f:"Tonalin / Clarinol brands; 80% CLA"},
+{n:"GLA (Gamma-Linolenic Acid)",c:"Fatty Acids & Lipids",u:"Inflammation, eczema, PMS, nerve health, breast pain",d:"240-480 mg GLA/day",f:"From borage, EPO, or black currant"},
+{n:"MCT Oil (Medium-Chain Triglycerides)",c:"Fatty Acids & Lipids",u:"Quick energy, ketone production, cognitive fuel, fat loss",d:"1-3 tbsp/day",f:"C8+C10 blend; coconut-derived"},
+{n:"C8 MCT (Caprylic Acid / Brain Octane)",c:"Fatty Acids & Lipids",u:"Strongest ketone-producing MCT, brain fuel, antimicrobial",d:"1-2 tbsp/day",f:"Pure C8; fastest ketone conversion"},
+{n:"Coconut Oil (Virgin)",c:"Fatty Acids & Lipids",u:"MCT source, antimicrobial (lauric acid), cooking, skin",d:"1-2 tbsp/day",f:"50% lauric acid; monolaurin precursor"},
+{n:"Phosphatidylserine (PS)",c:"Fatty Acids & Lipids",u:"Cognitive function, cortisol reduction, memory, ADHD, sports",d:"100-300 mg/day",f:"Soy or sunflower-derived"},
+{n:"Phosphatidylcholine (PC)",c:"Fatty Acids & Lipids",u:"Liver health, cell membranes, brain, bile, methylation",d:"420-3,600 mg/day",f:"Precursor to acetylcholine"},
+{n:"Lecithin (Sunflower or Soy)",c:"Fatty Acids & Lipids",u:"Choline/PC source, liver, emulsification, brain, lactation",d:"1-3 g/day",f:"Sunflower preferred (no soy)"},
+{n:"Monolaurin (Lauricidin)",c:"Fatty Acids & Lipids",u:"Antimicrobial (viral/bacterial/fungal), immune, biofilm disruptor",d:"600-3,000 mg/day",f:"From coconut; Lauricidin brand"},
+{n:"Butyrate (Tributyrin / Cal-Mag Butyrate)",c:"Fatty Acids & Lipids",u:"Gut lining fuel, microbiome, inflammation, leaky gut, SCFA",d:"300-600 mg/day",f:"ProButyrate/Tributyrin forms preferred"},
+{n:"Black Currant Seed Oil",c:"Fatty Acids & Lipids",u:"GLA source, immune, inflammation, eye, hormonal",d:"500-1,000 mg/day",f:"GLA + ALA; balanced omega profile"},
+{n:"Perilla Oil",c:"Fatty Acids & Lipids",u:"Plant omega-3 (ALA), allergy, anti-inflammatory",d:"500-1,000 mg/day",f:"Highest ALA plant oil; anti-leukotriene"},
+{n:"Flaxseed Oil",c:"Fatty Acids & Lipids",u:"Plant ALA omega-3, lignans, hormonal, cardiovascular",d:"1-2 tbsp/day",f:"Refrigerate; oxidizes quickly"},
+{n:"Hemp Seed Oil",c:"Fatty Acids & Lipids",u:"Balanced omega-6:3, GLA source, skin, anti-inflammatory",d:"1-2 tbsp/day",f:"Ideal 3:1 omega-6:3 ratio"},
+{n:"Squalene / Squalane",c:"Fatty Acids & Lipids",u:"Skin health, antioxidant, immune, liver, oxygen transport",d:"500-1,000 mg/day",f:"Olive or shark-derived"},
+{n:"Alpha-GPC (L-Alpha Glycerylphosphorylcholine)",c:"Nootropics",u:"Choline source, acetylcholine, memory, power output, GH",d:"300-600 mg/day",f:"40% choline by weight"},
+{n:"CDP-Choline (Citicoline / Cognizin)",c:"Nootropics",u:"Brain energy, focus, neuroprotection, dopamine, phospholipids",d:"250-500 mg/day",f:"Cognizin patented; dual mechanism"},
+{n:"Huperzine A",c:"Nootropics",u:"Acetylcholinesterase inhibitor, memory, neuroprotection, Alzheimer\'s",d:"50-200 mcg/day (cycle 2-4 weeks)",f:"Chinese club moss extract; long half-life"},
+{n:"Vinpocetine",c:"Nootropics",u:"Cerebral blood flow, memory, neuroprotection, hearing",d:"5-30 mg/day",f:"Periwinkle-derived; Rx in Europe"},
+{n:"Noopept (Omberacetam)",c:"Nootropics",u:"Memory, neuroprotection, BDNF/NGF modulation, anxiolytic",d:"10-30 mg/day",f:"1000x more potent than piracetam by weight"},
+{n:"Piracetam",c:"Nootropics",u:"Memory, verbal fluency, neuroprotection, dyslexia",d:"1,200-4,800 mg/day divided",f:"Original racetam; Rx in some countries"},
+{n:"Aniracetam",c:"Nootropics",u:"Anxiety + cognition, AMPA modulation, creativity, verbal fluency",d:"750-1,500 mg/day divided (with fat)",f:"Fat-soluble racetam; anxiolytic"},
+{n:"Oxiracetam",c:"Nootropics",u:"Logical thinking, memory formation, stimulating racetam",d:"800-2,400 mg/day divided",f:"Mild stimulant effect"},
+{n:"Phenylpiracetam (Fonturacetam)",c:"Nootropics",u:"Physical/mental performance, stimulant-like, cold tolerance",d:"100-200 mg/day (cycle)",f:"WADA-banned in competition"},
+{n:"Pramiracetam",c:"Nootropics",u:"Focus, long-term memory, high-demand cognitive tasks",d:"600-1,200 mg/day divided",f:"Fat-soluble; most potent racetam"},
+{n:"Coluracetam",c:"Nootropics",u:"Choline uptake enhancer, vision, memory, depression",d:"20-80 mg/day",f:"High-affinity choline uptake"},
+{n:"Fasoracetam",c:"Nootropics",u:"GABA-B upregulation, ADHD research, anxiety, focus",d:"20-100 mg/day",f:"Unstimulating; anxiety-reducing"},
+{n:"Uridine Monophosphate (UMP)",c:"Nootropics",u:"Synapse formation, dopamine receptor density, mood",d:"150-250 mg/day",f:"Mr. Happy Stack: UMP + DHA + choline"},
+{n:"PQQ (Pyrroloquinoline Quinone)",c:"Nootropics",u:"Mitochondrial biogenesis, neuroprotection, energy, sleep, NGF",d:"10-20 mg/day",f:"BioPQQ brand; pairs with CoQ10"},
+{n:"CoQ10 (Ubiquinone)",c:"Nootropics",u:"Mitochondrial energy, heart, statin offset, antioxidant, gums",d:"100-300 mg/day",f:"Standard form; converts to ubiquinol"},
+{n:"CoQ10 (Ubiquinol / Kaneka QH)",c:"Nootropics",u:"Active reduced CoQ10, better absorbed, anti-aging, fertility",d:"100-300 mg/day",f:"Preferred over 40; Kaneka QH brand"},
+{n:"Sulbutiamine",c:"Nootropics",u:"Fat-soluble thiamine derivative, fatigue, memory, motivation",d:"400-600 mg/day",f:"Crosses BBB; developed in Japan"},
+{n:"Caffeine + L-Theanine",c:"Nootropics",u:"Smooth focus, alertness without jitters, attention",d:"100 mg caffeine + 200 mg theanine",f:"Gold standard beginner nootropic"},
+{n:"Theacrine (TeaCrine)",c:"Nootropics",u:"Non-habituating stimulant, energy, mood, no tolerance buildup",d:"100-300 mg/day",f:"Purine alkaloid; kucha tea"},
+{n:"Dynamine (Methylliberine)",c:"Nootropics",u:"Fast-acting energy, mood, pairs with TeaCrine, no crash",d:"100-200 mg/day",f:"Rapid onset; short duration"},
+{n:"Methylene Blue (USP Grade, Low-Dose)",c:"Nootropics",u:"Mitochondrial electron carrier, neuroprotection, cognitive, memory",d:"0.5-4 mg/kg/day",f:"USP pharmaceutical grade ONLY; blue urine"},
+{n:"Centrophenoxine (Meclofenoxate)",c:"Nootropics",u:"Lipofuscin removal, memory, choline source, anti-aging brain",d:"250-750 mg/day",f:"DMAE-derived; neuroprotective"},
+{n:"DMAE (Dimethylaminoethanol)",c:"Nootropics",u:"Focus, skin firmness, acetylcholine precursor (debated)",d:"100-300 mg/day",f:"Deanol; sardine/anchovy source"},
+{n:"Phenibut (Beta-Phenyl-GABA)",c:"Nootropics",u:"Anxiety, sleep, social confidence, GABA-B agonist",d:"250-1,000 mg as needed; DO NOT use daily",f:"HIGH dependence/withdrawal risk; cycle strictly"},
+{n:"Lion\'s Mane (as nootropic)",c:"Nootropics",u:"NGF/BDNF, neuroregeneration, nerve repair, memory",d:"500-3,000 mg/day",f:"Dual extract (fruiting body + mycelium)"},
+{n:"Polygala tenuifolia (Yuan Zhi)",c:"Nootropics",u:"Memory, neuroprotection, BDNF, anti-inflammatory, TCM cognition",d:"100-300 mg/day",f:"Traditional Chinese nootropic herb"},
+{n:"Sabroxy (Oroxylin A)",c:"Nootropics",u:"Dopaminergic focus, motivation, ADHD-like effects",d:"100-300 mg/day",f:"Oroxylum indicum bark extract"},
+{n:"Celastrus paniculatus (Intellect Tree)",c:"Nootropics",u:"Memory, learning, neuroprotection, Ayurvedic nootropic",d:"5-10 seed oil caps/day",f:"Traditional Ayurvedic brain tonic"},
+{n:"NMN (Nicotinamide Mononucleotide)",c:"Longevity",u:"NAD+ precursor, sirtuin activation, cellular aging, energy, DNA repair",d:"250-1,000 mg/day",f:"Sublingual or enteric for absorption"},
+{n:"NR (Nicotinamide Riboside / Niagen)",c:"Longevity",u:"NAD+ precursor, mitochondrial health, aging, metabolic",d:"250-500 mg/day",f:"Niagen / TruNiagen brands; patented"},
+{n:"Niacinamide (Low-Dose for NAD+)",c:"Longevity",u:"NAD+ maintenance, PARP support, skin, anti-inflammatory",d:"250-500 mg/day",f:"Cheapest NAD+ precursor"},
+{n:"Spermidine",c:"Longevity",u:"Autophagy induction, cellular renewal, longevity, hair growth, cardiac",d:"1-6 mg/day",f:"Wheat germ source; caloric restriction mimetic"},
+{n:"Alpha-Lipoic Acid (ALA)",c:"Longevity",u:"Universal antioxidant (fat + water), blood sugar, neuropathy, liver",d:"300-600 mg/day",f:"Racemic form; both compartments"},
+{n:"R-Alpha-Lipoic Acid (R-ALA / Na-RALA)",c:"Longevity",u:"More bioactive ALA form, mitochondrial antioxidant, nerve",d:"100-300 mg/day",f:"R-enantiomer only; stabilized Na salt"},
+{n:"Urolithin A (Mitopure / Timeline)",c:"Longevity",u:"Mitophagy, muscle aging, mitochondrial recycling, exercise capacity",d:"500-1,000 mg/day",f:"Timeline brand; pomegranate metabolite"},
+{n:"Ergothioneine (ERGO)",c:"Longevity",u:"Longevity amino acid, mitochondrial antioxidant, cellular protection",d:"5-25 mg/day",f:"Mushroom-derived; OCTN1 transporter"},
+{n:"TUDCA (Tauroursodeoxycholic Acid)",c:"Longevity",u:"Bile flow, liver protection, cholestasis, ER stress, organ support",d:"250-1,000 mg/day",f:"Cycle support; bile acid therapeutic"},
+{n:"UDCA (Ursodeoxycholic Acid)",c:"Longevity",u:"Bile flow, gallstone dissolution, liver (Rx for PBC)",d:"250-500 mg/day (OTC in some markets)",f:"Precursor to TUDCA; Rx in US for PBC"},
+{n:"Rapamycin (Low-Dose / Off-Label)",c:"Longevity",u:"mTOR inhibition, longevity research, immune cycling",d:"Experimental; Rx only",f:"Prescription; longevity community off-label use"},
+{n:"Metformin (Off-Label Longevity)",c:"Longevity",u:"AMPK activation, blood sugar, aging research, cancer prevention",d:"500-1,500 mg/day (Rx)",f:"Prescription; TAME trial"},
+{n:"Astaxanthin",c:"Longevity",u:"Most powerful carotenoid antioxidant, joint, skin, eye, exercise",d:"4-12 mg/day",f:"Haematococcus pluvialis algae"},
+{n:"C60 (Carbon 60 / Fullerene)",c:"Longevity",u:"Antioxidant research, longevity (rat study), mitochondrial",d:"Experimental; 1-3 mg/day in olive oil",f:"Controversial; limited human data"},
+{n:"Epitalon (Epithalon / Epithalamin)",c:"Longevity",u:"Telomerase activation, pineal peptide, circadian, longevity",d:"OTC availability varies; 5-10 mg cycles",f:"Khavinson peptide; limited availability"},
+{n:"GlyNAC (Glycine + NAC)",c:"Longevity",u:"Glutathione repletion, aging, mitochondrial, oxidative stress",d:"Glycine 1.33 mmol/kg + NAC 0.81 mmol/kg/day",f:"Baylor aging study; GlyNAC protocol"},
+{n:"Taurine (Longevity Dose)",c:"Longevity",u:"Longevity, telomere, inflammation, mitochondria, stem cell",d:"3-6 g/day",f:"Science 2023 paper; age-related decline"},
+{n:"Melatonin (Immediate Release)",c:"Sleep",u:"Sleep onset, circadian rhythm reset, jet lag, antioxidant",d:"0.3-5 mg 30-60 min before bed",f:"Less is often more; start 0.3-0.5 mg"},
+{n:"Melatonin (Extended-Release)",c:"Sleep",u:"Sleep maintenance, staying asleep, middle-of-night waking",d:"1-5 mg before bed",f:"Sustained release for sleep maintenance"},
+{n:"Melatonin (Liposomal/Liquid)",c:"Sleep",u:"Fast-acting sleep onset, sublingual absorption",d:"0.5-3 mg before bed",f:"Rapid sublingual delivery"},
+{n:"GABA (Gamma-Aminobutyric Acid)",c:"Sleep",u:"Calming neurotransmitter, anxiety, sleep, relaxation",d:"250-750 mg/day",f:"BBB crossing debated; peripheral effects"},
+{n:"PharmaGABA (Natural GABA)",c:"Sleep",u:"Natural fermented GABA, better absorbed, alpha waves, stress",d:"100-200 mg as needed",f:"Lactobacillus-fermented; patented"},
+{n:"Magnolia Bark (Honokiol/Magnolol)",c:"Sleep",u:"Anxiety, sleep, cortisol reduction, GABA-A modulation",d:"200-400 mg/day",f:"Relora brand (magnolia + phellodendron)"},
+{n:"Tart Cherry (Montmorency)",c:"Sleep",u:"Natural melatonin source, sleep, recovery, uric acid/gout",d:"500-1,000 mg/day or 8 oz juice 2x/day",f:"CherryPURE brand; anthocyanins"},
+{n:"CBD (Cannabidiol)",c:"Sleep",u:"Anxiety, sleep, pain modulation, anti-inflammatory, seizure",d:"15-50 mg/day",f:"Full-spectrum vs isolate; COA required"},
+{n:"CBN (Cannabinol)",c:"Sleep",u:"Sedating cannabinoid, sleep-focused, mild psychoactive",d:"2.5-10 mg before bed",f:"Pairs with CBD for sleep"},
+{n:"CBG (Cannabigerol)",c:"Sleep",u:"Anti-anxiety, neuroprotective, anti-inflammatory, non-sedating",d:"10-25 mg/day",f:"Mother cannabinoid; emerging research"},
+{n:"Oleamide",c:"Sleep",u:"Endogenous sleep lipid, sleep onset, GABA modulation",d:"100-400 mg before bed",f:"Fatty acid amide; natural sleep signal"},
+{n:"Glycine (Sleep Dose)",c:"Sleep",u:"Sleep quality, thermoregulation, next-day alertness",d:"3 g before bed",f:"Lowers core body temp for sleep"},
+{n:"L-Theanine (Sleep Dose)",c:"Sleep",u:"Relaxation, alpha waves, sleep quality without sedation",d:"200-400 mg before bed",f:"Non-sedating calm; safe to combine"},
+{n:"Magnesium Glycinate (Sleep Dose)",c:"Sleep",u:"Muscle relaxation, GABA support, sleep quality",d:"200-400 mg elemental Mg before bed",f:"Preferred Mg form for sleep"},
+{n:"Phosphatidylserine (PM Cortisol)",c:"Sleep",u:"Evening cortisol reduction, HPA axis calming",d:"100-200 mg before bed",f:"Cortisol-lowering for sleep"},
+{n:"Reishi Mushroom (Sleep Use)",c:"Sleep",u:"Calming, sleep, GABAergic, reduces sleep latency",d:"1-2 g extract before bed",f:"Triterpenes for calming"},
+{n:"Jujube Seed (Ziziphus jujuba)",c:"Sleep",u:"Sleep, anxiety, neuroprotection, TCM insomnia herb",d:"250-500 mg/day",f:"Suan Zao Ren in TCM"},
+{n:"Glucosamine Sulfate",c:"Joint & Connective Tissue",u:"Cartilage support, osteoarthritis, joint cushioning",d:"1,500 mg/day",f:"Sulfate form most studied"},
+{n:"Glucosamine HCl",c:"Joint & Connective Tissue",u:"Cartilage support, osteoarthritis (no sulfate)",d:"1,500 mg/day",f:"Shellfish or veg source; no sulfur"},
+{n:"Chondroitin Sulfate",c:"Joint & Connective Tissue",u:"Cartilage matrix, joint lubrication, anti-inflammatory",d:"800-1,200 mg/day",f:"Often paired with glucosamine"},
+{n:"MSM (Methylsulfonylmethane)",c:"Joint & Connective Tissue",u:"Joint inflammation, sulfur donor, connective tissue, hair, detox",d:"1-3 g/day",f:"OptiMSM brand; sulfur source"},
+{n:"Hyaluronic Acid (Oral)",c:"Joint & Connective Tissue",u:"Joint lubrication, skin hydration, wound healing",d:"100-200 mg/day",f:"Injuv / BioCell brands"},
+{n:"Collagen Type I & III (Hydrolyzed)",c:"Joint & Connective Tissue",u:"Skin, hair, nails, tendons, bones, gut lining",d:"10-20 g/day",f:"Bovine or marine peptides"},
+{n:"Collagen Type II (UC-II / Undenatured)",c:"Joint & Connective Tissue",u:"Joint-specific, immune-mediated cartilage support",d:"40 mg/day",f:"UC-II brand; oral tolerance"},
+{n:"Collagen (Marine Peptides)",c:"Joint & Connective Tissue",u:"Skin elasticity, type I collagen, small peptide size",d:"5-10 g/day",f:"Fish-derived; highest bioavailability"},
+{n:"Collagen (Multi-Type I, II, III, V, X)",c:"Joint & Connective Tissue",u:"Comprehensive connective tissue, bone, cartilage, skin",d:"10-15 g/day",f:"Ancient Nutrition / multi-source"},
+{n:"BioCell Collagen",c:"Joint & Connective Tissue",u:"Type II collagen + HA + chondroitin, joint + skin",d:"1-2 g/day",f:"Patented hydrolyzed matrix"},
+{n:"Astaxanthin",c:"Joint & Connective Tissue",u:"Powerful antioxidant, joint, skin, eye, anti-inflammatory, exercise",d:"4-12 mg/day",f:"AstaReal brand; H. pluvialis"},
+{n:"Eggshell Membrane (NEM)",c:"Joint & Connective Tissue",u:"Joint flexibility, cartilage support, rapid onset (7-10 days)",d:"500 mg/day",f:"NEM brand; collagen + GAGs + HA"},
+{n:"Cetyl Myristoleate (CMO)",c:"Joint & Connective Tissue",u:"Joint lubrication, anti-inflammatory, flexibility",d:"500-1,000 mg/day",f:"Cetylated fatty acids"},
+{n:"SAMe (Joint Use)",c:"Joint & Connective Tissue",u:"Cartilage repair, anti-inflammatory, comparable to NSAIDs",d:"600-1,200 mg/day",f:"Effective but expensive for joints"},
+{n:"Type V Collagen",c:"Joint & Connective Tissue",u:"Placental tissue, hair, cell surface support",d:"Within multi-collagen blends",f:"Niche collagen type"},
+{n:"Type X Collagen",c:"Joint & Connective Tissue",u:"Bone and cartilage formation, endochondral ossification",d:"Within multi-collagen blends",f:"Bone-focused collagen"},
+{n:"DHEA (Dehydroepiandrosterone)",c:"Hormonal Support",u:"Hormone precursor, adrenal support, libido, anti-aging, fertility",d:"25-50 mg/day (test levels first)",f:"Declines with age; test before supplementing"},
+{n:"7-Keto DHEA",c:"Hormonal Support",u:"Non-androgenic DHEA metabolite, metabolism, thermogenesis, immune",d:"25-100 mg/day",f:"No conversion to sex hormones"},
+{n:"Pregnenolone",c:"Hormonal Support",u:"Master hormone precursor, memory, mood, neurosteroid, vision",d:"10-50 mg/day (start low)",f:"Mother of all steroid hormones"},
+{n:"Calcium-D-Glucarate",c:"Hormonal Support",u:"Estrogen/toxin detox via glucuronidation, liver phase II",d:"200-500 mg/day",f:"Inhibits beta-glucuronidase"},
+{n:"Myo-Inositol",c:"Hormonal Support",u:"PCOS, insulin sensitizer, anxiety, ovarian function, OCD, bipolar",d:"2-4 g/day; anxiety: 12-18 g/day",f:"40:1 ratio with D-chiro-inositol"},
+{n:"D-Chiro-Inositol (DCI)",c:"Hormonal Support",u:"PCOS insulin signaling, paired with myo-inositol",d:"50-100 mg/day",f:"40:1 myo:DCI ratio optimal"},
+{n:"DIM (Diindolylmethane)",c:"Hormonal Support",u:"Estrogen metabolism, 2-OH:16-OH ratio, hormone detox",d:"100-200 mg/day",f:"From cruciferous vegetables"},
+{n:"Indole-3-Carbinol (I3C)",c:"Hormonal Support",u:"Estrogen metabolism, DIM precursor, hormone balance",d:"200-400 mg/day",f:"Converts to DIM + other metabolites"},
+{n:"Vitex / Chasteberry",c:"Hormonal Support",u:"PMS, menstrual regulation, prolactin modulation, luteal phase",d:"20-40 mg/day",f:"Dopaminergic; slow onset (2-3 cycles)"},
+{n:"Maca (Gelatinized)",c:"Hormonal Support",u:"Libido, hormone balance (without changing hormone levels), energy",d:"1,500-3,000 mg/day",f:"Adapts hormone receptor sensitivity"},
+{n:"Tongkat Ali (Hormonal Use)",c:"Hormonal Support",u:"Free testosterone optimization, SHBG reduction, cortisol",d:"200-400 mg/day",f:"LJ100 standardized"},
+{n:"Boron (Hormonal Use)",c:"Hormonal Support",u:"Free testosterone, estrogen metabolism, SHBG reduction",d:"6-12 mg/day",f:"Raises free T within 1 week"},
+{n:"Zinc (Hormonal Use)",c:"Hormonal Support",u:"Aromatase inhibition, testosterone synthesis, fertility",d:"30-50 mg/day (with copper)",f:"Foundational T-support mineral"},
+{n:"Stinging Nettle Root (SHBG)",c:"Hormonal Support",u:"SHBG binding, free testosterone increase",d:"300-600 mg/day root extract",f:"Root specifically for SHBG"},
+{n:"Chrysin",c:"Hormonal Support",u:"Aromatase inhibitor (in vitro), estrogen modulation",d:"500-3,000 mg/day",f:"Poor bioavailability; debated efficacy"},
+{n:"Progesterone Cream (OTC)",c:"Hormonal Support",u:"Low progesterone, luteal phase support, perimenopause, sleep",d:"20-40 mg/day topical",f:"OTC in US; bioidentical"},
+{n:"Divanil (3,4-Divanillyltetrahydrofuran)",c:"Hormonal Support",u:"SHBG binding, free testosterone optimization",d:"Per label in T-support formulas",f:"Nettle lignan isolate"},
+{n:"Pine Pollen (Tincture)",c:"Hormonal Support",u:"Phyto-androgens (DHEA, androsterone, testosterone analogs)",d:"1-3 mL tincture/day",f:"Alcohol extract for hormonal compounds"},
+{n:"Nattokinase",c:"Cardiovascular",u:"Fibrinolytic enzyme, blood clot prevention, circulation, plaque",d:"2,000-4,000 FU/day (100-200 mg)",f:"NSK-SD brand; empty stomach"},
+{n:"Serrapeptase (Serratiopeptidase)",c:"Cardiovascular",u:"Anti-inflammatory enzyme, plaque, sinus, pain, edema",d:"60,000-120,000 SPU/day",f:"Empty stomach; enteric-coated"},
+{n:"Lumbrokinase",c:"Cardiovascular",u:"Fibrinolytic (stronger than nattokinase), hypercoagulation, biofilm",d:"20-40 mg/day",f:"Earthworm-derived; Boluoke brand"},
+{n:"Bergamot Extract",c:"Cardiovascular",u:"Cholesterol (LDL/HDL ratio), metabolic syndrome, statin alternative",d:"500-1,000 mg/day",f:"Bergamonte brand; Italian citrus"},
+{n:"Red Yeast Rice",c:"Cardiovascular",u:"Natural lovastatin (monacolin K), cholesterol reduction",d:"1,200-2,400 mg/day",f:"Standardize to monacolin K; check CoQ10"},
+{n:"Plant Sterols / Stanols",c:"Cardiovascular",u:"LDL cholesterol reduction, blocks dietary cholesterol absorption",d:"2-3 g/day with meals",f:"FDA health claim for heart"},
+{n:"Beet Root (Nitrate)",c:"Cardiovascular",u:"Nitric oxide, blood pressure, exercise endurance, circulation",d:"500-1,000 mg extract or 6-12 g powder/day",f:"Dietary nitrate > NO; 2-3 hr window"},
+{n:"D-Ribose",c:"Cardiovascular",u:"Heart energy (CHF), fibromyalgia, exercise recovery, ATP synthesis",d:"5-15 g/day divided",f:"Pentose sugar for cardiac ATP"},
+{n:"Hawthorn Berry",c:"Cardiovascular",u:"Heart health, blood pressure, CHF support, antioxidant",d:"160-900 mg/day standardized",f:"WS 1442 extract most studied"},
+{n:"Garlic (Aged/Kyolic)",c:"Cardiovascular",u:"Blood pressure, cholesterol, immune, endothelial function",d:"600-1,200 mg/day",f:"SAC (S-allylcysteine) active"},
+{n:"Omega-3 (Cardiovascular Dose)",c:"Cardiovascular",u:"Triglyceride reduction, anti-arrhythmic, blood pressure",d:"2-4 g EPA+DHA/day",f:"Rx dose: 4g/day (Vascepa/Lovaza)"},
+{n:"Niacin (Cholesterol Dose)",c:"Cardiovascular",u:"HDL increase, LDL decrease, Lp(a) reduction",d:"1,500-2,000 mg/day extended-release",f:"Only supplement shown to lower Lp(a)"},
+{n:"Coenzyme Q10 (Cardiac)",c:"Cardiovascular",u:"Heart failure, statin myopathy, blood pressure, mitochondrial",d:"200-600 mg/day (CHF doses)",f:"Q-SYMBIO trial: 300 mg/day"},
+{n:"Magnesium (Cardiac)",c:"Cardiovascular",u:"Arrhythmia, blood pressure, vascular tone",d:"300-600 mg elemental/day",f:"Taurate or glycinate preferred for heart"},
+{n:"Potassium (Blood Pressure)",c:"Cardiovascular",u:"Blood pressure, DASH diet mineral, sodium balance",d:"Diet target: 3,400-4,700 mg/day",f:"OTC limited to 99 mg/dose"},
+{n:"Taurine (Cardiovascular)",c:"Cardiovascular",u:"Blood pressure, CHF, arrhythmia, endothelial, cholesterol",d:"1-6 g/day",f:"3g/day in heart failure studies"},
+{n:"L-Arginine (Cardiovascular)",c:"Cardiovascular",u:"NO production, blood pressure, angina, endothelial",d:"3-6 g/day",f:"Less effective than citrulline for sustained NO"},
+{n:"Vitamin K2 (Vascular)",c:"Cardiovascular",u:"Arterial calcium removal, vascular calcification prevention",d:"100-200 mcg MK-7/day",f:"Matrix GLA protein activation"},
+{n:"Beta-Glucans (1,3/1,6-D)",c:"Immune",u:"Innate immune activation, macrophage/NK cell stimulation",d:"250-500 mg/day",f:"Wellmune / Glucan 300 brands"},
+{n:"Lactoferrin",c:"Immune",u:"Iron-binding antimicrobial, gut immunity, anti-inflammatory",d:"100-300 mg/day",f:"Bovine-derived; iron-free preferred"},
+{n:"Propolis",c:"Immune",u:"Bee product, antimicrobial, immune, throat/oral health, wound",d:"300-500 mg/day",f:"CAPE compound; flavonoid-rich"},
+{n:"Colostrum (Bovine)",c:"Immune",u:"IgG antibodies, gut immunity, pathogen defense, leaky gut, athletic",d:"1-5 g/day",f:"6-hour first-milking; IgG standardized"},
+{n:"Thymus Glandular",c:"Immune",u:"Thymic immune support, T-cell maturation, immune aging",d:"250-500 mg/day",f:"Glandular supplement; tissue extract"},
+{n:"Spleen Glandular",c:"Immune",u:"Immune cell support, blood health, spleen extract",d:"250-500 mg/day",f:"Grass-fed organ extract"},
+{n:"Transfer Factor",c:"Immune",u:"Immune intelligence, pathogen recognition education",d:"1-3 caps/day per product",f:"Colostrum-derived immune molecules"},
+{n:"Vitamin C (Immune Dose)",c:"Immune",u:"Immune cell function, phagocyte activity, antioxidant",d:"1,000-3,000 mg/day during illness",f:"Higher doses during acute infection"},
+{n:"Zinc (Immune Dose)",c:"Immune",u:"T-cell function, thymus, viral replication inhibition",d:"30-50 mg/day short-term during illness",f:"Lozenges for upper respiratory"},
+{n:"Vitamin D3 (Immune Dose)",c:"Immune",u:"Immune modulation, cathelicidin, T-reg cells, autoimmune",d:"2,000-10,000 IU/day",f:"Critical immune vitamin; test levels"},
+{n:"Elderberry (Immune)",c:"Immune",u:"Viral immune response, flu duration reduction",d:"500-1,000 mg/day during illness",f:"Avoid in cytokine storm theory (debated)"},
+{n:"Andrographis (Immune)",c:"Immune",u:"Cold/flu treatment, anti-inflammatory, liver, immune activation",d:"200-400 mg/day at onset",f:"KalmCold for acute URI"},
+{n:"Olive Leaf (Immune)",c:"Immune",u:"Antiviral, antimicrobial, immune stimulation",d:"500-1,000 mg/day",f:"Oleuropein broad-spectrum antimicrobial"},
+{n:"Monolaurin (Immune)",c:"Immune",u:"Antiviral/antibacterial/antifungal envelope disruptor",d:"600-3,000 mg/day",f:"Dissolves lipid-coated pathogen membranes"},
+{n:"Quercetin (Immune)",c:"Immune",u:"Zinc ionophore, antiviral, mast cell stabilizer, anti-inflammatory",d:"500-1,000 mg/day",f:"Pairs with zinc + vitamin C"},
+{n:"Pelargonium sidoides",c:"Immune",u:"Upper respiratory infections, bronchitis, sore throat",d:"EPs 7630: per label",f:"Umcka brand most common"},
+{n:"Multi-strain Probiotic (Lactobacillus/Bifido)",c:"Probiotics & Gut",u:"General gut health, immune, microbiome diversity",d:"25-100 billion CFU/day",f:"Refrigerated or shelf-stable; strain-specific"},
+{n:"Saccharomyces boulardii",c:"Probiotics & Gut",u:"Antibiotic diarrhea, C. diff, traveler\'s diarrhea, anti-pathogenic",d:"250-500 mg 1-2x/day",f:"Beneficial yeast; survives antibiotics"},
+{n:"Lactobacillus rhamnosus GG (LGG)",c:"Probiotics & Gut",u:"Most studied probiotic strain, diarrhea, immune, atopic disease",d:"10-20 billion CFU/day",f:"Culturelle brand"},
+{n:"Lactobacillus reuteri DSM 17938",c:"Probiotics & Gut",u:"Colic, reflux, H. pylori, bone density, testosterone (mice)",d:"100M-10B CFU/day",f:"BioGaia brand; gut-brain"},
+{n:"Bacillus coagulans",c:"Probiotics & Gut",u:"IBS, antibiotic recovery, spore-forming, shelf-stable",d:"1-2 billion CFU/day",f:"LactoSpore / GanedenBC30"},
+{n:"Bacillus subtilis",c:"Probiotics & Gut",u:"Immune, pathogen inhibition, spore-former, biofilm disruption",d:"1-5 billion CFU/day",f:"HU58 / DE111 strains"},
+{n:"Bifidobacterium longum",c:"Probiotics & Gut",u:"Anxiety, IBS, immune, infant colonizer, pathogen inhibition",d:"1-10 billion CFU/day",f:"Bifido infantis subtype for IBS"},
+{n:"Lactobacillus plantarum",c:"Probiotics & Gut",u:"IBS, gut barrier, immune, cholesterol",d:"1-10 billion CFU/day",f:"LP 299v most studied"},
+{n:"Akkermansia muciniphila",c:"Probiotics & Gut",u:"Gut lining, metabolic health, weight, insulin sensitivity",d:"100 mg/day pasteurized",f:"Pendulum brand; postbiotic mechanism"},
+{n:"Soil-Based Organisms (SBO)",c:"Probiotics & Gut",u:"Immune, gut diversity, spore-forming resilient strains",d:"1-5 billion CFU/day",f:"Just Thrive / MegaSporeBiotic"},
+{n:"Prebiotic (FOS / Inulin)",c:"Probiotics & Gut",u:"Feed bifidobacteria, regularity, mineral absorption",d:"3-10 g/day",f:"Chicory root source; may cause gas"},
+{n:"Prebiotic (GOS / Galactooligosaccharides)",c:"Probiotics & Gut",u:"Bifidobacteria support, IBS, infant-like microbiome",d:"2.5-5 g/day",f:"Bimuno brand"},
+{n:"Prebiotic (PHGG / Sunfiber)",c:"Probiotics & Gut",u:"IBS, SIBO-safe, regularity, well-tolerated, low gas",d:"5-7 g/day",f:"Partially hydrolyzed guar gum"},
+{n:"Prebiotic (HMO / Human Milk Oligosaccharides)",c:"Probiotics & Gut",u:"Gut barrier, immune, pathogen decoy, infant-like benefits",d:"2-5 g/day",f:"2\'-FL HMO; Layer Origin brand"},
+{n:"Prebiotic (XOS / Xylooligosaccharides)",c:"Probiotics & Gut",u:"Bifidobacteria support, low dose effective, minimal gas",d:"1-4 g/day",f:"Low-dose prebiotic; gentle"},
+{n:"Postbiotic (Butyrate)",c:"Probiotics & Gut",u:"Gut lining fuel, anti-inflammatory, SCFA replacement",d:"300-600 mg/day",f:"Tributyrin form preferred"},
+{n:"Postbiotic (EpiCor)",c:"Probiotics & Gut",u:"Dried yeast fermentate, immune, gut barrier, IgA",d:"500 mg/day",f:"EpiCor brand; sIgA booster"},
+{n:"Digestive Enzymes (Broad-Spectrum)",c:"Probiotics & Gut",u:"Protein/fat/carb digestion, bloating, nutrient absorption",d:"1-2 caps with meals",f:"Protease, lipase, amylase, etc."},
+{n:"Betaine HCl (Digestive)",c:"Probiotics & Gut",u:"Low stomach acid support, protein digestion, GERD/SIBO",d:"325-650 mg with protein meals",f:"Challenge test for dose finding"},
+{n:"Ox Bile (Bile Salts)",c:"Probiotics & Gut",u:"Fat digestion (post-gallbladder), bile insufficiency, fat-soluble vitamins",d:"125-500 mg with fatty meals",f:"Gallbladder removal support"},
+{n:"Pancreatin / Pancrelipase",c:"Probiotics & Gut",u:"Pancreatic enzyme replacement, fat/protein digestion",d:"1-3 caps with meals",f:"For pancreatic insufficiency"},
+{n:"Bromelain",c:"Probiotics & Gut",u:"Protein digestion, anti-inflammatory, sinusitis, edema",d:"200-800 mg/day",f:"Pineapple-derived; between meals for inflammation"},
+{n:"Papain",c:"Probiotics & Gut",u:"Protein digestion, anti-inflammatory, wound healing",d:"200-500 mg with meals",f:"Papaya-derived enzyme"},
+{n:"DPP-IV Enzyme",c:"Probiotics & Gut",u:"Gluten/casein digestion support for accidental exposure",d:"1 cap with meals",f:"Not a replacement for avoidance"},
+{n:"Lactase",c:"Probiotics & Gut",u:"Lactose digestion, dairy tolerance",d:"3,000-9,000 FCC units per dairy serving",f:"Take immediately before dairy"},
+{n:"Colostrum (Gut Use)",c:"Probiotics & Gut",u:"Leaky gut repair, IgA, growth factors, gut barrier",d:"2-5 g/day on empty stomach",f:"Gut-focused dosing protocol"},
+{n:"L-Glutamine (Gut Use)",c:"Probiotics & Gut",u:"Gut lining repair, intestinal permeability, IBS",d:"5-20 g/day",f:"Enterocyte fuel; leaky gut protocol"},
+{n:"Zinc Carnosine (Gut Use)",c:"Probiotics & Gut",u:"Stomach lining repair, H. pylori, gastritis, ulcers",d:"75-150 mg/day",f:"PepZin GI; gut-wall specific"},
+{n:"Deglycyrrhizinated Licorice (DGL) (Gut Use)",c:"Probiotics & Gut",u:"Stomach/intestinal lining, ulcer, reflux, mucosal coating",d:"380-760 mg before meals",f:"Chewable preferred; coat mucosa"},
+{n:"Mastic Gum",c:"Probiotics & Gut",u:"H. pylori, stomach ulcers, GERD, SIBO, gut antimicrobial",d:"500-1,000 mg 2x/day",f:"Pistacia lentiscus resin"},
+{n:"Immunoglobulins (SBI / Mega IgG2000)",c:"Probiotics & Gut",u:"Gut immune support, pathogen binding, leaky gut, IBS",d:"2.5-5 g/day",f:"Serum-derived bovine immunoglobulins"},
+{n:"Capsaicin / Cayenne",c:"Weight Management",u:"Thermogenesis, appetite reduction, fat oxidation, pain",d:"2-6 mg capsaicin/day",f:"Capsimax beadlet for GI tolerance"},
+{n:"Glucomannan (Konjac Root)",c:"Weight Management",u:"Appetite suppression, fiber, cholesterol, blood sugar",d:"1-3 g before meals with lots of water",f:"Swells 50x; take with full glass water"},
+{n:"White Kidney Bean Extract",c:"Weight Management",u:"Carb/starch blocker (alpha-amylase inhibitor)",d:"500-1,000 mg before carb-heavy meals",f:"Phase 2 brand"},
+{n:"Grains of Paradise (Aframomum melegueta)",c:"Weight Management",u:"Brown adipose tissue activation, thermogenesis, fat oxidation",d:"40 mg/day",f:"CaloriBurn GP brand"},
+{n:"Synephrine (Bitter Orange / p-Synephrine)",c:"Weight Management",u:"Beta-3 agonist, metabolic rate, fat burning, mild stimulant",d:"10-20 mg 2-3x/day",f:"Not same as banned ephedrine"},
+{n:"Green Coffee Bean Extract",c:"Weight Management",u:"Chlorogenic acid, glucose metabolism, mild fat loss",d:"400-800 mg/day",f:"Chlorogenic acid active; not caffeine"},
+{n:"Garcinia Cambogia (HCA)",c:"Weight Management",u:"Appetite suppression, fat synthesis inhibition (debated)",d:"500-1,000 mg HCA before meals",f:"Mixed evidence; liver concern reports"},
+{n:"Berberine (Metabolic)",c:"Weight Management",u:"AMPK activation, blood sugar, fat metabolism, GLP-1 stimulation",d:"500 mg 2-3x/day",f:"Nature\'s metformin; weight management tool"},
+{n:"CLA (Body Composition)",c:"Weight Management",u:"Lean mass preservation, fat reduction, insulin sensitivity",d:"3-6 g/day",f:"Body recomposition; modest effect"},
+{n:"L-Carnitine (Fat Metabolism)",c:"Weight Management",u:"Fatty acid transport to mitochondria, fat oxidation",d:"1-3 g/day before exercise",f:"More effective when depleted"},
+{n:"Chromium (Appetite/Cravings)",c:"Weight Management",u:"Carb craving reduction, insulin sensitivity, appetite regulation",d:"200-1,000 mcg/day",f:"Picolinate form for cravings"},
+{n:"5-HTP (Appetite)",c:"Weight Management",u:"Serotonin-mediated appetite suppression, carb craving reduction",d:"100-300 mg/day",f:"Take before carb-heavy meals"},
+{n:"Inulin/FOS (Satiety)",c:"Weight Management",u:"Prebiotic fiber, GLP-1 stimulation, satiety signaling",d:"5-10 g/day",f:"Microbiome-mediated appetite effects"},
+{n:"Conjugated Linoleic Acid (Tonalin)",c:"Weight Management",u:"Body fat reduction, lean mass, insulin sensitivity",d:"3.4-6.8 g/day",f:"80% CLA isomer standardization"},
+{n:"Forskolin (Fat Loss)",c:"Weight Management",u:"cAMP activation, lipolysis, lean mass preservation",d:"250 mg 2x/day (10% forskolin)",f:"Some thyroid stimulation"},
+{n:"Creatine Monohydrate (Sports)",c:"Sports Performance",u:"Strength, power, sprint, lean mass, brain energy, recovery",d:"3-5 g/day; loading: 20g/day x 5 days",f:"Most evidence-based sports supplement"},
+{n:"Beta-Alanine (Sports)",c:"Sports Performance",u:"Carnosine buffer, muscular endurance, 60-240 second efforts",d:"3.2-6.4 g/day",f:"CarnoSyn brand; sustained release"},
+{n:"Citrulline Malate (Sports)",c:"Sports Performance",u:"NO, pump, endurance, fatigue reduction, rep volume",d:"6-8 g 30-60 min pre-workout",f:"2:1 citrulline:malate ratio"},
+{n:"Caffeine (Sports)",c:"Sports Performance",u:"Power, endurance, focus, pain threshold, RPE reduction",d:"3-6 mg/kg 30-60 min pre-exercise",f:"Most potent legal ergogenic"},
+{n:"Peak ATP (Adenosine 5\'-Triphosphate)",c:"Sports Performance",u:"Muscular power, blood flow, recovery, strength",d:"400 mg 30 min pre-workout",f:"Oral ATP; PEAK ATP brand"},
+{n:"Phosphatidic Acid (PA)",c:"Sports Performance",u:"mTOR signaling, muscle protein synthesis, lean mass",d:"750 mg/day",f:"Mediator brand"},
+{n:"Epicatechin",c:"Sports Performance",u:"Myostatin inhibition, follistatin increase, NO, muscle growth",d:"100-200 mg/day",f:"Dark chocolate flavanol"},
+{n:"Turkesterone",c:"Sports Performance",u:"Ecdysteroid, muscle growth, recovery, protein synthesis (debated)",d:"500-1,000 mg/day",f:"Ajuga turkestanica; purity concerns"},
+{n:"Ecdysterone (20-Hydroxyecdysone)",c:"Sports Performance",u:"Muscle protein synthesis, anabolic, non-hormonal (debated)",d:"100-500 mg/day",f:"Insect molting hormone; Freie Universitat study"},
+{n:"Sodium Bicarbonate (Sports)",c:"Sports Performance",u:"Lactic acid buffering, high-intensity endurance, sprint",d:"200-300 mg/kg 60-90 min pre-exercise",f:"GI distress common; titrate dose"},
+{n:"Sodium Phosphate (Loading)",c:"Sports Performance",u:"Aerobic capacity, VO2max, endurance, 2,3-DPG increase",d:"1 g 4x/day for 3-6 days",f:"Phosphate loading protocol"},
+{n:"Betaine Anhydrous (Sports)",c:"Sports Performance",u:"Power, force production, lean mass, homocysteine reduction",d:"2.5 g/day",f:"TMG for strength performance"},
+{n:"Tart Cherry (Recovery)",c:"Sports Performance",u:"DOMS reduction, inflammation, muscle recovery, sleep",d:"480-1,000 mg/day or 8-12 oz juice 2x/day",f:"Marathon/endurance recovery"},
+{n:"HMB (Sports)",c:"Sports Performance",u:"Anti-catabolic, lean mass, recovery, calorie deficit training",d:"3 g/day in divided doses",f:"Free acid form faster absorption"},
+{n:"Nitrate (Beet/Leafy Green)",c:"Sports Performance",u:"Endurance, efficiency, blood flow, oxygen cost reduction",d:"6-12 mmol nitrate 2-3 hrs pre-exercise",f:"Beet juice / concentrated shots"},
+{n:"EAAs / BCAAs (Intra-Workout)",c:"Sports Performance",u:"Muscle protein synthesis during training, anti-catabolic",d:"5-15 g during training",f:"EAAs superior to BCAAs"},
+{n:"Electrolyte Complex (Sports)",c:"Sports Performance",u:"Hydration, cramping prevention, sweat replacement",d:"Per label; individualize to sweat rate",f:"Na/K/Mg/Ca in exercise ratios"},
+{n:"Glycerol (HyperHydration)",c:"Sports Performance",u:"Hyperhydration, heat tolerance, endurance",d:"1-1.5 g/kg in fluid 60-120 min pre-exercise",f:"Water retention for heat events"},
+{n:"Rhodiola (Sports)",c:"Sports Performance",u:"Fatigue resistance, VO2max, RPE reduction, endurance",d:"200-600 mg 30-60 min pre-exercise",f:"Adaptogen for training stress"},
+{n:"Palmitoylethanolamide (PEA)",c:"Pain & Inflammation",u:"Endocannabinoid system, chronic pain, nerve pain, inflammation",d:"300-1,200 mg/day",f:"Micronized/ultra-micronized forms preferred"},
+{n:"SPMs (Pro-Resolving Mediators)",c:"Pain & Inflammation",u:"Active inflammation resolution, omega-3 metabolites, chronic inflammation",d:"1-2 softgels/day per product",f:"Metagenics SPM Active brand"},
+{n:"Curcumin (Pain/Inflammation)",c:"Pain & Inflammation",u:"NF-kB inhibition, COX-2, joint pain, systemic inflammation",d:"500-1,000 mg bioavailable form/day",f:"Meriva/Longvida/Theracurmin"},
+{n:"Boswellia (Pain)",c:"Pain & Inflammation",u:"5-LOX inhibition, joint, back pain, IBD, OA",d:"300-500 mg/day standardized",f:"ApresFlex for rapid onset"},
+{n:"Devil\'s Claw",c:"Pain & Inflammation",u:"OA, back pain, anti-inflammatory, comparable to mild NSAIDs",d:"600-2,400 mg/day",f:"Harpagoside active compound"},
+{n:"White Willow Bark",c:"Pain & Inflammation",u:"Natural salicylate, pain, inflammation, fever, headache",d:"240 mg salicin/day",f:"Aspirin predecessor; slower onset, fewer GI effects"},
+{n:"Bromelain (Anti-Inflammatory)",c:"Pain & Inflammation",u:"Post-surgical swelling, sinusitis, joint inflammation",d:"500-2,000 GDU/day between meals",f:"Take away from food for systemic effect"},
+{n:"Serrapeptase (Pain)",c:"Pain & Inflammation",u:"Edema reduction, pain, inflammation, scar tissue",d:"60,000-120,000 SPU/day",f:"Enteric-coated; empty stomach"},
+{n:"CBD (Pain)",c:"Pain & Inflammation",u:"Neuropathic pain, inflammation, muscle tension, arthritis",d:"25-100+ mg/day",f:"Full-spectrum preferred for entourage effect"},
+{n:"Arnica (Topical)",c:"Pain & Inflammation",u:"Bruising, muscle soreness, post-surgical swelling",d:"Topical gel/cream as needed",f:"External use only in herb form"},
+{n:"Capsaicin (Topical)",c:"Pain & Inflammation",u:"Neuropathic pain, arthritis, post-herpetic neuralgia, cluster headache",d:"0.025-0.075% cream 3-4x/day",f:"Substance P depletion mechanism"},
+{n:"Omega-3 (Anti-Inflammatory)",c:"Pain & Inflammation",u:"Systemic inflammation reduction, pain modulation, resolution",d:"2-4 g EPA+DHA/day",f:"Higher EPA ratio for inflammation"},
+{n:"Ginger (Anti-Inflammatory)",c:"Pain & Inflammation",u:"OA pain, muscle soreness, DOMS, menstrual pain",d:"500-1,000 mg/day",f:"Comparable to ibuprofen in some trials"},
+{n:"MSM (Pain/Inflammation)",c:"Pain & Inflammation",u:"OA, joint pain, sulfur donation, exercise recovery",d:"1-3 g/day",f:"OptiMSM; synergistic with glucosamine"},
+{n:"SAMe (Pain)",c:"Pain & Inflammation",u:"OA, fibromyalgia, joint pain, anti-inflammatory, comparable to NSAIDs",d:"600-1,200 mg/day",f:"Slow onset; 2-4 weeks"},
+{n:"DL-Phenylalanine (Pain)",c:"Pain & Inflammation",u:"Chronic pain, endorphin preservation, enkephalinase inhibition",d:"500-1,500 mg/day",f:"D-form blocks pain signal degradation"},
+{n:"Milk Thistle / Silymarin",c:"Detox & Liver",u:"Liver protection, NAFLD, detox, hangover, hepatitis",d:"200-400 mg silymarin/day",f:"Phytosome form best absorbed"},
+{n:"NAC (Liver)",c:"Detox & Liver",u:"Glutathione replenishment, acetaminophen protection, NAFLD",d:"600-1,800 mg/day",f:"Hospital antidote for Tylenol OD"},
+{n:"TUDCA (Liver)",c:"Detox & Liver",u:"Bile flow, cholestasis, liver protection, steroid cycle support",d:"250-1,000 mg/day",f:"Tauroursodeoxycholic acid"},
+{n:"Sulforaphane",c:"Detox & Liver",u:"Nrf2 activation, phase II detox enzymes, liver, cancer prevention",d:"10-50 mg/day",f:"Broccoli seed/sprout extract"},
+{n:"Calcium-D-Glucarate (Detox)",c:"Detox & Liver",u:"Glucuronidation support, estrogen/toxin clearance",d:"200-500 mg/day",f:"Phase II liver detox support"},
+{n:"Glutathione (Liver)",c:"Detox & Liver",u:"Master antioxidant, phase II conjugation, detox, immune",d:"250-500 mg liposomal/day",f:"Direct glutathione supplementation"},
+{n:"Alpha-Lipoic Acid (Liver)",c:"Detox & Liver",u:"Liver antioxidant, NAFLD, heavy metal chelation assist",d:"300-600 mg/day",f:"Regenerates vitamins C and E"},
+{n:"Artichoke Extract",c:"Detox & Liver",u:"Bile flow, liver, cholesterol, digestion, NAFLD",d:"600-1,200 mg/day",f:"Cynarin + chlorogenic acid"},
+{n:"Dandelion Root",c:"Detox & Liver",u:"Bile flow, mild diuretic, liver tonic, digestion",d:"500-1,500 mg/day",f:"Traditional liver herb"},
+{n:"Burdock Root",c:"Detox & Liver",u:"Blood cleanser, liver, skin, prebiotic (inulin source)",d:"500-1,000 mg/day",f:"Traditional alterative herb"},
+{n:"Schisandra (Liver)",c:"Detox & Liver",u:"Phase I + II liver detox, adaptogen, liver protection",d:"500-1,000 mg/day",f:"Increases liver detox enzymes"},
+{n:"Chlorella (Detox)",c:"Detox & Liver",u:"Heavy metal binding, mycotoxin binding, chlorophyll detox",d:"5-10 g/day",f:"Broken cell wall for binding"},
+{n:"Modified Citrus Pectin (Detox)",c:"Detox & Liver",u:"Heavy metal chelation, lead/mercury/arsenic binding",d:"5-15 g/day",f:"PectaSol-C brand"},
+{n:"Zeolite (Detox)",c:"Detox & Liver",u:"Toxin/heavy metal binder, gut decontamination",d:"1-3 g/day",f:"Clinoptilolite; micronized"},
+{n:"Activated Charcoal (Detox)",c:"Detox & Liver",u:"Acute toxin binding, mold exposure, food poisoning, gas",d:"500-1,000 mg as needed",f:"2 hrs away from all other supplements"},
+{n:"Bentonite Clay (Detox)",c:"Detox & Liver",u:"Mycotoxin/mold binder, gut detox, heavy metals",d:"1-2 tsp/day in water",f:"Calcium bentonite food grade"},
+{n:"Cholestyramine (OTC Binder Alternative)",c:"Detox & Liver",u:"Bile acid sequestrant, mold illness, cholesterol",d:"Rx; alternatives: charcoal/clay/MCP",f:"Prescription; listed for completeness"},
+{n:"Liposomal Glutathione (Detox)",c:"Detox & Liver",u:"Direct GSH delivery, detox support, oxidative stress",d:"250-500 mg/day",f:"Best oral glutathione form for detox"},
+{n:"Lutein",c:"Eye Health",u:"Macular degeneration prevention, blue light filter, visual acuity",d:"10-20 mg/day",f:"FloraGLO brand; AREDS2 study"},
+{n:"Zeaxanthin",c:"Eye Health",u:"Macular health, UV/blue light protection, central retina",d:"2-4 mg/day",f:"Often paired with lutein at 5:1 ratio"},
+{n:"Meso-Zeaxanthin",c:"Eye Health",u:"Central macula pigment, AMD prevention, visual processing",d:"10 mg/day",f:"Not widely in diet; supplement-specific"},
+{n:"Bilberry Extract (Vaccinium myrtillus)",c:"Eye Health",u:"Night vision, retinal blood flow, macular support, diabetic retinopathy",d:"160-480 mg/day (25% anthocyanins)",f:"WWII pilot night vision legend"},
+{n:"Astaxanthin (Eye)",c:"Eye Health",u:"Eye fatigue, accommodation, retinal protection, anti-inflammatory",d:"4-12 mg/day",f:"Crosses blood-retinal barrier"},
+{n:"Omega-3 DHA (Eye)",c:"Eye Health",u:"Retinal structure, dry eye, macular health",d:"500-1,000 mg DHA/day",f:"Retina is 60% DHA"},
+{n:"Saffron (Eye)",c:"Eye Health",u:"AMD progression, visual acuity, retinal function",d:"20-30 mg/day",f:"Crocin + crocetin; clinical evidence"},
+{n:"Vitamin A (Eye)",c:"Eye Health",u:"Night vision, corneal health, dry eye, retinal function",d:"700-900 mcg RAE/day",f:"Retinol essential for rhodopsin"},
+{n:"Zinc (Eye)",c:"Eye Health",u:"AMD, retinal metabolism, AREDS2 component",d:"25-80 mg/day (with copper)",f:"AREDS2: 25 mg Zn as oxide"},
+{n:"Ginkgo Biloba (Eye)",c:"Eye Health",u:"Glaucoma, retinal blood flow, optic nerve protection",d:"120-240 mg/day",f:"Neuroprotective for glaucoma"},
+{n:"Pycnogenol (Eye)",c:"Eye Health",u:"Diabetic retinopathy, retinal edema, microcirculation",d:"50-150 mg/day",f:"Retinal capillary strengthening"},
+{n:"Eyebright (Euphrasia officinalis)",c:"Eye Health",u:"Traditional eye wash, eye inflammation, conjunctivitis",d:"200-400 mg/day or topical wash",f:"Limited modern evidence; traditional use"},
+{n:"Ceramides (Phytoceramides)",c:"Skin & Hair",u:"Skin barrier repair, hydration, anti-aging, eczema, dryness",d:"350 mg/day",f:"Sweet potato or wheat-derived"},
+{n:"Keratin (Cynatine HNS)",c:"Skin & Hair",u:"Hair/nail structural protein, strength, growth",d:"500 mg/day",f:"Solubilized keratin; bioavailable"},
+{n:"Polypodium Leucotomos (Fernblock)",c:"Skin & Hair",u:"Internal sun protection, photoaging, UV defense, melasma",d:"240-480 mg/day before sun exposure",f:"Fernblock brand; oral sunscreen adjunct"},
+{n:"Biotin (Hair/Skin/Nails)",c:"Skin & Hair",u:"Keratin infrastructure, hair growth, nail strength, skin health",d:"2,500-10,000 mcg/day",f:"Interferes with lab tests; notify doctor"},
+{n:"Collagen (Skin)",c:"Skin & Hair",u:"Skin elasticity, hydration, wrinkle reduction, cellulite",d:"5-15 g/day hydrolyzed",f:"Verisol peptides for skin"},
+{n:"Hyaluronic Acid (Skin)",c:"Skin & Hair",u:"Skin hydration, plumping, anti-aging, moisture retention",d:"100-200 mg/day oral",f:"Low MW for absorption; oral effective"},
+{n:"Vitamin C (Skin)",c:"Skin & Hair",u:"Collagen synthesis, photoprotection, brightening, antioxidant",d:"500-1,000 mg/day oral",f:"Topical + oral synergy"},
+{n:"Vitamin E (Skin)",c:"Skin & Hair",u:"Photoprotection, scar healing, antioxidant, moisturizing",d:"200-400 IU/day",f:"Topical and oral; synergy with C"},
+{n:"Astaxanthin (Skin)",c:"Skin & Hair",u:"UV protection, elasticity, wrinkles, age spots, moisture",d:"4-12 mg/day",f:"Carotenoid sunscreen from within"},
+{n:"GLA (Skin/Eczema)",c:"Skin & Hair",u:"Eczema, skin barrier, moisture, hormonal acne",d:"240-480 mg GLA/day",f:"EPO or borage oil source"},
+{n:"MSM (Hair/Skin/Nails)",c:"Skin & Hair",u:"Sulfur for keratin, collagen, elastin production",d:"1-3 g/day",f:"Sulfur building block for beauty"},
+{n:"Silica (Hair/Skin/Nails)",c:"Skin & Hair",u:"Structural support, collagen crosslinking, hair thickness",d:"5-10 mg OSA/day or 500 mg horsetail",f:"BioSil / Living Silica brands"},
+{n:"Zinc (Skin/Acne)",c:"Skin & Hair",u:"Acne reduction, wound healing, sebum regulation",d:"30-50 mg/day",f:"Picolinate or gluconate for acne"},
+{n:"Niacinamide (Skin)",c:"Skin & Hair",u:"Sebum control, pore reduction, anti-aging, barrier repair",d:"Oral: 500 mg/day; Topical: 2-5%",f:"Oral and topical; non-flushing"},
+{n:"Saw Palmetto (Hair Loss)",c:"Skin & Hair",u:"DHT reduction, androgenic alopecia, hair thinning",d:"320 mg/day",f:"Oral 5-alpha reductase inhibitor"},
+{n:"Pumpkin Seed Oil (Hair)",c:"Skin & Hair",u:"DHT modulation, hair growth, androgenic alopecia support",d:"400-1,000 mg/day",f:"Mild 5-alpha reductase inhibitor"},
+{n:"Spermidine (Hair)",c:"Skin & Hair",u:"Hair follicle stem cell, growth phase extension, autophagy",d:"1-6 mg/day",f:"Hair growth cycle regulation"},
+{n:"Iron (Hair Loss)",c:"Skin & Hair",u:"Hair loss from deficiency, ferritin optimization",d:"Ferritin target: 40-80 ng/mL",f:"Test ferritin before supplementing"},
+{n:"Vitamin D (Hair)",c:"Skin & Hair",u:"Hair follicle cycling, alopecia areata, growth phase",d:"2,000-5,000 IU/day",f:"Deficiency linked to hair loss"},
+{n:"Omega-3 (Hair/Skin)",c:"Skin & Hair",u:"Scalp health, hair density, skin moisture, anti-inflammatory",d:"1-2 g EPA+DHA/day",f:"Systemic skin and hair support"},
+{n:"Tremella Mushroom (Skin)",c:"Skin & Hair",u:"Natural hyaluronic acid effect, skin hydration, anti-aging",d:"1-2 g/day",f:"Beauty mushroom; HA-like polysaccharides"},
+{n:"Agmatine Sulfate",c:"Specialty",u:"Neuromodulator, pain, NO regulation, neuroprotection, mood, opioid potentiation",d:"250-1,000 mg/day",f:"Arginine metabolite; NMDA modulation"},
+{n:"BPC-157 (Oral/Nasal OTC)",c:"Specialty",u:"Gut healing, tendon repair, systemic healing peptide, angiogenesis",d:"250-500 mcg 2x/day",f:"Body Protection Compound; gastric pentadecapeptide"},
+{n:"Semax",c:"Specialty",u:"Nootropic/BDNF peptide, focus, mood, neuroprotection, stroke recovery",d:"200-600 mcg intranasal 1-3x/day",f:"Russian-developed neuropeptide"},
+{n:"Selank",c:"Specialty",u:"Anxiolytic peptide, immune (tuftsin analog), cognitive enhancement",d:"250-500 mcg intranasal 1-3x/day",f:"GABA modulation + immune"},
+{n:"Humic/Fulvic Acid",c:"Specialty",u:"Mineral transport, gut health, detox, nutrient absorption, mitochondrial",d:"250-500 mg/day or liquid drops",f:"Ancient organic matter extract"},
+{n:"Inosine",c:"Specialty",u:"ATP precursor, exercise, neuroprotection, uric acid/antioxidant",d:"500-2,000 mg/day",f:"Purine nucleoside; may raise uric acid"},
+{n:"Dihexa",c:"Specialty",u:"BDNF/HGF potentiator, cognitive enhancement, neuroregeneration research",d:"Experimental; 10-20 mg/day",f:"Research chemical; limited safety data"},
+{n:"9-ME-BC (9-Methyl-beta-carboline)",c:"Specialty",u:"Dopaminergic neuroregeneration, tyrosine hydroxylase upregulation",d:"Experimental; 5-15 mg/day",f:"Research chemical; photosensitizing"},
+{n:"Cerebrolysin (Peptide)",c:"Specialty",u:"Neuropeptide complex, stroke recovery, TBI, cognitive impairment",d:"Experimental/Rx in some countries",f:"Injectable porcine brain-derived peptides"},
+{n:"Methylene Blue (Specialty)",c:"Specialty",u:"Mitochondrial electron shuttle, methemoglobinemia, cognitive research",d:"0.5-2 mg/kg/day",f:"USP grade only; dyes everything blue"},
+{n:"DMSO (Dimethyl Sulfoxide)",c:"Specialty",u:"Topical penetration enhancer, anti-inflammatory, pain (topical)",d:"70-90% solution topical",f:"Pharmaceutical grade only; garlic taste"},
+{n:"MSM + DMSO (Topical Combo)",c:"Specialty",u:"Joint/muscle pain, inflammation, enhanced delivery",d:"Topical application as needed",f:"DMSO drives MSM deeper"},
+{n:"Peptide Bioregulators (Khavinson)",c:"Specialty",u:"Organ-specific short peptides, anti-aging, tissue repair",d:"1-2 caps/day per organ target",f:"Thymalin, Epithalon, Cortexin, etc."},
+{n:"Oxaloacetate (OAA)",c:"Specialty",u:"Glutamate scavenging, brain energy, longevity, NAD+ sparing",d:"100-200 mg/day",f:"Krebs cycle intermediate; BenaGene brand"},
+{n:"Tauroursodeoxycholic Acid (Specialty)",c:"Specialty",u:"ER stress relief, neuroprotection, ALS research, liver",d:"250-1,500 mg/day",f:"Chemical chaperone; bile acid derivative"},
+{n:"Diatomaceous Earth (Internal)",c:"Specialty",u:"Silica source, gut cleanse, parasite theory (unproven)",d:"1-2 tbsp in water/day",f:"Food grade ONLY; amorphous silica"},
+{n:"Bee Pollen",c:"Specialty",u:"Nutrient-dense, immune, energy, allergy desensitization (local)",d:"1-3 tsp/day",f:"Start small for allergy testing"},
+{n:"Royal Jelly",c:"Specialty",u:"Immune, skin, hormonal, anti-aging, wound healing",d:"300-6,000 mg/day",f:"Bee-produced; 10-HDA active compound"},
+{n:"Deer Antler Velvet / IGF-1",c:"Specialty",u:"Growth factor, joint, athletic recovery, libido (traditional)",d:"500-1,000 mg/day",f:"IGF-1 content variable; WADA concern"},
+{n:"Colloidal Minerals",c:"Specialty",u:"Trace mineral complex from humic/fulvic sources",d:"Per label",f:"Plant-derived; Majestic Earth type"}
+];
+
+const CC={
+  "Vitamins":"#E94560","Minerals":"#4A90D9","Amino Acids":"#7C5CBF","Herbal & Botanical":"#2E8B57",
+  "Fatty Acids & Lipids":"#D4772C","Nootropics":"#9B59B6","Longevity":"#1ABC9C","Sleep":"#5B6ABF",
+  "Joint & Connective Tissue":"#8D7B3E","Hormonal Support":"#C0392B","Cardiovascular":"#E74C3C",
+  "Immune":"#2980B9","Probiotics & Gut":"#27AE60","Weight Management":"#E67E22",
+  "Sports Performance":"#D35400","Pain & Inflammation":"#8E44AD","Detox & Liver":"#16A085",
+  "Eye Health":"#2471A3","Skin & Hair":"#E48DBF","Specialty":"#7F8C8D"
+};
+const gc=c=>CC[c]||"#666";
+
+let search="",selCat="All",view="grid",expanded=null;
+const cats=[...new Set(S.map(s=>s.c))].sort();
+const catCounts={All:S.length};
+S.forEach(s=>{catCounts[s.c]=(catCounts[s.c]||0)+1});
+
+document.getElementById("totalCount").textContent=S.length+" COMPOUNDS";
+document.getElementById("catCount").textContent=cats.length+" CATEGORIES";
+
+function renderPills(){
+  document.getElementById("catPills").innerHTML=["All",...cats].map(c=>
+    '<button class="cat-pill'+(selCat===c?" active":"")+'" onclick="setCat(this)" data-cat="'+c.replace(/"/g,"&quot;")+'">'+c+'<span class="cnt">'+( catCounts[c]||0)+'</span></button>'
+  ).join("");
+}
+
+function getFiltered(){
+  const q=search.toLowerCase();
+  return S.filter(s=>{
+    const cm=selCat==="All"||s.c===selCat;
+    const tm=!q||s.n.toLowerCase().includes(q)||s.u.toLowerCase().includes(q)||s.c.toLowerCase().includes(q)||s.d.toLowerCase().includes(q)||(s.f&&s.f.toLowerCase().includes(q));
+    return cm&&tm;
+  });
+}
+
+function render(){
+  renderPills();
+  const f=getFiltered();
+  document.getElementById("resultsBar").innerHTML=f.length+" result"+(f.length!==1?"s":"")+(search?' <button class="clear-btn" onclick="clearAll()">Clear</button>':"");
+
+  const el=document.getElementById("content");
+  if(f.length===0){
+    el.innerHTML='<div class="no-results"><div class="icon">&#x1F50D;</div><p>No supplements match your search.</p></div>';
+    return;
+  }
+
+  if(view==="grid"){
+    let html='<div class="grid">';
+    f.forEach((s,i)=>{
+      const idx=S.indexOf(s);
+      const isExp=expanded===idx;
+      const col=gc(s.c);
+      const useText=isExp?s.u:(s.u.length>80?s.u.slice(0,80)+"...":s.u);
+      html+='<div class="card'+(isExp?" expanded":"")+'" style="border-left-color:'+col+'" onclick="toggle('+idx+')">';
+      html+='<div class="card-top"><div class="card-name">'+s.n+'</div>';
+      html+='<span class="card-cat" style="color:'+col+';background:'+col+'18">'+s.c+'</span></div>';
+      html+='<div class="card-use">'+useText+'</div>';
+      if(isExp){
+        html+='<div class="card-detail"><div class="lbl">Dosage</div><div class="val">'+s.d+'</div>';
+        if(s.f) html+='<div class="form-note">'+s.f+'</div>';
+        html+='</div>';
+      }
+      html+='</div>';
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  } else {
+    let html='<div class="list-wrap"><div class="list-header"><span>Supplement</span><span>Category</span><span>Use Case</span><span>Dosage</span><span>Form / Notes</span></div>';
+    f.forEach(s=>{
+      const col=gc(s.c);
+      html+='<div class="list-row">';
+      html+='<div class="l-name">'+s.n+'</div>';
+      html+='<div class="l-cat" style="color:'+col+'">'+s.c+'</div>';
+      html+='<div class="l-use">'+s.u+'</div>';
+      html+='<div class="l-dose">'+s.d+'</div>';
+      html+='<div class="l-form">'+(s.f||"")+'</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  }
+}
+
+function setCat(el){selCat=el.dataset.cat;expanded=null;render();}
+function toggle(i){expanded=expanded===i?null:i;render();}
+function setView(v){
+  view=v;expanded=null;
+  document.getElementById("gridBtn").classList.toggle("active",v==="grid");
+  document.getElementById("listBtn").classList.toggle("active",v==="list");
+  render();
+}
+function clearAll(){search="";selCat="All";expanded=null;document.getElementById("searchInput").value="";render();}
+
+document.getElementById("searchInput").addEventListener("input",function(e){
+  search=e.target.value;expanded=null;render();
+});
+
+document.addEventListener("keydown",function(e){
+  if(e.key==="/"&&document.activeElement!==document.getElementById("searchInput")){
+    e.preventDefault();document.getElementById("searchInput").focus();
+  }
+});
+
+function toggleMobile(){document.getElementById("mobileMenu").classList.toggle("open");}
+
+render();
+</script>
+</body>
+</html>
