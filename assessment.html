@@ -707,9 +707,7 @@ function submitGate() {
   }
   leadData = { name, email };
 
-  // 🔌 CONNECT GHL WEBHOOK HERE
-  // Uncomment the block below and paste your GHL webhook URL
-  /*
+  // 🔌 GHL WEBHOOK — LIVE
   const score = calcScore();
   const tier = getTier(score);
   const pct = calcPillarScores();
@@ -718,7 +716,7 @@ function submitGate() {
 
   const pillarLabels = {S:'Steps',H:'Hydration',I:'Identity Input',F:'Fuel',T:'Training'};
 
-  fetch('YOUR_GHL_WEBHOOK_URL', {
+  fetch('https://services.leadconnectorhq.com/hooks/wWa1nNze80AlKHul1GMT/webhook-trigger/9f60bf1b-6383-4e60-b519-3657663c4880', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({
@@ -772,7 +770,6 @@ function submitGate() {
       supportingCount: recs.filter(r => r.p > 1).length
     })
   });
-  */
 
   showResults();
 }
