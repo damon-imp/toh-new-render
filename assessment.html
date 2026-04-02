@@ -208,7 +208,6 @@ h2{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;line-height:1.3;m
   .cost-bar .cost-right{text-align:left}
 }
 </style>
-
 </head>
 <body>
 <div class="wrap">
@@ -709,10 +708,71 @@ function submitGate() {
   leadData = { name, email };
 
   // 🔌 CONNECT GHL WEBHOOK HERE
-  // fetch('YOUR_GHL_WEBHOOK_URL', {
-  //   method: 'POST', headers: {'Content-Type':'application/json'},
-  //   body: JSON.stringify({ name, email, score: calcScore(), tier: getTier(calcScore()).name, weakestPillar: getWeakestPillar() })
-  // });
+  // Uncomment the block below and paste your GHL webhook URL
+  /*
+  const score = calcScore();
+  const tier = getTier(score);
+  const pct = calcPillarScores();
+  const weakest = getWeakestPillar();
+  const recs = getCompoundRecommendations();
+
+  const pillarLabels = {S:'Steps',H:'Hydration',I:'Identity Input',F:'Fuel',T:'Training'};
+
+  fetch('YOUR_GHL_WEBHOOK_URL', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      // Contact info
+      name: name,
+      email: email,
+
+      // OH Score results
+      score: score,
+      tier: tier.name,
+      tierMessage: tier.msg,
+      tierCTA: tier.cta,
+
+      // Pillar breakdown
+      weakestPillar: pillarLabels[weakest],
+      pillar_steps: pct.S,
+      pillar_hydration: pct.H,
+      pillar_identity: pct.I,
+      pillar_fuel: pct.F,
+      pillar_training: pct.T,
+
+      // Focus area selected
+      focusArea: protocolAnswers.focus || '',
+
+      // Compound recommendations (array)
+      compounds: recs.map(r => {
+        const c = COMPOUNDS[r.key];
+        return {
+          name: c ? c.name : r.key,
+          tier: r.p === 1 ? 'Primary' : r.p === 2 ? 'Supporting' : 'Complementary',
+          reason: r.reason,
+          price: c ? c.price : 0,
+          content: c ? c.content : '',
+          form: c ? c.form : ''
+        };
+      }),
+
+      // Flattened compound list for email template
+      compoundList: recs.map(r => {
+        const c = COMPOUNDS[r.key];
+        const tierLabel = r.p === 1 ? 'PRIMARY' : r.p === 2 ? 'SUPPORTING' : 'COMPLEMENTARY';
+        return `[${tierLabel}] ${c ? c.name : r.key} (${c ? c.content : ''}) - $${c ? c.price.toFixed(2) : '0.00'} - ${r.reason}`;
+      }).join(' | '),
+
+      // Total estimated cost
+      totalCost: recs.reduce((sum, r) => sum + (COMPOUNDS[r.key]?.price || 0), 0).toFixed(2),
+
+      // Compound count
+      compoundCount: recs.length,
+      primaryCount: recs.filter(r => r.p === 1).length,
+      supportingCount: recs.filter(r => r.p > 1).length
+    })
+  });
+  */
 
   showResults();
 }
