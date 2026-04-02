@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Received | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--red:#EF4444;--radius:12px;--max-w:800px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none}img{max-width:100%;display:block}.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}.nav-inner{max-width:1200px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:12px}.nav-logo .mark{font-weight:900;font-size:28px;color:var(--accent);letter-spacing:-1px}.nav-logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--t2);letter-spacing:2px;text-transform:uppercase}.nav-logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--white)}
+.nav-right{display:flex;align-items:center;gap:12px}.user-email{font-size:11px;color:var(--t3);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.logout-btn{background:var(--bg3);border:1px solid var(--t4);border-radius:6px;padding:6px 12px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;transition:all .2s}.logout-btn:hover{border-color:var(--accent);color:var(--white)}
+
+.confirmation-page{padding:100px 0 80px}
+.check-icon{width:72px;height:72px;background:rgba(52,211,153,.12);border:2px solid rgba(52,211,153,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+.check-icon svg{width:36px;height:36px;stroke:var(--green);fill:none;stroke-width:2.5}
+.confirmation-hero{text-align:center;margin-bottom:48px}
+.order-tag{display:inline-block;background:var(--bg3);border:1px solid var(--t4);border-radius:20px;padding:6px 16px;font-size:12px;color:var(--t2);font-family:'JetBrains Mono',monospace;margin-bottom:16px}
+.confirmation-hero h1{font-size:clamp(28px,4vw,40px);font-weight:800;color:var(--white);margin-bottom:8px}
+.confirmation-hero .subtitle{font-size:18px;font-weight:600;color:var(--accent-light);margin-bottom:8px}
+.confirmation-hero .tagline{font-size:15px;color:var(--t2);margin-bottom:4px}
+
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);padding:32px;margin-bottom:24px}
+.card-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:20px}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:14px}
+.step{display:flex;gap:16px;align-items:flex-start}
+.step-num{width:32px;height:32px;min-width:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--white);margin-top:2px}
+.step-body .step-title{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px}
+.step-body .step-desc{font-size:13px;color:var(--t2);line-height:1.6}
+
+/* Alert box */
+.alert-box{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:20px 24px}
+.alert-box .alert-title{font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:8px}
+.alert-box p{font-size:13px;color:#d4aa60;line-height:1.7;margin-bottom:8px}
+.alert-box p:last-child{margin-bottom:0}
+
+/* Order summary */
+.order-item{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.order-item:last-child{border-bottom:none}
+.order-item-img{width:64px;height:64px;min-width:64px;background:var(--bg3);border-radius:8px;overflow:hidden}
+.order-item-img img{width:100%;height:100%;object-fit:cover}
+.order-item-info{flex:1}
+.order-item-info .name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px}
+.order-item-info .meta{font-size:12px;color:var(--t3)}
+.order-item-info .qty{font-size:12px;color:var(--t3)}
+.order-item-price{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--white)}
+
+.totals-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.totals-row .label{font-size:14px;color:var(--t2)}
+.totals-row .value{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--white);font-weight:600}
+.totals-total{display:flex;justify-content:space-between;padding:14px 0 0;margin-top:4px}
+.totals-total .label{font-size:16px;font-weight:700;color:var(--white)}
+.totals-total .value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--green)}
+
+.shop-again-btn{display:inline-block;background:var(--accent);color:var(--white);padding:14px 32px;border-radius:10px;font-weight:600;font-size:14px;transition:all .2s;margin-top:8px}
+.shop-again-btn:hover{background:var(--accent-light)}
+
+.signature{font-size:15px;color:var(--t2);margin-top:8px}
+.signature strong{color:var(--t1)}
+
+.footer{padding:60px 0 40px;border-top:1px solid rgba(255,255,255,.04)}.footer-bottom{display:flex;justify-content:space-between;align-items:center}.footer-bottom p{font-size:12px;color:var(--t4)}.footer-bottom .disclaimer{font-size:10px;color:var(--t4);max-width:500px;text-align:right;line-height:1.5}
+@media(max-width:768px){.footer-bottom{flex-direction:column;gap:12px;text-align:center}.footer-bottom .disclaimer{text-align:center}}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
+  <div class="nav-right" id="navUser" style="display:none">
+    <span class="user-email" id="navEmail"></span>
+    <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+  </div>
+</div></nav>
+
+<div class="confirmation-page">
+<div class="container">
+
+  <!-- HERO -->
+  <div class="confirmation-hero">
+    <div class="check-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="order-tag" id="orderTag">Order #—</div>
+    <h1>Thank you, <span id="firstName">there</span>!</h1>
+    <div class="subtitle">Order Received — One More Step to Complete Your Order</div>
+    <div class="tagline">Thank you for your order!</div>
+    <div class="tagline">Just one more step before it ships.</div>
+  </div>
+
+  <!-- INVOICE NOTICE -->
+  <div class="card" style="background:rgba(172,102,167,.06);border-color:rgba(172,102,167,.2)">
+    <p style="font-size:15px;color:var(--t1);line-height:1.7;text-align:center">Your payment will be completed through a <strong style="color:var(--accent-light)">separate invoice that will be sent to your email shortly.</strong></p>
+  </div>
+
+  <!-- STEPS -->
+  <div class="card">
+    <div class="card-title">Here's what happens next:</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Invoice on its way</div>
+          <div class="step-desc">You will receive an invoice via email within the next few minutes.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Check the sender</div>
+          <div class="step-desc">The invoice will come from <strong style="color:var(--white)">The Optimized Human</strong> and will be labeled as <strong style="color:var(--white)">"Coaching Services."</strong></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Complete payment</div>
+          <div class="step-desc">Simply complete the invoice payment.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Ships the same day</div>
+          <div class="step-desc">Once payment is received, your order will be packaged and shipped the same day (when paid during normal business hours).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORTANT -->
+  <div class="alert-box" style="margin-bottom:24px">
+    <div class="alert-title">⚠ Important</div>
+    <p>The invoice description will say "coaching" for processing purposes, but it corresponds directly to the order you just placed.</p>
+    <p>If you do not see your invoice within 10–15 minutes, please check your spam or promotions folder.</p>
+    <p>If you need help at any point, contact our team at <a href="mailto:support@theoptimizedhumanproject.com" style="color:#fbbf24">support@theoptimizedhumanproject.com</a> and we'll take care of you.</p>
+  </div>
+
+  <!-- SIGNATURE -->
+  <div class="card" style="text-align:center;padding:24px 32px">
+    <p style="font-size:15px;color:var(--t2);line-height:1.8">We appreciate your trust and look forward to serving you.</p>
+    <p class="signature" style="margin-top:12px"><strong>— TOH Team</strong></p>
+  </div>
+
+  <!-- ORDER DETAILS -->
+  <div class="card" style="margin-top:32px">
+    <div class="card-title">Order Details Below</div>
+    <div id="orderItems"></div>
+    <div style="margin-top:16px">
+      <div class="totals-row">
+        <span class="label">Subtotal</span>
+        <span class="value" id="confirmSubtotal">—</span>
+      </div>
+      <div class="totals-row" id="confirmDiscountRow" style="display:none">
+        <span class="label">Discount <span id="confirmDiscountLabel" style="font-size:11px;color:var(--green)"></span></span>
+        <span class="value" id="confirmDiscount" style="color:var(--green)">-$0.00</span>
+      </div>
+      <div class="totals-row" id="confirmProtRow" style="display:none">
+        <span class="label">Shipping Protection</span>
+        <span class="value" style="color:var(--accent)">$5.00</span>
+      </div>
+      <div class="totals-row" id="confirmTaxRow" style="display:none">
+        <span class="label">Tax</span>
+        <span class="value" id="confirmTax">$0.00</span>
+      </div>
+      <div class="totals-row">
+        <span class="label">Shipping (Standard)</span>
+        <span class="value">$10.00</span>
+      </div>
+      <div class="totals-total">
+        <span class="label">Total</span>
+        <span class="value" id="confirmTotal">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:32px">
+    <a href="shop.html" class="shop-again-btn">← Back to Shop</a>
+  </div>
+
+</div>
+</div>
+
+<footer class="footer"><div class="container"><div class="footer-bottom">
+  <p>&copy; 2026 The Optimized Human. All rights reserved.</p>
+  <div class="disclaimer">All products are sold strictly for laboratory research purposes only and are not intended for human or animal consumption.</div>
+</div></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyb3pqYm1pbXpjd2Vnem9scHRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTQ1NDgsImV4cCI6MjA5MDEzMDU0OH0.JmmgwESE5BB3PMUFeWTJcX1G3iSVWr8-Sc57p3NNezw';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.replace('shop.html'); return; }
+  document.getElementById('navUser').style.display = 'flex';
+  document.getElementById('navEmail').textContent = session.user.email || '';
+
+  const orderData = JSON.parse(sessionStorage.getItem('toh_order') || '{}');
+
+  if (orderData.orderNumber) {
+    document.getElementById('orderTag').textContent = `Order #${orderData.orderNumber}`;
+  }
+  if (orderData.firstName) {
+    document.getElementById('firstName').textContent = orderData.firstName;
+  }
+  if (orderData.subtotal !== undefined) {
+    document.getElementById('confirmSubtotal').textContent = '$' + Number(orderData.subtotal).toFixed(2);
+  }
+  if (orderData.total !== undefined) {
+    document.getElementById('confirmTotal').textContent = '$' + Number(orderData.total).toFixed(2);
+  }
+  if (orderData.couponDiscount > 0) {
+    document.getElementById('confirmDiscountRow').style.display = 'flex';
+    document.getElementById('confirmDiscount').textContent = '-$' + Number(orderData.couponDiscount).toFixed(2);
+    document.getElementById('confirmDiscountLabel').textContent = '(' + (orderData.couponCode || '') + ')';
+  }
+  if (orderData.shippingProtection) {
+    document.getElementById('confirmProtRow').style.display = 'flex';
+  }
+  if (orderData.tax > 0) {
+    document.getElementById('confirmTaxRow').style.display = 'flex';
+    document.getElementById('confirmTax').textContent = '$' + Number(orderData.tax).toFixed(2);
+  }
+  if (orderData.items && orderData.items.length > 0) {
+    document.getElementById('orderItems').innerHTML = orderData.items.map(item => `
+      <div class="order-item">
+        <div class="order-item-img">
+          <img src="images/${item.imgKey}.png" alt="${item.name}">
+        </div>
+        <div class="order-item-info">
+          <div class="name">${item.name}</div>
+          <div class="meta">${item.form} · ${item.content}</div>
+          <div class="qty">Qty: ${item.qty}</div>
+        </div>
+        <div class="order-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+      </div>`).join('');
+  }
+
+  // Clear checkout session data
+  sessionStorage.removeItem('toh_checkout');
+}
+
+async function handleLogout() {
+  await sb.auth.signOut();
+  window.location.href = 'shop.html';
+}
+
+init();
+</script>
+</body>
+</html>

@@ -50,8 +50,25 @@
 .summary-total .value{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--green)}
 .checkout-btn{width:100%;background:var(--accent);color:var(--white);border:none;border-radius:10px;padding:16px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:20px}
 .checkout-btn:hover{background:var(--accent-light);transform:translateY(-1px)}
+.checkout-btn:disabled{background:var(--t4);cursor:not-allowed;transform:none}
 .continue-link{display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--t3)}
 .continue-link:hover{color:var(--accent)}
+/* Shipping Protection */
+.protection-card{background:linear-gradient(135deg,rgba(172,102,167,.12),rgba(172,102,167,.05));border:1px solid rgba(172,102,167,.35);border-radius:var(--radius);padding:24px;margin:24px 0}
+.protection-card .prot-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+.protection-card .prot-icon{font-size:28px;line-height:1}
+.protection-card .prot-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px}
+.protection-card .prot-desc{font-size:13px;color:var(--t2);line-height:1.5}
+.protection-card .prot-price{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:600;margin-top:4px}
+.prot-btns{display:flex;gap:10px}
+.prot-btn{flex:1;padding:11px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid var(--t4)}
+.prot-btn-yes{background:var(--accent);color:var(--white);border-color:var(--accent)}
+.prot-btn-yes:hover{background:var(--accent-light)}
+.prot-btn-no{background:var(--bg3);color:var(--t2)}
+.prot-btn-no:hover{border-color:var(--t3);color:var(--white)}
+.prot-btn.selected-yes{background:var(--accent);color:var(--white);border-color:var(--accent);box-shadow:0 0 0 3px rgba(172,102,167,.3)}
+.prot-btn.selected-no{background:var(--bg3);color:var(--white);border-color:var(--t3);box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+.prot-chosen{font-size:12px;color:var(--t3);text-align:center;margin-top:10px;min-height:16px}
 
 /* Empty Cart */
 .empty-cart{text-align:center;padding:80px 20px}
@@ -141,6 +158,23 @@
     <div id="cartLayout" class="cart-layout" style="display:none">
       <div>
         <div id="cartItems"></div>
+
+        <!-- Shipping Protection Offer -->
+        <div class="protection-card" id="protectionCard">
+          <div class="prot-header">
+            <div class="prot-icon">🛡️</div>
+            <div>
+              <div class="prot-title">Shipping Protection</div>
+              <div class="prot-desc">Protect your order against loss, theft, or damage during shipping.</div>
+              <div class="prot-price">$5.00 one-time</div>
+            </div>
+          </div>
+          <div class="prot-btns">
+            <button class="prot-btn prot-btn-yes" id="protYes" onclick="setProtection(true)">✓ Add Protection — $5.00</button>
+            <button class="prot-btn prot-btn-no" id="protNo" onclick="setProtection(false)">No thanks</button>
+          </div>
+          <div class="prot-chosen" id="protChosen"></div>
+        </div>
       </div>
       <div class="cart-summary">
         <h2>Order Summary</h2>
@@ -148,15 +182,20 @@
           <span class="label">Subtotal</span>
           <span class="value" id="subtotal">$0.00</span>
         </div>
+        <div class="summary-row" id="protRow" style="display:none">
+          <span class="label">Shipping Protection</span>
+          <span class="value" style="color:var(--accent)">$5.00</span>
+        </div>
         <div class="summary-row">
           <span class="label">Shipping</span>
-          <span class="value" style="color:var(--green)">Free</span>
+          <span class="value">$10.00</span>
         </div>
         <div class="summary-total">
           <span class="label">Total</span>
           <span class="value" id="totalPrice">$0.00</span>
         </div>
-        <button class="checkout-btn" onclick="handleCheckout()">Proceed to Checkout</button>
+        <button class="checkout-btn" id="checkoutBtn" onclick="handleCheckout()" disabled>Continue to Checkout</button>
+        <p id="checkoutHint" style="font-size:11px;color:var(--t3);text-align:center;margin-top:8px">Select your shipping protection preference above to continue</p>
         <a href="shop.html" class="continue-link">← Continue Shopping</a>
         <p style="font-size:10px;color:var(--t4);margin-top:16px;line-height:1.5;text-align:center">All products are sold for laboratory research purposes only. Not for human or animal consumption.</p>
       </div>
@@ -200,6 +239,7 @@ const PRODUCTS = [
 const IMG_MAP = {kpv:'kpv',ksptn:'ksptn',methblue:'methblue',tesa:'tesamorelin',amino5:'amino5',selank:'selank',ta1:'ta1',b12:'b12',glut:'glutathione',motsc:'motsc',epi:'epithalon',tb500:'tb500',nad:'nad',ipa:'ipamorelin',bpc:'bpc157',ghkcu:'ghkcu',glp3r:'glp3r'};
 
 let cart = [];
+let shippingProtection = null; // null = not chosen, true = yes, false = no
 
 // ─── AUTH ───
 async function checkAuth(){
@@ -301,12 +341,29 @@ function renderCart(){
 
   document.getElementById('cartItems').innerHTML=html;
   document.getElementById('subtotal').textContent='$'+subtotal.toFixed(2);
-  document.getElementById('totalPrice').textContent='$'+subtotal.toFixed(2);
+  const prot = shippingProtection===true ? 5 : 0;
+  const total = subtotal + 10 + prot;
+  document.getElementById('totalPrice').textContent='$'+total.toFixed(2);
+}
+
+function setProtection(val){
+  shippingProtection = val;
+  document.getElementById('protYes').className = 'prot-btn prot-btn-yes' + (val===true?' selected-yes':'');
+  document.getElementById('protNo').className  = 'prot-btn prot-btn-no'  + (val===false?' selected-no':'');
+  document.getElementById('protRow').style.display = val===true ? 'flex' : 'none';
+  document.getElementById('checkoutBtn').disabled = false;
+  document.getElementById('checkoutHint').style.display = 'none';
+  document.getElementById('protChosen').textContent = val ? '✓ Protection added to your order' : 'No protection — understood';
+  renderCart(); // refresh total
 }
 
 function handleCheckout(){
-  // 🔌 CONNECT PAYMENT EMBED / CHECKOUT FLOW HERE
-  showToast('Checkout coming soon — contact support@theoptimizedhumanproject.com to place an order');
+  if(shippingProtection===null){
+    showToast('Please choose your shipping protection preference above');
+    return;
+  }
+  sessionStorage.setItem('toh_checkout', JSON.stringify({shippingProtection}));
+  window.location.href = 'checkout.html';
 }
 
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}

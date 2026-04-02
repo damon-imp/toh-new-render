@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | The Optimized Human</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--red:#EF4444;--radius:12px;--max-w:1200px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none}img{max-width:100%;display:block}.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:12px}.nav-logo .mark{font-weight:900;font-size:28px;color:var(--accent);letter-spacing:-1px}.nav-logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--t2);letter-spacing:2px;text-transform:uppercase}.nav-logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--white)}
+.nav-right{display:flex;align-items:center;gap:12px}.user-email{font-size:11px;color:var(--t3);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.logout-btn{background:var(--bg3);border:1px solid var(--t4);border-radius:6px;padding:6px 12px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;transition:all .2s}.logout-btn:hover{border-color:var(--accent);color:var(--white)}
+@media(max-width:768px){.user-email{display:none}}
+
+/* LAYOUT */
+.checkout-page{padding:100px 0 80px}
+.checkout-grid{display:grid;grid-template-columns:1fr 420px;gap:48px;align-items:start}
+@media(max-width:960px){.checkout-grid{grid-template-columns:1fr;gap:32px}}
+
+/* BREADCRUMB */
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:32px;font-size:12px;color:var(--t3)}
+.breadcrumb a{color:var(--t3);transition:color .2s}.breadcrumb a:hover{color:var(--accent)}
+.breadcrumb .sep{color:var(--t4)}
+.breadcrumb .current{color:var(--white);font-weight:600}
+
+/* FORM */
+.section-title{font-size:16px;font-weight:700;color:var(--white);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.form-group{margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-row-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:600px){.form-row,.form-row-3{grid-template-columns:1fr}}
+label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.field{width:100%;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:13px 16px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.field:focus{border-color:var(--accent)}
+.field::placeholder{color:var(--t4)}
+.field-optional{font-size:10px;color:var(--t4);font-weight:400;margin-left:4px;text-transform:none;letter-spacing:0}
+select.field{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+
+/* Billing toggle */
+.billing-toggle{display:flex;align-items:center;gap:10px;margin:20px 0;padding:14px 16px;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;cursor:pointer}
+.billing-toggle input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+.billing-toggle label{font-size:14px;color:var(--t1);cursor:pointer;font-weight:500;text-transform:none;letter-spacing:0;margin:0}
+
+/* Coupon */
+.coupon-box{margin:24px 0}
+.coupon-row{display:flex;gap:10px}
+.coupon-input{flex:1;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s;text-transform:uppercase;letter-spacing:.5px}
+.coupon-input:focus{border-color:var(--accent)}
+.coupon-input::placeholder{color:var(--t4);text-transform:none;letter-spacing:0}
+.coupon-btn{background:var(--bg3);border:1px solid var(--t4);border-radius:8px;padding:12px 20px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.coupon-btn:hover{border-color:var(--accent);color:var(--white)}
+.coupon-btn:disabled{opacity:.5;cursor:not-allowed}
+.coupon-msg{font-size:12px;margin-top:8px;line-height:1.4}
+.coupon-msg.success{color:var(--green)}
+.coupon-msg.error{color:var(--red)}
+.coupon-applied{display:flex;align-items:center;justify-content:space-between;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:8px;padding:12px 16px}
+.coupon-applied .coupon-tag{font-size:13px;color:var(--green);font-weight:600}
+.coupon-applied .coupon-remove{background:none;border:none;color:var(--t3);font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif;transition:color .2s}
+.coupon-applied .coupon-remove:hover{color:var(--red)}
+
+/* Invoice notice */
+.invoice-notice{background:rgba(172,102,167,.08);border:1px solid rgba(172,102,167,.25);border-radius:10px;padding:18px 20px;margin:24px 0}
+.invoice-notice p{font-size:13px;color:var(--t2);line-height:1.6;margin:0}
+.invoice-notice strong{color:var(--accent-light)}
+
+/* Submit */
+.submit-btn{width:100%;background:var(--accent);color:var(--white);border:none;border-radius:10px;padding:18px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:8px;letter-spacing:.2px}
+.submit-btn:hover{background:var(--accent-light);transform:translateY(-1px)}
+.submit-btn:disabled{background:var(--t4);cursor:not-allowed;transform:none}
+.error-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:16px;display:none}
+
+/* ORDER SUMMARY SIDEBAR */
+.order-sidebar{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:28px;position:sticky;top:92px}
+.order-sidebar h3{font-size:16px;font-weight:700;color:var(--white);margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.order-item{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.order-item:last-child{border-bottom:none}
+.order-item-img{width:58px;height:58px;min-width:58px;background:var(--bg3);border-radius:8px;overflow:hidden;position:relative}
+.order-item-img img{width:100%;height:100%;object-fit:cover}
+.order-item-qty{position:absolute;top:-6px;right:-6px;background:var(--t3);color:var(--white);font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.order-item-info{flex:1}
+.order-item-info .name{font-size:13px;font-weight:600;color:var(--white);line-height:1.3}
+.order-item-info .meta{font-size:11px;color:var(--t3);margin-top:2px}
+.order-item-price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--white)}
+.sidebar-divider{border:none;border-top:1px solid rgba(255,255,255,.06);margin:16px 0}
+.sidebar-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+.sidebar-row .label{font-size:13px;color:var(--t2)}
+.sidebar-row .value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--white);font-weight:600}
+.sidebar-total{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;margin-top:8px;border-top:1px solid rgba(255,255,255,.08)}
+.sidebar-total .label{font-size:15px;font-weight:700;color:var(--white)}
+.sidebar-total .value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--green)}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#000;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:1000;transform:translateY(80px);opacity:0;transition:all .3s ease}
+.toast.show{transform:translateY(0);opacity:1}
+
+.autofill-note{font-size:11px;color:var(--accent);margin-bottom:20px;display:none}
+.autofill-note a{color:var(--accent);text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
+  <div class="nav-right" id="navUser" style="display:none">
+    <span class="user-email" id="navEmail"></span>
+    <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+  </div>
+</div></nav>
+
+<div class="checkout-page">
+<div class="container">
+  <div class="breadcrumb">
+    <a href="cart.html">Cart</a>
+    <span class="sep">›</span>
+    <span class="current">Shipping & Billing</span>
+  </div>
+
+  <div class="checkout-grid">
+    <!-- LEFT: FORM -->
+    <div>
+      <div id="errorMsg" class="error-msg"></div>
+      <div id="autofillNote" class="autofill-note">✓ Shipping address loaded from your account. <a onclick="clearAutofill()">Use a different address</a></div>
+
+      <div class="section-title">Shipping Information</div>
+
+      <div class="form-group">
+        <label>Country</label>
+        <select id="country" class="field">
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="GB">United Kingdom</option>
+          <option value="AU">Australia</option>
+          <option value="DE">Germany</option>
+          <option value="FR">France</option>
+          <option value="NL">Netherlands</option>
+          <option value="SE">Sweden</option>
+          <option value="NO">Norway</option>
+          <option value="DK">Denmark</option>
+          <option value="CH">Switzerland</option>
+          <option value="NZ">New Zealand</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label>First Name</label>
+          <input id="firstName" class="field" type="text" placeholder="First name" autocomplete="given-name">
+        </div>
+        <div>
+          <label>Last Name</label>
+          <input id="lastName" class="field" type="text" placeholder="Last name" autocomplete="family-name">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Address Line 1</label>
+        <input id="address1" class="field" type="text" placeholder="Street address" autocomplete="address-line1">
+      </div>
+      <div class="form-group">
+        <label>Address Line 2 <span class="field-optional">(optional)</span></label>
+        <input id="address2" class="field" type="text" placeholder="Apt, suite, unit, etc." autocomplete="address-line2">
+      </div>
+
+      <div class="form-row-3">
+        <div>
+          <label>City</label>
+          <input id="city" class="field" type="text" placeholder="City" autocomplete="address-level2">
+        </div>
+        <div>
+          <label>State</label>
+          <input id="state" class="field" type="text" placeholder="State" autocomplete="address-level1" maxlength="50">
+        </div>
+        <div>
+          <label>ZIP / Postal Code</label>
+          <input id="zip" class="field" type="text" placeholder="ZIP" autocomplete="postal-code" maxlength="20">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Phone <span class="field-optional">(optional)</span></label>
+        <input id="phone" class="field" type="tel" placeholder="+1 (555) 000-0000" autocomplete="tel">
+      </div>
+
+      <!-- Billing Address -->
+      <div class="billing-toggle" onclick="toggleBilling()">
+        <input type="checkbox" id="billingSame" checked onchange="toggleBilling()">
+        <label for="billingSame">Billing address same as shipping address</label>
+      </div>
+
+      <div id="billingSection" style="display:none">
+        <div class="section-title" style="margin-top:8px">Billing Address</div>
+        <div class="form-group">
+          <label>Country</label>
+          <select id="bCountry" class="field">
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+            <option value="GB">United Kingdom</option>
+            <option value="AU">Australia</option>
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+            <option value="NL">Netherlands</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>First Name</label>
+            <input id="bFirstName" class="field" type="text" placeholder="First name">
+          </div>
+          <div>
+            <label>Last Name</label>
+            <input id="bLastName" class="field" type="text" placeholder="Last name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Address Line 1</label>
+          <input id="bAddress1" class="field" type="text" placeholder="Street address">
+        </div>
+        <div class="form-group">
+          <label>Address Line 2 <span class="field-optional">(optional)</span></label>
+          <input id="bAddress2" class="field" type="text" placeholder="Apt, suite, unit, etc.">
+        </div>
+        <div class="form-row-3">
+          <div>
+            <label>City</label>
+            <input id="bCity" class="field" type="text" placeholder="City">
+          </div>
+          <div>
+            <label>State</label>
+            <input id="bState" class="field" type="text" placeholder="State" maxlength="50">
+          </div>
+          <div>
+            <label>ZIP / Postal Code</label>
+            <input id="bZip" class="field" type="text" placeholder="ZIP" maxlength="20">
+          </div>
+        </div>
+      </div>
+
+      <!-- Coupon Code -->
+      <div class="coupon-box">
+        <label>Coupon Code</label>
+        <div id="couponInput" class="coupon-row">
+          <input id="couponCode" class="coupon-input" type="text" placeholder="Enter coupon code" maxlength="30">
+          <button class="coupon-btn" id="couponBtn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div id="couponApplied" class="coupon-applied" style="display:none">
+          <span class="coupon-tag" id="couponTag"></span>
+          <button class="coupon-remove" onclick="removeCoupon()">Remove</button>
+        </div>
+        <div class="coupon-msg" id="couponMsg"></div>
+      </div>
+
+      <!-- Invoice Notice -->
+      <div class="invoice-notice">
+        <p>📋 <strong>Your order will be invoiced separately via email.</strong> After placing your order, you'll receive an invoice from The Optimized Human labeled as "Coaching Services." Your order ships once payment is received.</p>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="placeOrder()">Complete Order</button>
+      <p style="font-size:11px;color:var(--t4);text-align:center;margin-top:12px;line-height:1.5">All products are sold for laboratory research purposes only. Not for human or animal consumption.</p>
+    </div>
+
+    <!-- RIGHT: ORDER SUMMARY -->
+    <div class="order-sidebar">
+      <h3>Order Summary</h3>
+      <div id="sidebarItems"></div>
+      <hr class="sidebar-divider">
+      <div class="sidebar-row">
+        <span class="label">Subtotal</span>
+        <span class="value" id="sSubtotal">$0.00</span>
+      </div>
+      <div class="sidebar-row" id="sDiscountRow" style="display:none">
+        <span class="label">Discount <span id="sDiscountLabel" style="font-size:11px;color:var(--green)"></span></span>
+        <span class="value" id="sDiscount" style="color:var(--green)">-$0.00</span>
+      </div>
+      <div class="sidebar-row" id="sProtRow" style="display:none">
+        <span class="label">Shipping Protection</span>
+        <span class="value" style="color:var(--accent)">$5.00</span>
+      </div>
+      <div class="sidebar-row" id="sTaxRow" style="display:none">
+        <span class="label">Tax <span id="sTaxLabel" style="font-size:11px;color:var(--t4)"></span></span>
+        <span class="value" id="sTax">$0.00</span>
+      </div>
+      <div class="sidebar-row">
+        <span class="label">Shipping</span>
+        <span class="value">$10.00</span>
+      </div>
+      <div class="sidebar-total">
+        <span class="label">Total</span>
+        <span class="value" id="sTotal">$0.00</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyb3pqYm1pbXpjd2Vnem9scHRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTQ1NDgsImV4cCI6MjA5MDEzMDU0OH0.JmmgwESE5BB3PMUFeWTJcX1G3iSVWr8-Sc57p3NNezw';
+const EDGE_FN_URL = 'https://qrozjbmimzcwegzolptm.supabase.co/functions/v1/place-order';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PRODUCTS = [
+  {id:"kpv",name:"KPV",content:"10mg",form:"Lyophilized",price:49.99,imgKey:"kpv"},
+  {id:"ksptn",name:"KSPTN",content:"10mg",form:"Lyophilized",price:44.99,imgKey:"ksptn"},
+  {id:"methblue",name:"Methylene Blue 1%",content:"60ml",form:"Liquid",price:33.99,imgKey:"methblue"},
+  {id:"tesa",name:"Tesamorelin",content:"10mg",form:"Lyophilized",price:74.99,imgKey:"tesamorelin"},
+  {id:"amino5",name:"5-Amino-1MQ",content:"20mg",form:"Lyophilized",price:79.99,imgKey:"amino5"},
+  {id:"selank",name:"Selank (N-Acetyl)",content:"10mg",form:"Lyophilized",price:79.99,imgKey:"selank"},
+  {id:"ta1",name:"Thymosin Alpha-1",content:"5mg",form:"Lyophilized",price:49.99,imgKey:"ta1"},
+  {id:"b12",name:"B12 (Methylated)",content:"10mg",form:"Liquid",price:67.99,imgKey:"b12"},
+  {id:"glut",name:"Glutathione",content:"600mg",form:"Lyophilized",price:38.99,imgKey:"glutathione"},
+  {id:"motsc",name:"MOTS-c",content:"10mg",form:"Lyophilized",price:55.99,imgKey:"motsc"},
+  {id:"epi",name:"Epithalon",content:"10mg",form:"Lyophilized",price:42.99,imgKey:"epithalon"},
+  {id:"tb500",name:"TB-500",content:"10mg",form:"Lyophilized",price:64.99,imgKey:"tb500"},
+  {id:"nad",name:"NAD+",content:"500mg",form:"Lyophilized",price:59.99,imgKey:"nad"},
+  {id:"ipa",name:"Ipamorelin",content:"10mg",form:"Lyophilized",price:59.99,imgKey:"ipamorelin"},
+  {id:"bpc",name:"BPC-157",content:"10mg",form:"Lyophilized",price:64.99,imgKey:"bpc157"},
+  {id:"ghkcu",name:"GHK-Cu",content:"50mg",form:"Lyophilized",price:54.99,imgKey:"ghkcu"},
+  {id:"glp3r",name:"GLP-3R",content:"10mg",form:"Lyophilized",price:89.99,imgKey:"glp3r"},
+];
+
+const STATE_TAX_RATES = {
+  AL:0.04,AK:0.00,AZ:0.056,AR:0.065,CA:0.0725,CO:0.029,CT:0.0635,
+  DE:0.00,FL:0.06,GA:0.04,HI:0.04,ID:0.06,IL:0.0625,IN:0.07,IA:0.06,
+  KS:0.065,KY:0.06,LA:0.0445,ME:0.055,MD:0.06,MA:0.0625,MI:0.06,
+  MN:0.06875,MS:0.07,MO:0.04225,MT:0.00,NE:0.055,NV:0.0685,NH:0.00,
+  NJ:0.06625,NM:0.05125,NY:0.04,NC:0.0475,ND:0.05,OH:0.0575,OK:0.045,
+  OR:0.00,PA:0.06,RI:0.07,SC:0.06,SD:0.045,TN:0.07,TX:0.0625,UT:0.0485,
+  VT:0.06,VA:0.053,WA:0.065,WV:0.06,WI:0.05,WY:0.04,DC:0.06
+};
+
+// Full state name → abbreviation map
+const STATE_NAME_MAP = {
+  'alabama':'AL','alaska':'AK','arizona':'AZ','arkansas':'AR','california':'CA',
+  'colorado':'CO','connecticut':'CT','delaware':'DE','florida':'FL','georgia':'GA',
+  'hawaii':'HI','idaho':'ID','illinois':'IL','indiana':'IN','iowa':'IA','kansas':'KS',
+  'kentucky':'KY','louisiana':'LA','maine':'ME','maryland':'MD','massachusetts':'MA',
+  'michigan':'MI','minnesota':'MN','mississippi':'MS','missouri':'MO','montana':'MT',
+  'nebraska':'NE','nevada':'NV','new hampshire':'NH','new jersey':'NJ','new mexico':'NM',
+  'new york':'NY','north carolina':'NC','north dakota':'ND','ohio':'OH','oklahoma':'OK',
+  'oregon':'OR','pennsylvania':'PA','rhode island':'RI','south carolina':'SC',
+  'south dakota':'SD','tennessee':'TN','texas':'TX','utah':'UT','vermont':'VT',
+  'virginia':'VA','washington':'WA','west virginia':'WV','wisconsin':'WI','wyoming':'WY',
+  'district of columbia':'DC','washington dc':'DC','washington d.c.':'DC'
+};
+
+function getTaxRate(stateInput, country) {
+  if (country !== 'US') return 0;
+  const raw = stateInput.trim().toUpperCase();
+  if (STATE_TAX_RATES.hasOwnProperty(raw)) return STATE_TAX_RATES[raw];
+  const byName = STATE_NAME_MAP[stateInput.trim().toLowerCase()];
+  if (byName) return STATE_TAX_RATES[byName] || 0;
+  return 0;
+}
+
+let currentUser = null;
+let cart = [];
+let shippingProtection = false;
+let billingSameAsShipping = true;
+let appliedCoupon = null; // { code, discount_percent, discount_amount }
+
+// ─── AUTH ───
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'shop.html'; return; }
+  currentUser = session.user;
+  document.getElementById('navUser').style.display = 'flex';
+  document.getElementById('navEmail').textContent = currentUser.email || '';
+
+  // Read checkout state from sessionStorage
+  const checkoutData = JSON.parse(sessionStorage.getItem('toh_checkout') || '{}');
+  shippingProtection = checkoutData.shippingProtection === true;
+
+  if (shippingProtection) {
+    document.getElementById('sProtRow').style.display = 'flex';
+  }
+
+  await loadCart();
+  await loadProfile();
+
+  // Live tax update when state or country changes
+  document.getElementById('state').addEventListener('input', renderSidebar);
+  document.getElementById('country').addEventListener('change', renderSidebar);
+  document.getElementById('couponCode').addEventListener('keydown', e => { if (e.key === 'Enter') applyCoupon(); });
+}
+
+sb.auth.onAuthStateChange((_, session) => {
+  if (!session) window.location.href = 'shop.html';
+});
+
+async function handleLogout() {
+  await sb.auth.signOut();
+  window.location.href = 'shop.html';
+}
+
+// ─── CART ───
+async function loadCart() {
+  const { data, error } = await sb.from('cart_items').select('*').eq('user_id', currentUser.id);
+  if (error || !data || data.length === 0) {
+    window.location.href = 'cart.html'; return;
+  }
+  cart = data.map(r => {
+    const p = PRODUCTS.find(x => x.id === r.product_id);
+    return { id: r.product_id, name: p?.name || r.product_id, content: p?.content || '', form: p?.form || '', price: p?.price || 0, qty: r.quantity, imgKey: p?.imgKey || r.product_id };
+  });
+  renderSidebar();
+}
+
+function renderSidebar() {
+  const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  const discount = appliedCoupon ? (appliedCoupon.discount_percent ? subtotal * (appliedCoupon.discount_percent / 100) : Math.min(appliedCoupon.discount_amount || 0, subtotal)) : 0;
+  const discountedSubtotal = subtotal - discount;
+  const prot = shippingProtection ? 5 : 0;
+  const stateVal  = document.getElementById('state')?.value || '';
+  const countryVal = document.getElementById('country')?.value || 'US';
+  const taxRate = getTaxRate(stateVal, countryVal);
+  const tax = discountedSubtotal * taxRate;
+  const total = discountedSubtotal + 10 + prot + tax;
+
+  document.getElementById('sSubtotal').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('sTotal').textContent = '$' + total.toFixed(2);
+  if (appliedCoupon) {
+    document.getElementById('sDiscountRow').style.display = 'flex';
+    document.getElementById('sDiscount').textContent = '-$' + discount.toFixed(2);
+    const discLabel = appliedCoupon.discount_percent ? appliedCoupon.discount_percent + '% off' : '$' + appliedCoupon.discount_amount.toFixed(2) + ' off';
+    document.getElementById('sDiscountLabel').textContent = '(' + appliedCoupon.code + ' ' + discLabel + ')';
+  } else {
+    document.getElementById('sDiscountRow').style.display = 'none';
+  }
+  if (tax > 0) {
+    document.getElementById('sTaxRow').style.display = 'flex';
+    document.getElementById('sTax').textContent = '$' + tax.toFixed(2);
+    const abbr = stateVal.trim().toUpperCase().length === 2 ? stateVal.trim().toUpperCase() : (STATE_NAME_MAP[stateVal.trim().toLowerCase()] || '');
+    document.getElementById('sTaxLabel').textContent = abbr ? `(${abbr})` : '';
+  } else {
+    document.getElementById('sTaxRow').style.display = 'none';
+  }
+
+  document.getElementById('sidebarItems').innerHTML = cart.map(item => `
+    <div class="order-item">
+      <div class="order-item-img" style="position:relative">
+        <img src="images/${item.imgKey}.png" alt="${item.name}">
+        <div class="order-item-qty">${item.qty}</div>
+      </div>
+      <div class="order-item-info">
+        <div class="name">${item.name}</div>
+        <div class="meta">${item.form} · ${item.content}</div>
+      </div>
+      <div class="order-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+    </div>`).join('');
+}
+
+// ─── PROFILE AUTOFILL ───
+async function loadProfile() {
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (!data) {
+    // Try to populate name from auth metadata
+    const meta = currentUser.user_metadata || {};
+    if (meta.first_name) document.getElementById('firstName').value = meta.first_name;
+    if (meta.last_name)  document.getElementById('lastName').value  = meta.last_name;
+    return;
+  }
+  if (data.first_name) document.getElementById('firstName').value = data.first_name;
+  if (data.last_name)  document.getElementById('lastName').value  = data.last_name;
+  if (data.address1)   document.getElementById('address1').value  = data.address1;
+  if (data.address2)   document.getElementById('address2').value  = data.address2 || '';
+  if (data.city)       document.getElementById('city').value      = data.city;
+  if (data.state)      document.getElementById('state').value     = data.state;
+  if (data.zip)        document.getElementById('zip').value       = data.zip;
+  if (data.phone)      document.getElementById('phone').value     = data.phone;
+  if (data.country) {
+    const sel = document.getElementById('country');
+    const opt = [...sel.options].find(o => o.value === data.country);
+    if (opt) sel.value = data.country;
+  }
+  if (data.address1) {
+    document.getElementById('autofillNote').style.display = 'block';
+  }
+}
+
+function clearAutofill() {
+  ['firstName','lastName','address1','address2','city','state','zip','phone'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('autofillNote').style.display = 'none';
+}
+
+// ─── BILLING TOGGLE ───
+function toggleBilling() {
+  const cb = document.getElementById('billingSame');
+  billingSameAsShipping = cb.checked;
+  document.getElementById('billingSection').style.display = billingSameAsShipping ? 'none' : 'block';
+}
+
+// ─── COUPON ───
+async function applyCoupon() {
+  const input = document.getElementById('couponCode');
+  const msg = document.getElementById('couponMsg');
+  const btn = document.getElementById('couponBtn');
+  const code = input.value.trim().toUpperCase();
+  if (!code) { msg.className = 'coupon-msg error'; msg.textContent = 'Please enter a coupon code.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  msg.textContent = '';
+
+  const { data, error } = await sb.from('coupons')
+    .select('code, discount_percent, discount_amount, customer_emails, expires_at, max_uses, times_used, first_order_only')
+    .eq('code', code).eq('active', true).single();
+
+  if (error || !data) {
+    msg.className = 'coupon-msg error';
+    msg.textContent = 'Invalid or expired coupon code.';
+    btn.disabled = false; btn.textContent = 'Apply'; return;
+  }
+
+  // Check expiration
+  if (data.expires_at && new Date(data.expires_at) < new Date()) {
+    msg.className = 'coupon-msg error';
+    msg.textContent = 'This coupon has expired.';
+    btn.disabled = false; btn.textContent = 'Apply'; return;
+  }
+
+  // Check max uses
+  if (data.max_uses !== null && data.times_used >= data.max_uses) {
+    msg.className = 'coupon-msg error';
+    msg.textContent = 'This coupon has reached its usage limit.';
+    btn.disabled = false; btn.textContent = 'Apply'; return;
+  }
+
+  // Check email restriction (JSONB array)
+  const emails = data.customer_emails;
+  if (emails && Array.isArray(emails) && emails.length > 0) {
+    const userEmail = currentUser.email.toLowerCase();
+    const allowed = emails.map(e => e.toLowerCase());
+    if (!allowed.includes(userEmail)) {
+      msg.className = 'coupon-msg error';
+      msg.textContent = 'This coupon is not valid for your account.';
+      btn.disabled = false; btn.textContent = 'Apply'; return;
+    }
+  }
+
+  // Check first order only
+  if (data.first_order_only) {
+    const { count } = await sb.from('orders').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id);
+    if (count > 0) {
+      msg.className = 'coupon-msg error';
+      msg.textContent = 'This coupon is only valid for first-time orders.';
+      btn.disabled = false; btn.textContent = 'Apply'; return;
+    }
+  }
+
+  const pct = Number(data.discount_percent) || 0;
+  const amt = Number(data.discount_amount) || 0;
+  const tagLabel = pct ? pct + '% off' : '$' + amt.toFixed(2) + ' off';
+
+  appliedCoupon = { code: data.code, discount_percent: pct, discount_amount: amt };
+  document.getElementById('couponInput').style.display = 'none';
+  document.getElementById('couponApplied').style.display = 'flex';
+  document.getElementById('couponTag').textContent = '✓ ' + data.code + ' — ' + tagLabel;
+  msg.className = 'coupon-msg success';
+  msg.textContent = 'Coupon applied!';
+  btn.disabled = false;
+  btn.textContent = 'Apply';
+  renderSidebar();
+}
+
+function removeCoupon() {
+  appliedCoupon = null;
+  document.getElementById('couponInput').style.display = 'flex';
+  document.getElementById('couponApplied').style.display = 'none';
+  document.getElementById('couponCode').value = '';
+  document.getElementById('couponMsg').textContent = '';
+  renderSidebar();
+}
+
+// ─── PLACE ORDER ───
+async function placeOrder() {
+  const btn = document.getElementById('submitBtn');
+  const errEl = document.getElementById('errorMsg');
+  errEl.style.display = 'none';
+
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName  = document.getElementById('lastName').value.trim();
+  const address1  = document.getElementById('address1').value.trim();
+  const city      = document.getElementById('city').value.trim();
+  const state     = document.getElementById('state').value.trim();
+  const zip       = document.getElementById('zip').value.trim();
+  const country   = document.getElementById('country').value;
+  const phone     = document.getElementById('phone').value.trim();
+
+  if (!firstName || !lastName) { showError('Please enter your first and last name.'); return; }
+  if (!address1)  { showError('Please enter your shipping address.'); return; }
+  if (!city)      { showError('Please enter your city.'); return; }
+  if (!state)     { showError('Please enter your state.'); return; }
+  if (!zip)       { showError('Please enter your ZIP / postal code.'); return; }
+
+  const shippingAddress = { firstName, lastName, address1, address2: document.getElementById('address2').value.trim(), city, state, zip, country, phone };
+
+  let billingAddress = null;
+  if (!billingSameAsShipping) {
+    const bFirst = document.getElementById('bFirstName').value.trim();
+    const bLast  = document.getElementById('bLastName').value.trim();
+    const bAddr1 = document.getElementById('bAddress1').value.trim();
+    const bCity  = document.getElementById('bCity').value.trim();
+    const bState = document.getElementById('bState').value.trim();
+    const bZip   = document.getElementById('bZip').value.trim();
+    if (!bFirst || !bLast || !bAddr1 || !bCity || !bState || !bZip) {
+      showError('Please complete all required billing address fields.'); return;
+    }
+    billingAddress = { firstName: bFirst, lastName: bLast, address1: bAddr1, address2: document.getElementById('bAddress2').value.trim(), city: bCity, state: bState, zip: bZip, country: document.getElementById('bCountry').value };
+  }
+
+  const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  const discount = appliedCoupon ? (appliedCoupon.discount_percent ? subtotal * (appliedCoupon.discount_percent / 100) : Math.min(appliedCoupon.discount_amount || 0, subtotal)) : 0;
+  const discountedSubtotal = subtotal - discount;
+  const taxRate = getTaxRate(state, country);
+  const tax = discountedSubtotal * taxRate;
+  const refCode = localStorage.getItem('toh_ref') || null;
+
+  btn.disabled = true;
+  btn.textContent = 'Placing Order…';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(EDGE_FN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        customerEmail: currentUser.email,
+        customerName: `${firstName} ${lastName}`,
+        shippingAddress,
+        billingAddress,
+        items: cart.map(i => ({ id: i.id, name: i.name, content: i.content, form: i.form, price: i.price, qty: i.qty, imgKey: i.imgKey })),
+        subtotal,
+        couponCode: appliedCoupon?.code || null,
+        couponDiscount: discount,
+        tax,
+        shippingProtection,
+        refCode,
+      }),
+    });
+
+    const result = await res.json();
+    if (!result.success) throw new Error(result.error || 'Order failed');
+
+    // Record affiliate conversion if applicable
+    if (refCode) {
+      try {
+        await sb.rpc('record_conversion', {
+          p_ref_code: refCode,
+          p_customer_email: currentUser.email,
+          p_order_items: cart.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
+          p_order_total: discountedSubtotal + 10 + tax + (shippingProtection ? 5 : 0),
+        });
+      } catch(e) { /* non-blocking */ }
+    }
+
+    // Save confirmation data and redirect
+    sessionStorage.setItem('toh_order', JSON.stringify({
+      orderNumber: result.orderNumber,
+      firstName,
+      items: cart,
+      subtotal,
+      couponCode: appliedCoupon?.code || null,
+      couponDiscount: discount,
+      tax,
+      shippingProtection,
+      total: discountedSubtotal + 10 + tax + (shippingProtection ? 5 : 0),
+      shippingAddress,
+    }));
+
+    window.location.href = 'order-confirmation.html';
+
+  } catch (err) {
+    showError('Something went wrong placing your order. Please try again or contact support@theoptimizedhumanproject.com');
+    btn.disabled = false;
+    btn.textContent = 'Complete Order';
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+
+init();
+</script>
+</body>
+</html>
