@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/png" href="favicon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OH Score™ + Protocol Finder | The Optimized Human</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -53,13 +54,13 @@ h2{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;line-height:1.3;m
 .label-tag{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
 
 /* ─── HABIT CARDS (Intro) ─── */
-.habit-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:32px}
+.habit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px}
 .habit-card{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
 .habit-card .ic{font-size:22px}
 .habit-card h3{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
 .habit-card p{font-size:11px;color:var(--text3)}
-.habit-card.full{}
-@media(max-width:500px){}
+.habit-card.full{grid-column:1/-1}
+@media(max-width:500px){.habit-grid{grid-template-columns:1fr}}
 
 /* ─── PROGRESS BAR ─── */
 .progress-wrap{margin-bottom:28px}
@@ -246,7 +247,7 @@ h2{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;line-height:1.3;m
     <div class="phase-dot">2</div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:32px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
     <div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px">
       <div style="font-size:11px;color:var(--purple);font-family:var(--mono);font-weight:700;letter-spacing:1.5px;margin-bottom:8px">PHASE 1</div>
       <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">OH Score™</div>
@@ -707,7 +708,7 @@ function submitGate() {
   }
   leadData = { name, email };
 
-  // 🔌 GHL WEBHOOK — LIVE
+  // 🔌 GHL CONTACT UPSERT — via Edge Function
   const score = calcScore();
   const tier = getTier(score);
   const pct = calcPillarScores();
@@ -716,65 +717,34 @@ function submitGate() {
 
   const pillarLabels = {S:'Steps',H:'Hydration',I:'Identity Input',F:'Fuel',T:'Training'};
 
-  fetch('https://services.leadconnectorhq.com/hooks/wWa1nNze80AlKHul1GMT/webhook-trigger/9f60bf1b-6383-4e60-b519-3657663c4880', {
+  fetch(SUPABASE_URL + '/functions/v1/ghl-upsert', {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+    },
     body: JSON.stringify({
-      // Contact info
-      name: name,
+      firstName: name,
       email: email,
-
-      // Source tracking
-      utm_source: 'assessment',
-      utm_medium: 'oh_score',
-      utm_content: tier.name.toLowerCase(),
-
-      // OH Score results
-      score: score,
-      tier: tier.name,
-      tierMessage: tier.msg,
-      tierCTA: tier.cta,
-
-      // Pillar breakdown
-      weakestPillar: pillarLabels[weakest],
-      pillar_steps: pct.S,
-      pillar_hydration: pct.H,
-      pillar_identity: pct.I,
-      pillar_fuel: pct.F,
-      pillar_training: pct.T,
-
-      // Focus area selected
-      focusArea: protocolAnswers.focus || '',
-
-      // Compound recommendations (array)
-      compounds: recs.map(r => {
-        const c = COMPOUNDS[r.key];
-        return {
-          name: c ? c.name : r.key,
-          tier: r.p === 1 ? 'Primary' : r.p === 2 ? 'Supporting' : 'Complementary',
-          reason: r.reason,
-          price: c ? c.price : 0,
-          content: c ? c.content : '',
-          form: c ? c.form : ''
-        };
-      }),
-
-      // Flattened compound list for email template
-      compoundList: recs.map(r => {
-        const c = COMPOUNDS[r.key];
-        const tierLabel = r.p === 1 ? 'PRIMARY' : r.p === 2 ? 'SUPPORTING' : 'COMPLEMENTARY';
-        return `[${tierLabel}] ${c ? c.name : r.key} (${c ? c.content : ''}) - $${c ? c.price.toFixed(2) : '0.00'} - ${r.reason}`;
-      }).join(' | '),
-
-      // Total estimated cost
-      totalCost: recs.reduce((sum, r) => sum + (COMPOUNDS[r.key]?.price || 0), 0).toFixed(2),
-
-      // Compound count
-      compoundCount: recs.length,
-      primaryCount: recs.filter(r => r.p === 1).length,
-      supportingCount: recs.filter(r => r.p > 1).length
+      source: 'OH Score Assessment',
+      customFields: [
+        { key: 'oh_score', field_value: score },
+        { key: 'oh_score_tier', field_value: tier.name },
+        { key: 'oh_score_weakest_pillar', field_value: pillarLabels[weakest] },
+        { key: 'oh_score_tier_message', field_value: tier.msg },
+        { key: 'oh_score_tier_cta_text', field_value: tier.cta },
+        { key: 'oh_score_pillar_steps', field_value: pct.S },
+        { key: 'oh_score_pillar_hydration', field_value: pct.H },
+        { key: 'oh_score_pillar_identity', field_value: pct.I },
+        { key: 'oh_score_pillar_fuel', field_value: pct.F },
+        { key: 'oh_score_pillar_training', field_value: pct.T },
+        { key: 'utm_source', field_value: 'assessment' },
+        { key: 'utm_medium', field_value: 'oh_score' },
+        { key: 'utm_content', field_value: tier.name.toLowerCase() }
+      ]
     })
-  });
+  })
+  .catch(err => console.error('GHL upsert error:', err));
 
   showResults();
 }
