@@ -7,18 +7,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--accent:#AC66A7;--accent-light:#c88cc4;--accent-glow:rgba(172,102,167,.12);--accent-glow2:rgba(172,102,167,.25);--white:#fff;--t1:#eee;--t2:#999;--t3:#666;--t4:#444;--green:#34D399;--radius:12px;--max-w:1280px}
-*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-light)}img{max-width:100%;display:block}.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-light)}.container{max-width:var(--max-w);margin:0 auto;padding:0 32px}
 
-/* Nav */
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(17,17,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px}.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}.nav-logo .mark{font-weight:900;font-size:28px;color:var(--accent);letter-spacing:-1px}.nav-logo .wordmark{line-height:1.1}.nav-logo .wordmark .sm{font-size:9px;font-weight:500;color:var(--t2);letter-spacing:2px;text-transform:uppercase}.nav-logo .wordmark .lg{font-size:16px;font-weight:700;color:var(--white)}.nav-links{display:flex;align-items:center;gap:32px}.nav-links a{color:var(--t2);font-size:13px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}.nav-links a:hover,.nav-links a.active{color:var(--white)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:200}.hamburger span{width:22px;height:2px;background:var(--t2);transition:all .3s}.hamburger:hover span{background:var(--white)}
 .mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;bottom:0;background:rgba(17,17,17,.98);backdrop-filter:blur(20px);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:32px}.mobile-menu a{color:var(--t2);font-size:18px;font-weight:500;letter-spacing:1px;text-transform:uppercase}.mobile-menu a:hover,.mobile-menu a.active{color:var(--white)}.mobile-menu.open{display:flex}
 @media(max-width:768px){.nav-links{display:none}.hamburger{display:flex}}
 
-/* Page Header */
 .page-header{padding:120px 0 40px;border-bottom:1px solid rgba(255,255,255,.04)}.page-header h1{font-size:clamp(28px,4vw,44px);font-weight:800;color:var(--white);margin-bottom:8px}.page-header p{font-size:16px;color:var(--t3);font-weight:300}.page-header .stat-row{display:flex;gap:24px;margin-top:16px;flex-wrap:wrap}.page-header .stat{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);letter-spacing:.5px}
 
-/* Controls */
+/* Mode Tabs */
+.mode-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--t4)}
+.mode-tab{padding:14px 28px;background:none;border:none;color:var(--t2);font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;position:relative;transition:color .2s;letter-spacing:.3px}
+.mode-tab:hover{color:var(--t1)}
+.mode-tab.active{color:var(--accent)}
+.mode-tab.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--accent)}
+
+/* DATABASE TAB STYLES (same as before) */
 .controls{padding:24px 0;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:20px}
 .search-box{flex:1;min-width:240px;position:relative}
 .search-box input{width:100%;background:var(--bg2);border:1px solid var(--t4);border-radius:8px;padding:12px 16px 12px 42px;color:var(--white);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
@@ -29,20 +34,15 @@
 .view-toggle button{padding:8px 16px;background:transparent;border:none;color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .2s}
 .view-toggle button.active{background:var(--accent);color:var(--white)}
 .view-toggle button:hover:not(.active){color:var(--white)}
-
-/* Category Pills */
 .cat-pills{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:20px}
 .cat-pill{padding:6px 14px;border-radius:20px;border:1px solid var(--t4);background:var(--bg2);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'Outfit',sans-serif}
 .cat-pill:hover{border-color:var(--t2);color:var(--t1)}
 .cat-pill.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent)}
 .cat-pill .cnt{opacity:.5;margin-left:4px;font-family:'JetBrains Mono',monospace;font-size:10px}
-
-/* Results */
 .results-bar{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:12px}
 .clear-btn{background:none;border:1px solid var(--t4);border-radius:4px;color:var(--t2);font-size:11px;padding:2px 10px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all .2s}
 .clear-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-/* Grid Cards */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;padding-bottom:80px}
 .card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:all .25s;position:relative;border-left:3px solid var(--t4)}
 .card:hover{border-color:rgba(172,102,167,.4);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
@@ -57,11 +57,10 @@
 .card-detail .form-note{margin-top:10px;font-size:12px;color:var(--t3);font-style:italic;padding-top:8px;border-top:1px solid rgba(255,255,255,.04)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 
-/* List View */
 .list-wrap{border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden;margin-bottom:80px}
 .list-header{display:grid;grid-template-columns:2.2fr 1.1fr 2.5fr 2fr 1.5fr;background:var(--bg3);padding:12px 20px;gap:12px}
 .list-header span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
-.list-row{display:grid;grid-template-columns:2.2fr 1.1fr 2.5fr 2fr 1.5fr;padding:10px 20px;gap:12px;border-top:1px solid rgba(255,255,255,.03);transition:background .15s;cursor:default}
+.list-row{display:grid;grid-template-columns:2.2fr 1.1fr 2.5fr 2fr 1.5fr;padding:10px 20px;gap:12px;border-top:1px solid rgba(255,255,255,.03);transition:background .15s}
 .list-row:hover{background:rgba(172,102,167,.04)}
 .list-row:nth-child(even){background:rgba(255,255,255,.01)}
 .list-row:nth-child(even):hover{background:rgba(172,102,167,.04)}
@@ -70,16 +69,47 @@
 .list-row .l-use{font-size:12px;color:var(--t2);line-height:1.4}
 .list-row .l-dose{font-size:11px;color:var(--t1);font-family:'JetBrains Mono',monospace;line-height:1.4}
 .list-row .l-form{font-size:11px;color:var(--t3);font-style:italic;line-height:1.4}
-
-/* No results */
 .no-results{text-align:center;padding:80px 20px;color:var(--t3)}.no-results .icon{font-size:48px;margin-bottom:12px;opacity:.4}.no-results p{font-family:'JetBrains Mono',monospace;font-size:14px}
 
-/* Footer */
+/* STACKS TAB STYLES */
+.stacks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px;padding-bottom:40px}
+.stack-card{background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .3s}
+.stack-card:hover{border-color:rgba(172,102,167,.4);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.stack-card.active{border-color:var(--accent)}
+.stack-card-head{padding:20px;display:flex;gap:14px;align-items:flex-start}
+.stack-icon{font-size:28px;flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--bg3);border-radius:10px}
+.stack-info{flex:1}
+.stack-info h3{font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px}
+.stack-info p{font-size:12px;color:var(--t3);line-height:1.4}
+.stack-meta{display:flex;gap:16px;margin-top:8px}
+.stack-meta span{font-family:'JetBrains Mono',monospace;font-size:11px}
+.stack-meta .count{color:var(--t2)}
+.stack-meta .cost{color:var(--accent)}
+
+.stack-detail{padding:0 20px 20px;animation:fadeIn .25s ease}
+.tier-section{margin-top:16px}
+.tier-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:4px 12px;border-radius:6px;display:inline-block;margin-bottom:10px}
+.tier-foundation .tier-label{color:#34D399;background:rgba(52,211,153,.1)}
+.tier-targeted .tier-label{color:#3B82F6;background:rgba(59,130,246,.1)}
+.tier-advanced .tier-label{color:#9B59B6;background:rgba(155,89,182,.1)}
+
+.compound-row{background:var(--bg);border:1px solid rgba(255,255,255,.04);border-radius:8px;padding:14px 16px;margin-bottom:8px;transition:border-color .2s}
+.compound-row:hover{border-color:rgba(255,255,255,.1)}
+.compound-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+.compound-name{font-size:14px;font-weight:600;color:var(--white)}
+.compound-cost{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);white-space:nowrap}
+.compound-dose{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t1);margin-bottom:4px}
+.compound-timing{font-size:12px;color:var(--t3);margin-bottom:6px}
+.compound-why{font-size:12px;color:var(--t2);line-height:1.5;padding-top:8px;border-top:1px solid rgba(255,255,255,.04)}
+
+.stack-disclaimer{margin-top:32px;padding:16px 20px;background:var(--bg2);border:1px solid var(--t4);border-radius:var(--radius);font-size:11px;color:var(--t3);line-height:1.6}
+.stack-disclaimer strong{color:var(--t2)}
+
 .footer{padding:60px 0 40px;border-top:1px solid rgba(255,255,255,.04)}.footer-bottom{display:flex;justify-content:space-between;align-items:center}.footer-bottom p{font-size:12px;color:var(--t4)}.footer-bottom .disclaimer{font-size:10px;color:var(--t4);max-width:500px;text-align:right;line-height:1.5}
 
-/* Responsive */
 @media(max-width:900px){
   .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  .stacks-grid{grid-template-columns:1fr}
   .list-header,.list-row{grid-template-columns:1.8fr 1fr 2fr 1.5fr}
   .list-header span:nth-child(5),.list-row .l-form{display:none}
 }
@@ -91,65 +121,69 @@
   .list-row .l-dose{font-size:10px}
   .footer-bottom{flex-direction:column;gap:12px;text-align:center}
   .footer-bottom .disclaimer{text-align:center}
-  .page-header .stat-row{gap:12px}
+  .mode-tab{padding:12px 16px;font-size:14px}
 }
-@media(max-width:500px){
-  .cat-pills{gap:6px}
-  .cat-pill{font-size:11px;padding:5px 10px}
-}
+@media(max-width:500px){.cat-pills{gap:6px}.cat-pill{font-size:11px;padding:5px 10px}}
 </style>
 </head>
 <body>
 
-<!-- Nav -->
 <nav class="nav"><div class="nav-inner">
   <a href="index.html" class="nav-logo"><div class="mark">OH</div><div class="wordmark"><div class="sm">THE</div><div class="lg">Optimized Human</div></div></a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="shop.html">Shop</a>
-    <a href="supplements.html" class="active">Supplements</a>
-    <a href="coa.html">COA</a>
-    <a href="about.html">About</a>
-    <a href="partners.html">Partners</a>
-    <a href="contact.html">Contact</a>
+    <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="supplements.html" class="active">Supplements</a><a href="coa.html">COA</a><a href="about.html">About</a><a href="partners.html">Partners</a><a href="contact.html">Contact</a>
   </div>
   <div class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></div>
 </div></nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="index.html">Home</a>
-  <a href="shop.html">Shop</a>
-  <a href="supplements.html" class="active">Supplements</a>
-  <a href="coa.html">COA</a>
-  <a href="about.html">About</a>
-  <a href="partners.html">Partners</a>
-  <a href="contact.html">Contact</a>
+  <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="supplements.html" class="active">Supplements</a><a href="coa.html">COA</a><a href="about.html">About</a><a href="partners.html">Partners</a><a href="contact.html">Contact</a>
 </div>
 
-<!-- Header -->
 <section class="page-header"><div class="container">
   <h1>OTC Supplement Database</h1>
   <p>The complete reference. Every compound, every form, every research-backed dosage.</p>
   <div class="stat-row">
     <span class="stat" id="totalCount"></span>
     <span class="stat" id="catCount"></span>
+    <span class="stat">9 GOAL-BASED STACKS</span>
   </div>
 </div></section>
 
-<!-- Controls -->
 <section><div class="container">
-  <div class="controls">
-    <div class="search-box">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="searchInput" placeholder="Search 593 supplements by name, use, dosage, form..." />
+
+  <!-- Mode Tabs -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tabDB" onclick="switchTab('db')">Database</button>
+    <button class="mode-tab" id="tabStacks" onclick="switchTab('stacks')">Stacks</button>
+  </div>
+
+  <!-- DATABASE TAB -->
+  <div id="dbTab">
+    <div class="controls">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search 593 supplements by name, use, dosage, form..." />
+      </div>
+      <div class="view-toggle">
+        <button class="active" id="gridBtn" onclick="setView('grid')">Grid</button>
+        <button id="listBtn" onclick="setView('list')">List</button>
+      </div>
     </div>
-    <div class="view-toggle">
-      <button class="active" id="gridBtn" onclick="setView('grid')">Grid</button>
-      <button id="listBtn" onclick="setView('list')">List</button>
+    <div class="cat-pills" id="catPills"></div>
+    <div class="results-bar" id="resultsBar"></div>
+    <div id="content"></div>
+  </div>
+
+  <!-- STACKS TAB -->
+  <div id="stacksTab" style="display:none">
+    <p style="color:var(--t2);margin-bottom:8px;font-size:14px">9 goal-based supplement stacks. 3 tiers each: <span style="color:#34D399;font-weight:600">Foundation</span> (start here), <span style="color:#3B82F6;font-weight:600">Targeted</span> (goal-specific), <span style="color:#9B59B6;font-weight:600">Advanced</span> (aggressive optimization).</p>
+    <p style="color:var(--t3);margin-bottom:24px;font-size:13px">Every stack assumes the Universal Foundation is in place first. Click any stack to expand.</p>
+    <div id="stacksContent"></div>
+    <div class="stack-disclaimer">
+      <strong>Disclaimer:</strong> Supplement information is for educational purposes only. These stacks are not medical advice and are not intended to diagnose, treat, cure, or prevent any disease. Always consult a qualified healthcare provider before starting any supplement regimen. Dosages listed are general ranges from published research and may not be appropriate for your individual situation. Interactions with medications are possible.
     </div>
   </div>
-  <div class="cat-pills" id="catPills"></div>
-  <div class="results-bar" id="resultsBar"></div>
-  <div id="content"></div>
+
 </div></section>
 
 <footer class="footer"><div class="container"><div class="footer-bottom">
@@ -754,6 +788,183 @@ const S=[
 {n:"Colloidal Minerals",c:"Specialty",u:"Trace mineral complex from humic/fulvic sources",d:"Per label",f:"Plant-derived; Majestic Earth type"}
 ];
 
+
+const STACKS = [
+  {
+    id:"foundation",
+    name:"Universal Foundation",
+    icon:"🏗️",
+    desc:"The non-negotiable daily baseline. Every human, every goal. Fix these first or nothing else works.",
+    color:"#34D399",
+    items:[
+      {t:"Foundation",n:"Vitamin D3 (Cholecalciferol)",form:"Softgel / Liquid",dose:"5,000 IU/day",timing:"Morning with fat",why:"Immune modulation, hormone precursor, mood, bone. 42% of US adults are deficient. Nothing downstream works without adequate D.",cost:"$5-12/mo"},
+      {t:"Foundation",n:"Vitamin K2 (MK-7)",form:"Softgel",dose:"200 mcg/day",timing:"Morning with D3",why:"Routes calcium out of arteries and into bones. Non-negotiable pair with D3. Without K2, D3 supplementation can calcify soft tissue.",cost:"$8-15/mo"},
+      {t:"Foundation",n:"Magnesium (Glycinate)",form:"Capsule / Powder",dose:"400 mg elemental/day",timing:"Evening",why:"80% of adults are deficient. Sleep, muscle recovery, 300+ enzyme reactions, blood sugar, blood pressure. Glycinate for absorption + calming.",cost:"$8-15/mo"},
+      {t:"Foundation",n:"Omega-3 Fish Oil (EPA/DHA)",form:"Softgel / Liquid",dose:"2-3 g combined EPA+DHA/day",timing:"With meals",why:"Anti-inflammatory backbone. Cardiovascular, brain, joint, mood. Triglyceride form, third-party tested for oxidation and heavy metals.",cost:"$15-30/mo"},
+      {t:"Foundation",n:"Creatine Monohydrate",form:"Powder",dose:"5 g/day",timing:"Any time, daily",why:"Most studied supplement in existence. Strength, brain energy, cell hydration, neuroprotection. Not just for lifters. Everyone benefits.",cost:"$5-10/mo"},
+      {t:"Foundation",n:"Electrolytes (Na/K/Mg)",form:"Powder / Capsule",dose:"Per activity level",timing:"Morning + intra-workout",why:"Hydration is not just water. Sodium, potassium, magnesium in proper ratios. Especially critical for anyone training or in ketosis.",cost:"$10-25/mo"},
+      {t:"Targeted",n:"Vitamin B Complex (Methylated)",form:"Capsule",dose:"1 cap/day",timing:"Morning",why:"Methylfolate + methylcobalamin + P-5-P + riboflavin 5-phosphate. Covers MTHFR variants, energy metabolism, methylation, homocysteine clearance.",cost:"$10-20/mo"},
+      {t:"Targeted",n:"Zinc (Picolinate) + Copper",form:"Capsule",dose:"30 mg Zn + 2 mg Cu/day",timing:"Evening with food",why:"Immune, testosterone synthesis, wound healing. Copper balances zinc. Most people are zinc-deficient and don't know it.",cost:"$6-12/mo"},
+      {t:"Targeted",n:"Vitamin C (Liposomal)",form:"Liquid / Capsule",dose:"1,000-2,000 mg/day",timing:"Divided doses",why:"Immune, collagen synthesis, antioxidant, iron absorption. Liposomal for 2-3x absorption over standard ascorbic acid.",cost:"$12-25/mo"}
+    ]
+  },
+  {
+    id:"fat-loss",
+    name:"Fat Loss & Metabolic",
+    icon:"🔥",
+    desc:"Targeting metabolic rate, insulin sensitivity, appetite regulation, and fat oxidation. Assumes Foundation Stack is in place.",
+    color:"#E67E22",
+    items:[
+      {t:"Foundation",n:"Berberine (Dihydroberberine)",form:"Capsule",dose:"100-200 mg 2-3x/day with meals",timing:"With meals",why:"AMPK activator. Blood sugar, insulin sensitivity, GLP-1 stimulation. Dihydroberberine is 5x more bioavailable with fewer GI side effects.",cost:"$15-30/mo"},
+      {t:"Foundation",n:"Chromium (Picolinate)",form:"Capsule",dose:"500-1,000 mcg/day",timing:"With carb-heavy meals",why:"Insulin receptor sensitivity, carb craving reduction, glucose tolerance. Cheap, well-studied, zero downside at this dose.",cost:"$4-8/mo"},
+      {t:"Foundation",n:"L-Carnitine (L-Tartrate)",form:"Powder / Capsule",dose:"2 g/day",timing:"Pre-workout or morning",why:"Fatty acid transport into mitochondria. More effective when combined with exercise. Also supports recovery and fertility.",cost:"$10-20/mo"},
+      {t:"Targeted",n:"Green Tea Extract (EGCG)",form:"Capsule",dose:"400-500 mg EGCG/day",timing:"Morning with food",why:"Thermogenesis, fat oxidation, catecholamine activity. Decaffeinated extract. Always take with food to protect liver.",cost:"$10-18/mo"},
+      {t:"Targeted",n:"Grains of Paradise",form:"Capsule",dose:"40 mg/day",timing:"Morning",why:"Brown adipose tissue activation. Recruits BAT to burn more calories as heat. One of the few OTC compounds with direct BAT evidence.",cost:"$12-20/mo"},
+      {t:"Targeted",n:"Forskolin (Coleus forskohlii)",form:"Capsule",dose:"250 mg 2x/day (10% forskolin)",timing:"Morning + afternoon",why:"cAMP activation, lipolysis, lean mass preservation. Also has mild thyroid-stimulating properties.",cost:"$12-22/mo"},
+      {t:"Targeted",n:"5-HTP",form:"Capsule",dose:"100-200 mg/day",timing:"Before carb-heavy meals or evening",why:"Serotonin-mediated appetite suppression. Specifically reduces carb cravings. Also supports mood and sleep.",cost:"$8-15/mo"},
+      {t:"Advanced",n:"Capsaicin (Capsimax)",form:"Beadlet Capsule",dose:"100 mg/day",timing:"Morning",why:"Thermogenesis, fat oxidation boost, appetite reduction. Capsimax beadlet form eliminates GI burn of raw cayenne.",cost:"$10-18/mo"},
+      {t:"Advanced",n:"Conjugated Linoleic Acid (CLA)",form:"Softgel",dose:"3-4 g/day",timing:"With meals",why:"Body recomposition, modest fat reduction, insulin sensitivity. Tonalin brand for proper isomer ratio.",cost:"$15-25/mo"},
+      {t:"Advanced",n:"Glucomannan",form:"Capsule",dose:"1 g before meals (3x/day)",timing:"30 min before meals with full glass water",why:"Soluble fiber that expands 50x. Mechanical appetite suppression + cholesterol binding. Simple, effective, dirt cheap.",cost:"$6-12/mo"}
+    ]
+  },
+  {
+    id:"recovery",
+    name:"Recovery & Performance",
+    icon:"🩹",
+    desc:"Accelerate recovery, reduce inflammation, support connective tissue, and enhance training output. Assumes Foundation Stack is in place.",
+    color:"#3B82F6",
+    items:[
+      {t:"Foundation",n:"Collagen Peptides (Type I & III)",form:"Powder",dose:"15-20 g/day",timing:"Morning or post-workout with vitamin C",why:"Tendons, ligaments, bones, gut lining, skin. Take with vitamin C to enhance collagen synthesis. Hydrolyzed for absorption.",cost:"$15-30/mo"},
+      {t:"Foundation",n:"Tart Cherry Extract",form:"Capsule / Juice",dose:"500-1,000 mg/day",timing:"Post-workout + evening",why:"Natural melatonin source, DOMS reduction, uric acid, inflammation. Proven in marathon and strength training recovery studies.",cost:"$12-22/mo"},
+      {t:"Foundation",n:"Curcumin (Meriva Phytosome)",form:"Capsule",dose:"500-1,000 mg/day",timing:"With meals",why:"NF-kB and COX-2 inhibition. Systemic anti-inflammatory comparable to low-dose NSAIDs without the gut damage. Phytosome for 29x absorption.",cost:"$15-28/mo"},
+      {t:"Targeted",n:"Bromelain",form:"Capsule",dose:"500-1,000 mg/day",timing:"Between meals (empty stomach)",why:"Proteolytic enzyme. Anti-inflammatory, edema reduction, sinusitis, post-surgical swelling. Must be taken away from food for systemic effect.",cost:"$8-15/mo"},
+      {t:"Targeted",n:"MSM (OptiMSM)",form:"Powder / Capsule",dose:"2-3 g/day",timing:"Morning",why:"Sulfur donor for connective tissue, joint inflammation, muscle recovery. Synergistic with glucosamine. OptiMSM brand for purity.",cost:"$8-14/mo"},
+      {t:"Targeted",n:"Boswellia (ApresFlex)",form:"Capsule",dose:"100-200 mg/day",timing:"Morning",why:"5-LOX inhibition, joint pain, IBD. ApresFlex form is 20% AKBA with superior absorption. Works within 5 days.",cost:"$12-20/mo"},
+      {t:"Targeted",n:"Beta-Alanine (CarnoSyn)",form:"Powder",dose:"3.2-6.4 g/day",timing:"Daily (timing irrelevant, loading effect)",why:"Carnosine buffer. Extends muscular endurance in 60-240 second efforts. Sustained release to minimize tingling.",cost:"$8-15/mo"},
+      {t:"Advanced",n:"Astaxanthin",form:"Softgel",dose:"8-12 mg/day",timing:"With fat-containing meal",why:"Most powerful carotenoid antioxidant. Joint, muscle recovery, eye protection, endurance, skin. Crosses BBB and blood-retinal barriers.",cost:"$15-28/mo"},
+      {t:"Advanced",n:"Palmitoylethanolamide (PEA)",form:"Capsule",dose:"600-1,200 mg/day",timing:"Divided doses",why:"Endocannabinoid system modulator. Chronic pain, nerve pain, inflammation. No tolerance buildup. Ultra-micronized form preferred.",cost:"$20-35/mo"},
+      {t:"Advanced",n:"Nattokinase",form:"Capsule",dose:"4,000 FU/day",timing:"Empty stomach, morning",why:"Fibrinolytic enzyme. Blood flow, circulation, clot prevention. Supports recovery by improving nutrient delivery to damaged tissue.",cost:"$12-22/mo"}
+    ]
+  },
+  {
+    id:"longevity",
+    name:"Longevity & Anti-Aging",
+    icon:"🧬",
+    desc:"NAD+ support, autophagy, mitochondrial biogenesis, senolytic clearance, and telomere maintenance. Assumes Foundation Stack is in place.",
+    color:"#1ABC9C",
+    items:[
+      {t:"Foundation",n:"NMN (Nicotinamide Mononucleotide)",form:"Sublingual / Capsule",dose:"500-1,000 mg/day",timing:"Morning, sublingual preferred",why:"NAD+ precursor. Sirtuin activation, DNA repair, cellular energy. NAD+ declines ~50% between age 40-60. This reverses that decline.",cost:"$30-60/mo"},
+      {t:"Foundation",n:"Resveratrol (trans-)",form:"Capsule",dose:"500 mg/day",timing:"Morning with fat (pairs with NMN)",why:"Sirtuin activator, AMPK, anti-inflammatory. Synergistic with NMN. Japanese knotweed source for trans-resveratrol content.",cost:"$12-25/mo"},
+      {t:"Foundation",n:"CoQ10 (Ubiquinol)",form:"Softgel",dose:"200-300 mg/day",timing:"With fat-containing meal",why:"Mitochondrial electron transport, cellular energy, heart, antioxidant. Ubiquinol (reduced form) for anyone over 40. Kaneka QH brand.",cost:"$20-40/mo"},
+      {t:"Targeted",n:"Spermidine",form:"Capsule",dose:"6 mg/day",timing:"Morning",why:"Autophagy inducer. Cellular recycling, longevity, hair growth, cardiac health. Caloric restriction mimetic without the caloric restriction.",cost:"$20-40/mo"},
+      {t:"Targeted",n:"Fisetin",form:"Capsule",dose:"100-500 mg/day; senolytic: 1-2 g x 2 days/month",timing:"Senolytic protocol monthly",why:"Most potent natural senolytic. Clears zombie cells that drive aging inflammation. Intermittent high-dose protocol for senolytic effect.",cost:"$15-30/mo"},
+      {t:"Targeted",n:"Quercetin (Phytosome)",form:"Capsule",dose:"500-1,000 mg/day",timing:"Morning",why:"Senolytic (pairs with fisetin), zinc ionophore, mast cell stabilizer, antiviral. Phytosome form for bioavailability.",cost:"$12-22/mo"},
+      {t:"Targeted",n:"PQQ (Pyrroloquinoline Quinone)",form:"Capsule",dose:"20 mg/day",timing:"Morning",why:"Mitochondrial BIOGENESIS. Not just protecting existing mitochondria, creating new ones. Pairs with CoQ10 for full mitochondrial support.",cost:"$15-30/mo"},
+      {t:"Advanced",n:"Urolithin A (Mitopure)",form:"Capsule",dose:"500-1,000 mg/day",timing:"Morning",why:"Mitophagy. Recycles damaged mitochondria. Pomegranate metabolite most people cannot produce endogenously. Timeline brand.",cost:"$40-60/mo"},
+      {t:"Advanced",n:"Apigenin",form:"Capsule",dose:"50 mg/day",timing:"Evening",why:"CD38 inhibitor. Preserves NAD+ by blocking the enzyme that degrades it. Also sleep-promoting and anxiolytic. Force multiplier for NMN.",cost:"$8-15/mo"},
+      {t:"Advanced",n:"TUDCA",form:"Capsule",dose:"500-1,000 mg/day",timing:"Morning, empty stomach",why:"ER stress relief, bile flow, liver protection, neuroprotection. Chemical chaperone that helps cells fold proteins correctly under stress.",cost:"$20-35/mo"}
+    ]
+  },
+  {
+    id:"cognitive",
+    name:"Cognitive & Focus",
+    icon:"🧠",
+    desc:"Neurotransmitter support, cerebral blood flow, neuroprotection, and sustained mental performance. Assumes Foundation Stack is in place.",
+    color:"#9B59B6",
+    items:[
+      {t:"Foundation",n:"Lion's Mane Mushroom",form:"Capsule (Dual Extract)",dose:"1,000-2,000 mg/day",timing:"Morning",why:"NGF and BDNF stimulation. Neuroregeneration, memory, focus, gut-brain axis. Dual extract (fruiting body + mycelium) for hericenones and erinacines.",cost:"$15-30/mo"},
+      {t:"Foundation",n:"Caffeine + L-Theanine",form:"Capsule or separate",dose:"100 mg caffeine + 200 mg theanine",timing:"Morning / pre-work",why:"Gold standard entry nootropic. Smooth focus without jitters. Theanine promotes alpha brainwaves while caffeine drives alertness.",cost:"$5-12/mo"},
+      {t:"Foundation",n:"CDP-Choline (Citicoline)",form:"Capsule",dose:"250-500 mg/day",timing:"Morning",why:"Brain energy, phospholipid synthesis, dopamine support, neuroprotection. Cognizin brand. Provides the choline backbone for acetylcholine.",cost:"$15-25/mo"},
+      {t:"Targeted",n:"Bacopa Monnieri",form:"Capsule",dose:"300-600 mg/day (50% bacosides)",timing:"Morning with fat",why:"Memory consolidation, learning speed, anxiolytic. Takes 8-12 weeks to reach full effect. Fat-soluble. Patience required.",cost:"$10-18/mo"},
+      {t:"Targeted",n:"Rhodiola Rosea",form:"Capsule",dose:"200-400 mg/day",timing:"Morning, empty stomach",why:"Adaptogen. Fatigue resistance under stress, mental performance, cortisol modulation. SHR-5 extract most studied.",cost:"$10-18/mo"},
+      {t:"Targeted",n:"Alpha-GPC",form:"Capsule",dose:"300-600 mg/day",timing:"Morning or pre-workout",why:"High-bioavailability choline source. Acetylcholine production, memory, power output. 40% choline by weight. Pairs with racetams.",cost:"$12-22/mo"},
+      {t:"Targeted",n:"Phosphatidylserine",form:"Softgel",dose:"200-300 mg/day",timing:"Morning + evening",why:"Cortisol reduction, memory, ADHD support. Cell membrane phospholipid. Proven in cognitive decline and stress studies.",cost:"$15-28/mo"},
+      {t:"Advanced",n:"Uridine Monophosphate",form:"Capsule",dose:"150-250 mg/day",timing:"Morning",why:"Synapse formation, dopamine receptor density, mood. The Mr. Happy Stack = uridine + DHA + choline. Pairs with CDP-choline and fish oil.",cost:"$12-20/mo"},
+      {t:"Advanced",n:"Methylene Blue (USP Grade)",form:"Liquid",dose:"0.5-1 mg/kg/day",timing:"Morning, away from serotonergic compounds",why:"Mitochondrial electron carrier. Enhances brain energy by bypassing Complex I dysfunction. USP pharmaceutical grade ONLY. Turns urine blue.",cost:"$15-25/mo"},
+      {t:"Advanced",n:"Noopept",form:"Sublingual",dose:"10-20 mg/day",timing:"Morning, sublingual",why:"BDNF/NGF modulation, memory, neuroprotection. 1000x potency of piracetam by weight. Low dose, high impact. Cycle 2-3 months on, 1 month off.",cost:"$10-18/mo"}
+    ]
+  },
+  {
+    id:"sleep",
+    name:"Sleep & Stress",
+    icon:"😴",
+    desc:"Sleep architecture, HPA axis recovery, cortisol management, and parasympathetic activation. Foundation Stack Mg glycinate is your base.",
+    color:"#5B6ABF",
+    items:[
+      {t:"Foundation",n:"Magnesium L-Threonate (Magtein)",form:"Capsule",dose:"2,000 mg threonate/day (144 mg elemental)",timing:"1-2 hours before bed",why:"Only Mg form proven to cross the BBB. Brain magnesium, neuroplasticity, sleep quality. This is IN ADDITION to glycinate in Foundation.",cost:"$15-28/mo"},
+      {t:"Foundation",n:"L-Theanine",form:"Capsule",dose:"200-400 mg",timing:"Evening / before bed",why:"Alpha brainwave promotion, anxiety reduction, sleep quality improvement without sedation. Safe to combine with everything.",cost:"$6-12/mo"},
+      {t:"Foundation",n:"Glycine",form:"Powder",dose:"3 g before bed",timing:"30 min before sleep",why:"Lowers core body temperature for sleep onset. Improves next-day alertness even after short sleep. Dirt cheap, no tolerance.",cost:"$5-10/mo"},
+      {t:"Targeted",n:"Ashwagandha (KSM-66)",form:"Capsule",dose:"600 mg/day",timing:"Evening",why:"Cortisol reduction (14-28% in trials), anxiety, sleep latency, testosterone. KSM-66 full-spectrum root extract. Most studied adaptogen.",cost:"$10-20/mo"},
+      {t:"Targeted",n:"Apigenin",form:"Capsule",dose:"50 mg/day",timing:"1 hour before bed",why:"GABA-A modulation, anxiolytic, CD38 inhibition (preserves NAD+). Chamomile-derived. Huberman-popularized sleep compound.",cost:"$8-15/mo"},
+      {t:"Targeted",n:"Tart Cherry (Montmorency)",form:"Capsule / Juice",dose:"500 mg or 8 oz juice",timing:"Evening",why:"Natural melatonin + anthocyanins. Sleep duration, quality, and recovery. More physiological than exogenous melatonin.",cost:"$10-18/mo"},
+      {t:"Targeted",n:"Phosphatidylserine (PM Dose)",form:"Capsule",dose:"100-200 mg",timing:"Evening",why:"Blunts evening cortisol spike. HPA axis regulation. Especially useful for wired-but-tired people whose cortisol peaks at the wrong time.",cost:"$12-22/mo"},
+      {t:"Advanced",n:"Melatonin (Low-Dose ER)",form:"Tablet",dose:"0.3-0.5 mg extended-release",timing:"30 min before bed",why:"Less is more. Physiological dose (0.3-0.5 mg) outperforms pharmacological (3-10 mg). Extended-release for sleep maintenance.",cost:"$4-8/mo"},
+      {t:"Advanced",n:"Magnolia Bark (Honokiol)",form:"Capsule",dose:"200-400 mg",timing:"Evening",why:"GABA-A positive allosteric modulator. Anxiety, sleep, cortisol. Synergistic with L-theanine. Relora brand = magnolia + phellodendron.",cost:"$12-22/mo"},
+      {t:"Advanced",n:"Reishi Mushroom",form:"Capsule (Extract)",dose:"1-2 g extract",timing:"Evening",why:"GABAergic calming, immune modulation, reduces sleep latency. Triterpene content is the active for sleep. Choose extract over powder.",cost:"$12-25/mo"}
+    ]
+  },
+  {
+    id:"hormonal",
+    name:"Hormonal Optimization",
+    icon:"⚡",
+    desc:"Testosterone, estrogen metabolism, SHBG, cortisol, thyroid support. Foundation Stack Zn, D3, and Mg are your base.",
+    color:"#C0392B",
+    items:[
+      {t:"Foundation",n:"Tongkat Ali (LJ100)",form:"Capsule",dose:"200-400 mg/day (2% eurycomanone)",timing:"Morning",why:"Free testosterone optimization via SHBG reduction + cortisol lowering. LJ100 patented extract. Clinically proven in multiple trials.",cost:"$15-28/mo"},
+      {t:"Foundation",n:"Boron",form:"Capsule",dose:"6-10 mg/day",timing:"Morning",why:"Raises free testosterone within 1 week. Reduces SHBG, supports estrogen metabolism, D3 cofactor. Criminally underused at this price point.",cost:"$4-8/mo"},
+      {t:"Foundation",n:"DIM (Diindolylmethane)",form:"Capsule",dose:"100-200 mg/day",timing:"With meals",why:"Estrogen metabolism. Shifts 16-OH estrone to 2-OH estrone (favorable ratio). Relevant for men and women. Cruciferous compound.",cost:"$10-18/mo"},
+      {t:"Targeted",n:"Ashwagandha (KSM-66)",form:"Capsule",dose:"600 mg/day",timing:"Evening",why:"14-28% cortisol reduction, testosterone support (17% increase in trials), thyroid optimization (T4 to T3 conversion), stress resilience.",cost:"$10-20/mo"},
+      {t:"Targeted",n:"Stinging Nettle Root",form:"Capsule",dose:"600 mg/day",timing:"Morning",why:"SHBG binding. Frees up bound testosterone. Root extract specifically, not leaf. Also supports prostate health.",cost:"$8-14/mo"},
+      {t:"Targeted",n:"Fenugreek (Testofen)",form:"Capsule",dose:"600 mg/day",timing:"Morning",why:"Furostanol saponins support free testosterone and libido. Testofen patented extract. Also helps blood sugar.",cost:"$10-18/mo"},
+      {t:"Targeted",n:"Calcium-D-Glucarate",form:"Capsule",dose:"500 mg/day",timing:"With meals",why:"Supports Phase II liver detox (glucuronidation). Prevents estrogen recirculation by inhibiting beta-glucuronidase. Pairs with DIM.",cost:"$10-18/mo"},
+      {t:"Advanced",n:"Fadogia Agrestis",form:"Capsule",dose:"300-600 mg/day (cycle: 8 wk on, 4 off)",timing:"Morning",why:"LH stimulation for testosterone. Limited human data but promising animal studies. Must cycle. Do NOT run year-round.",cost:"$12-22/mo"},
+      {t:"Advanced",n:"Shilajit (PrimaVie)",form:"Capsule",dose:"250-500 mg/day",timing:"Morning",why:"Fulvic acid, testosterone, mitochondrial CoQ10 synergy, mineral transport. PrimaVie purified extract. Heavy metal tested.",cost:"$15-28/mo"},
+      {t:"Advanced",n:"Myo-Inositol + D-Chiro-Inositol (40:1)",form:"Powder / Capsule",dose:"2-4 g myo + 50-100 mg DCI/day",timing:"Divided doses with meals",why:"Insulin sensitization, PCOS, ovarian function, hormonal balance. Relevant for women. 40:1 ratio mirrors physiological levels.",cost:"$12-22/mo"}
+    ]
+  },
+  {
+    id:"gut",
+    name:"Gut & Immune Defense",
+    icon:"🛡️",
+    desc:"Microbiome diversity, gut barrier integrity, immune modulation, and pathogen defense. Assumes Foundation Stack is in place.",
+    color:"#27AE60",
+    items:[
+      {t:"Foundation",n:"Multi-Strain Probiotic (Lacto/Bifido)",form:"Capsule",dose:"50-100 billion CFU/day",timing:"Morning, empty stomach",why:"Microbiome diversity, immune priming, pathogen displacement. Rotate brands every 2-3 months for strain diversity.",cost:"$15-35/mo"},
+      {t:"Foundation",n:"L-Glutamine",form:"Powder",dose:"5-10 g/day",timing:"Morning, empty stomach",why:"Primary fuel for enterocytes (gut lining cells). Intestinal permeability (leaky gut), IBS, immune fuel. Cheap and effective.",cost:"$8-15/mo"},
+      {t:"Foundation",n:"Vitamin D3 (Immune Dose)",form:"Softgel",dose:"5,000-10,000 IU/day",timing:"Morning with fat",why:"Cathelicidin production, T-regulatory cell function, innate immune activation. Target 60-80 ng/mL serum level via lab testing.",cost:"$5-12/mo"},
+      {t:"Targeted",n:"Saccharomyces boulardii",form:"Capsule",dose:"500 mg 2x/day",timing:"With meals",why:"Beneficial yeast that survives antibiotics. C. diff, traveler's diarrhea. Use during and after any antibiotic course.",cost:"$12-22/mo"},
+      {t:"Targeted",n:"Zinc Carnosine (PepZin GI)",form:"Capsule",dose:"75 mg 2x/day",timing:"Before meals",why:"Stomach lining repair, H. pylori suppression, gastritis, ulcers. Zinc + L-carnosine chelate specifically for gastric mucosa.",cost:"$12-20/mo"},
+      {t:"Targeted",n:"Colostrum (Bovine)",form:"Powder / Capsule",dose:"2-5 g/day",timing:"Morning, empty stomach",why:"IgG antibodies, lactoferrin, growth factors. Gut barrier integrity, pathogen defense, immune training. 6-hour first-milking sourced.",cost:"$18-35/mo"},
+      {t:"Targeted",n:"Prebiotic (PHGG / Sunfiber)",form:"Powder",dose:"5-7 g/day",timing:"In water, any time",why:"Feeds beneficial bacteria without gas/bloating of FOS/inulin. SIBO-safe. Regularity. Bifidobacteria growth.",cost:"$10-18/mo"},
+      {t:"Advanced",n:"Monolaurin (Lauricidin)",form:"Pellets / Capsule",dose:"1,000-3,000 mg/day",timing:"With meals, titrate up slowly",why:"Dissolves lipid-coated pathogen membranes (viral, bacterial, fungal). Biofilm disruptor. Coconut-derived.",cost:"$15-28/mo"},
+      {t:"Advanced",n:"Beta-Glucans (1,3/1,6-D)",form:"Capsule",dose:"500 mg/day",timing:"Morning, empty stomach",why:"Innate immune activation. Macrophage and NK cell stimulation. Primes immune system without overstimulating.",cost:"$15-25/mo"},
+      {t:"Advanced",n:"Immunoglobulins (Mega IgG2000)",form:"Powder",dose:"2.5-5 g/day",timing:"Morning, empty stomach",why:"Serum-derived bovine immunoglobulins. Bind endotoxins, support gut immune barrier, reduce inflammatory load.",cost:"$35-55/mo"}
+    ]
+  },
+  {
+    id:"aesthetics",
+    name:"Skin, Hair & Aesthetics",
+    icon:"✨",
+    desc:"Collagen production, photoprotection, hair follicle cycling, skin barrier repair, and anti-aging from the inside out.",
+    color:"#E48DBF",
+    items:[
+      {t:"Foundation",n:"Collagen Peptides (Verisol)",form:"Powder",dose:"5-10 g/day",timing:"Morning with vitamin C",why:"Verisol bioactive collagen peptides specifically studied for skin elasticity, wrinkle depth, and nail growth. Brand matters here.",cost:"$15-28/mo"},
+      {t:"Foundation",n:"Vitamin C (Liposomal)",form:"Liquid / Capsule",dose:"1,000-2,000 mg/day",timing:"Divided doses",why:"Rate-limiting cofactor for collagen synthesis. Photoprotection, brightening, antioxidant. Without adequate C, collagen supps are wasted.",cost:"$12-25/mo"},
+      {t:"Foundation",n:"Hyaluronic Acid (Oral)",form:"Capsule",dose:"120-200 mg/day",timing:"Morning",why:"Skin hydration from within. Joint lubrication. Low molecular weight for absorption. Takes 4-8 weeks for visible skin effects.",cost:"$10-20/mo"},
+      {t:"Targeted",n:"Astaxanthin",form:"Softgel",dose:"8-12 mg/day",timing:"With fat-containing meal",why:"Internal sunscreen effect, wrinkle reduction, elasticity, moisture. 6,000x more potent than vitamin C as antioxidant.",cost:"$15-28/mo"},
+      {t:"Targeted",n:"Biotin",form:"Capsule",dose:"5,000-10,000 mcg/day",timing:"Morning",why:"Hair and nail keratin infrastructure. Tell your doctor before blood work: high-dose biotin interferes with cardiac and thyroid lab assays.",cost:"$5-10/mo"},
+      {t:"Targeted",n:"Silica (BioSil / Choline-Stabilized OSA)",form:"Liquid / Capsule",dose:"6-10 mg OSA/day",timing:"Morning",why:"Collagen cross-linking, hair thickness, nail hardness, bone density. Choline-stabilized orthosilicic acid is the only form with clinical evidence.",cost:"$12-22/mo"},
+      {t:"Targeted",n:"Polypodium Leucotomos (Fernblock)",form:"Capsule",dose:"240-480 mg/day",timing:"Morning before sun",why:"Oral photoprotection. Reduces UV-induced DNA damage, sunburn cells, and hyperpigmentation. Not a replacement for sunscreen.",cost:"$15-25/mo"},
+      {t:"Advanced",n:"Ceramides (Phytoceramides)",form:"Capsule",dose:"350 mg/day",timing:"With meals",why:"Skin barrier repair from within. Hydration, eczema, anti-aging. Restores the lipid matrix that degrades with age.",cost:"$12-22/mo"},
+      {t:"Advanced",n:"Spermidine (Hair/Skin)",form:"Capsule",dose:"3-6 mg/day",timing:"Morning",why:"Hair follicle stem cell activation, growth phase extension, autophagy. Extends the anagen (growth) phase of hair cycling.",cost:"$20-40/mo"},
+      {t:"Advanced",n:"GLA (Evening Primrose / Borage Oil)",form:"Softgel",dose:"240-480 mg GLA/day",timing:"With meals",why:"Anti-inflammatory omega-6 for eczema, hormonal acne, skin barrier, nail brittleness. Borage oil is highest GLA source.",cost:"$10-20/mo"}
+    ]
+  }
+];
+
+const TIER_COLORS = {Foundation:"#34D399",Targeted:"#3B82F6",Advanced:"#9B59B6"};
+
+
 const CC={
   "Vitamins":"#E94560","Minerals":"#4A90D9","Amino Acids":"#7C5CBF","Herbal & Botanical":"#2E8B57",
   "Fatty Acids & Lipids":"#D4772C","Nootropics":"#9B59B6","Longevity":"#1ABC9C","Sleep":"#5B6ABF",
@@ -764,20 +975,35 @@ const CC={
 };
 const gc=c=>CC[c]||"#666";
 
+// ═══ DATABASE STATE ═══
 let search="",selCat="All",view="grid",expanded=null;
 const cats=[...new Set(S.map(s=>s.c))].sort();
 const catCounts={All:S.length};
 S.forEach(s=>{catCounts[s.c]=(catCounts[s.c]||0)+1});
-
 document.getElementById("totalCount").textContent=S.length+" COMPOUNDS";
 document.getElementById("catCount").textContent=cats.length+" CATEGORIES";
 
-function renderPills(){
-  document.getElementById("catPills").innerHTML=["All",...cats].map(c=>
-    '<button class="cat-pill'+(selCat===c?" active":"")+'" onclick="setCat(this)" data-cat="'+c.replace(/"/g,"&quot;")+'">'+c+'<span class="cnt">'+( catCounts[c]||0)+'</span></button>'
-  ).join("");
+// ═══ TAB SWITCHING ═══
+let activeTab="db";
+function switchTab(tab){
+  activeTab=tab;
+  document.getElementById("tabDB").classList.toggle("active",tab==="db");
+  document.getElementById("tabStacks").classList.toggle("active",tab==="stacks");
+  document.getElementById("dbTab").style.display=tab==="db"?"block":"none";
+  document.getElementById("stacksTab").style.display=tab==="stacks"?"block":"none";
+  if(tab==="stacks") renderStacks();
+
+  // Handle hash
+  if(tab==="stacks") history.replaceState(null,"","#stacks");
+  else history.replaceState(null,"",window.location.pathname);
 }
 
+// ═══ DATABASE RENDERING ═══
+function renderPills(){
+  document.getElementById("catPills").innerHTML=["All",...cats].map(c=>
+    '<button class="cat-pill'+(selCat===c?" active":"")+'" onclick="setCat(this)" data-cat="'+c.replace(/"/g,"&quot;")+'">'+c+'<span class="cnt">'+(catCounts[c]||0)+'</span></button>'
+  ).join("");
+}
 function getFiltered(){
   const q=search.toLowerCase();
   return S.filter(s=>{
@@ -786,78 +1012,84 @@ function getFiltered(){
     return cm&&tm;
   });
 }
-
 function render(){
   renderPills();
   const f=getFiltered();
   document.getElementById("resultsBar").innerHTML=f.length+" result"+(f.length!==1?"s":"")+(search?' <button class="clear-btn" onclick="clearAll()">Clear</button>':"");
-
   const el=document.getElementById("content");
-  if(f.length===0){
-    el.innerHTML='<div class="no-results"><div class="icon">&#x1F50D;</div><p>No supplements match your search.</p></div>';
-    return;
-  }
-
+  if(f.length===0){el.innerHTML='<div class="no-results"><div class="icon">&#x1F50D;</div><p>No supplements match your search.</p></div>';return;}
   if(view==="grid"){
-    let html='<div class="grid">';
-    f.forEach((s,i)=>{
-      const idx=S.indexOf(s);
-      const isExp=expanded===idx;
-      const col=gc(s.c);
-      const useText=isExp?s.u:(s.u.length>80?s.u.slice(0,80)+"...":s.u);
-      html+='<div class="card'+(isExp?" expanded":"")+'" style="border-left-color:'+col+'" onclick="toggle('+idx+')">';
-      html+='<div class="card-top"><div class="card-name">'+s.n+'</div>';
-      html+='<span class="card-cat" style="color:'+col+';background:'+col+'18">'+s.c+'</span></div>';
-      html+='<div class="card-use">'+useText+'</div>';
-      if(isExp){
-        html+='<div class="card-detail"><div class="lbl">Dosage</div><div class="val">'+s.d+'</div>';
-        if(s.f) html+='<div class="form-note">'+s.f+'</div>';
-        html+='</div>';
-      }
-      html+='</div>';
-    });
-    html+='</div>';
-    el.innerHTML=html;
-  } else {
-    let html='<div class="list-wrap"><div class="list-header"><span>Supplement</span><span>Category</span><span>Use Case</span><span>Dosage</span><span>Form / Notes</span></div>';
+    let h='<div class="grid">';
     f.forEach(s=>{
-      const col=gc(s.c);
-      html+='<div class="list-row">';
-      html+='<div class="l-name">'+s.n+'</div>';
-      html+='<div class="l-cat" style="color:'+col+'">'+s.c+'</div>';
-      html+='<div class="l-use">'+s.u+'</div>';
-      html+='<div class="l-dose">'+s.d+'</div>';
-      html+='<div class="l-form">'+(s.f||"")+'</div>';
-      html+='</div>';
+      const idx=S.indexOf(s),isExp=expanded===idx,col=gc(s.c);
+      h+='<div class="card'+(isExp?" expanded":"")+'" style="border-left-color:'+col+'" onclick="toggle('+idx+')">';
+      h+='<div class="card-top"><div class="card-name">'+s.n+'</div><span class="card-cat" style="color:'+col+';background:'+col+'18">'+s.c+'</span></div>';
+      h+='<div class="card-use">'+(isExp?s.u:(s.u.length>80?s.u.slice(0,80)+"...":s.u))+'</div>';
+      if(isExp){h+='<div class="card-detail"><div class="lbl">Dosage</div><div class="val">'+s.d+'</div>';if(s.f)h+='<div class="form-note">'+s.f+'</div>';h+='</div>';}
+      h+='</div>';
     });
-    html+='</div>';
-    el.innerHTML=html;
+    el.innerHTML=h+'</div>';
+  } else {
+    let h='<div class="list-wrap"><div class="list-header"><span>Supplement</span><span>Category</span><span>Use Case</span><span>Dosage</span><span>Form / Notes</span></div>';
+    f.forEach(s=>{h+='<div class="list-row"><div class="l-name">'+s.n+'</div><div class="l-cat" style="color:'+gc(s.c)+'">'+s.c+'</div><div class="l-use">'+s.u+'</div><div class="l-dose">'+s.d+'</div><div class="l-form">'+(s.f||"")+'</div></div>';});
+    el.innerHTML=h+'</div>';
   }
 }
 
 function setCat(el){selCat=el.dataset.cat;expanded=null;render();}
 function toggle(i){expanded=expanded===i?null:i;render();}
-function setView(v){
-  view=v;expanded=null;
-  document.getElementById("gridBtn").classList.toggle("active",v==="grid");
-  document.getElementById("listBtn").classList.toggle("active",v==="list");
-  render();
-}
+function setView(v){view=v;expanded=null;document.getElementById("gridBtn").classList.toggle("active",v==="grid");document.getElementById("listBtn").classList.toggle("active",v==="list");render();}
 function clearAll(){search="";selCat="All";expanded=null;document.getElementById("searchInput").value="";render();}
+document.getElementById("searchInput").addEventListener("input",function(e){search=e.target.value;expanded=null;render();});
+document.addEventListener("keydown",function(e){if(e.key==="/"&&document.activeElement!==document.getElementById("searchInput")){e.preventDefault();document.getElementById("searchInput").focus();}});
 
-document.getElementById("searchInput").addEventListener("input",function(e){
-  search=e.target.value;expanded=null;render();
-});
+// ═══ STACKS RENDERING ═══
+let openStack=null;
+function renderStacks(){
+  const el=document.getElementById("stacksContent");
+  let h='<div class="stacks-grid">';
+  STACKS.forEach((stk,si)=>{
+    const isOpen=openStack===si;
+    const totalLow=stk.items.reduce((s,x)=>s+parseInt((x.cost.match(/\$(\d+)/)||[0,0])[1]),0);
+    const totalHigh=stk.items.reduce((s,x)=>s+parseInt((x.cost.match(/-(\d+)/)||[0,0])[1]),0);
+    h+='<div class="stack-card'+(isOpen?" active":"")+'" onclick="toggleStack('+si+')">';
+    h+='<div class="stack-card-head"><div class="stack-icon">'+stk.icon+'</div><div class="stack-info">';
+    h+='<h3>'+stk.name+'</h3><p>'+stk.desc+'</p>';
+    h+='<div class="stack-meta"><span class="count">'+stk.items.length+' compounds</span><span class="cost">$'+totalLow+' - $'+totalHigh+'/mo</span></div>';
+    h+='</div></div>';
+    if(isOpen){
+      h+='<div class="stack-detail">';
+      ["Foundation","Targeted","Advanced"].forEach(tier=>{
+        const tierItems=stk.items.filter(x=>x.t===tier);
+        if(tierItems.length===0) return;
+        const tc=TIER_COLORS[tier];
+        h+='<div class="tier-section tier-'+tier.toLowerCase()+'"><div class="tier-label">'+tier+' ('+tierItems.length+')</div>';
+        tierItems.forEach(item=>{
+          h+='<div class="compound-row">';
+          h+='<div class="compound-top"><span class="compound-name">'+item.n+'</span><span class="compound-cost">'+item.cost+'</span></div>';
+          h+='<div class="compound-dose">'+item.dose+' — '+item.form+'</div>';
+          h+='<div class="compound-timing">'+item.timing+'</div>';
+          h+='<div class="compound-why">'+item.why+'</div>';
+          h+='</div>';
+        });
+        h+='</div>';
+      });
+      h+='</div>';
+    }
+    h+='</div>';
+  });
+  el.innerHTML=h+'</div>';
+}
+function toggleStack(i){openStack=openStack===i?null:i;renderStacks();}
 
-document.addEventListener("keydown",function(e){
-  if(e.key==="/"&&document.activeElement!==document.getElementById("searchInput")){
-    e.preventDefault();document.getElementById("searchInput").focus();
-  }
-});
-
+// ═══ MOBILE MENU ═══
 function toggleMobile(){document.getElementById("mobileMenu").classList.toggle("open");}
 
+// ═══ INIT ═══
 render();
+
+// Handle hash routing
+if(window.location.hash==="#stacks") switchTab("stacks");
 </script>
 </body>
 </html>
