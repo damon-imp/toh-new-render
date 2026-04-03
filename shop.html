@@ -79,6 +79,13 @@
     <div class="auth-forgot"><a onclick="doReset()">Forgot password?</a></div>
     <div class="auth-msg" id="loginMsg"></div>
   </div>
+  <div class="auth-form" id="resetForm" style="display:none">
+    <p style="font-size:14px;color:var(--t2);margin-bottom:16px;line-height:1.6">Enter your new password below.</p>
+    <input type="password" id="newPassword" placeholder="New password (min 6 chars)">
+    <input type="password" id="confirmPassword" placeholder="Confirm new password">
+    <button class="auth-btn" onclick="doUpdatePassword()">Update Password</button>
+    <div class="auth-msg" id="resetMsg"></div>
+  </div>
   <div class="auth-form" id="signupForm">
     <div class="name-row">
       <input type="text" id="signupFirst" placeholder="First name">
@@ -428,6 +435,42 @@ async function checkAuth() {
   }
 }
 
+
+// ─── PASSWORD RECOVERY ───
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    // Show the reset form, hide login/signup
+    document.getElementById('authWall').style.display = 'block';
+    document.getElementById('shopWrap').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('resetForm').style.display = 'block';
+    document.querySelector('.auth-tabs').style.display = 'none';
+  }
+});
+
+async function doUpdatePassword() {
+  const pw = document.getElementById('newPassword').value;
+  const pw2 = document.getElementById('confirmPassword').value;
+  const msg = document.getElementById('resetMsg');
+  msg.className = 'auth-msg'; msg.textContent = '';
+  if (!pw || !pw2) { msg.className = 'auth-msg error'; msg.textContent = 'Please fill in both fields.'; return; }
+  if (pw.length < 6) { msg.className = 'auth-msg error'; msg.textContent = 'Password must be at least 6 characters.'; return; }
+  if (pw !== pw2) { msg.className = 'auth-msg error'; msg.textContent = 'Passwords do not match.'; return; }
+  const { error } = await sb.auth.updateUser({ password: pw });
+  if (error) { msg.className = 'auth-msg error'; msg.textContent = error.message; }
+  else {
+    msg.className = 'auth-msg success'; msg.textContent = 'Password updated! Redirecting…';
+    // Restore normal UI and proceed to shop
+    setTimeout(() => {
+      document.getElementById('resetForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = '';
+      document.getElementById('signupForm').style.display = '';
+      document.querySelector('.auth-tabs').style.display = '';
+      checkAuth();
+    }, 1500);
+  }
+}
 
 // ─── INIT ───
 checkAuth();
