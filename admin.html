@@ -618,7 +618,7 @@ function renderOrdersTable(orders) {
       <td>${channelBadge(o.channel)}</td>
       <td class="mono">$${parseFloat(o.total || 0).toFixed(2)}</td>
       <td style="font-size:12px">${fmtDate(o.created_at)}</td>
-      <td><button class="btn btn-secondary btn-sm" onclick="openOrderDetail('${o.id}')">View</button></td>
+      <td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openOrderDetail('${o.id}')">View</button> <button class="btn btn-secondary btn-sm" onclick="openOrderEdit('${o.id}')">Edit</button> <button class="btn btn-sm" style="background:#dc2626;color:#fff" onclick="deleteOrder('${o.id}')">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -728,6 +728,24 @@ async function saveOrderEdits() {
   toast('Order updated');
   await loadOrders();
   closeModal('modalOrderDetail');
+  renderFulfillment();
+  renderOrders();
+}
+
+function openOrderEdit(id) {
+  openOrderDetail(id);
+  toggleEditOrder(true);
+}
+
+async function deleteOrder(id) {
+  const o = allOrders.find(x => x.id === id);
+  if (!o) return;
+  const confirmation = prompt(`To delete order TOH-${o.order_number}, type DELETE:`);
+  if (confirmation !== 'DELETE') { if (confirmation !== null) toast('Deletion cancelled — you must type DELETE exactly', true); return; }
+  const { error } = await sb.from('orders').delete().eq('id', id);
+  if (error) { toast('Error deleting order: ' + error.message, true); return; }
+  toast('Order TOH-' + o.order_number + ' deleted');
+  await loadOrders();
   renderFulfillment();
   renderOrders();
 }
