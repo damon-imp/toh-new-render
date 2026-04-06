@@ -270,6 +270,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
             <option value="hormonal">Hormonal</option>
             <option value="aesthetic">Aesthetic</option>
           </select>
+          <div class="toolbar-right"><button class="btn btn-primary btn-sm" onclick="openAddProductModal()">+ Add Product</button></div>
         </div>
         <table>
           <thead><tr><th>Product</th><th>Content</th><th>Category</th><th>Stock</th><th>Status</th><th>Cost</th><th>Price</th><th>Margin</th><th>Actions</th></tr></thead>
@@ -387,6 +388,37 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalAdjust')">Cancel</button>
       <button class="btn btn-primary" onclick="confirmAdjust()">Save Adjustment</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAddProduct">
+  <div class="modal" style="max-width:600px">
+    <h3 id="addProductTitle">Add New Product</h3>
+    <input type="hidden" id="apEditId" value="">
+    <div class="form-row">
+      <div class="form-group" style="flex:2"><label>Product Name</label><input id="apName" placeholder="e.g., BPC-157"></div>
+      <div class="form-group"><label>Category</label>
+        <select id="apCategory"><option value="metabolic">Metabolic</option><option value="recovery">Recovery</option><option value="longevity">Longevity</option><option value="cognitive">Cognitive</option><option value="hormonal">Hormonal</option><option value="aesthetic">Aesthetic</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Content</label><input id="apContent" placeholder="e.g., 5mg, 10ml"></div>
+      <div class="form-group"><label>Form</label><input id="apForm" placeholder="e.g., Vial, Nasal Spray"></div>
+      <div class="form-group"><label>Image Key</label><input id="apImgKey" placeholder="e.g., bpc-157"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Wholesale Cost ($)</label><input id="apCost" type="number" step="0.01" placeholder="0.00"></div>
+      <div class="form-group"><label>Sale Price ($)</label><input id="apPrice" type="number" step="0.01" placeholder="0.00"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Starting Stock</label><input id="apStock" type="number" value="0"></div>
+      <div class="form-group"><label>Reorder Threshold</label><input id="apReorderThreshold" type="number" value="5"></div>
+      <div class="form-group"><label>Reorder Qty</label><input id="apReorderQty" type="number" value="10"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalAddProduct')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
     </div>
   </div>
 </div>
@@ -938,7 +970,8 @@ function renderInvTable(list) {
       <td class="mono">${margin}%</td>
       <td>
         <button class="btn btn-success btn-sm" onclick="openRestockModal('${p.id}')" style="margin-right:4px">+Restock</button>
-        <button class="btn btn-secondary btn-sm" onclick="openAdjustModal('${p.id}')">Adjust</button>
+        <button class="btn btn-secondary btn-sm" onclick="openAdjustModal('${p.id}')" style="margin-right:4px">Adjust</button>
+        <button class="btn btn-secondary btn-sm" onclick="openAddProductModal('${p.id}')">Edit</button>
       </td>
     </tr>`;
   }).join('');
@@ -951,6 +984,72 @@ function filterInventory(q) {
 function filterInvCategory(cat) {
   const filtered = cat ? products.filter(p => p.category === cat) : products;
   renderInvTable(filtered);
+}
+
+function openAddProductModal(productId) {
+  const isEdit = !!productId;
+  document.getElementById('addProductTitle').textContent = isEdit ? 'Edit Product' : 'Add New Product';
+  document.getElementById('apEditId').value = productId || '';
+  if (isEdit) {
+    const p = products.find(x => x.id === productId);
+    if (!p) return;
+    document.getElementById('apName').value = p.name || '';
+    document.getElementById('apCategory').value = p.category || 'metabolic';
+    document.getElementById('apContent').value = p.content || '';
+    document.getElementById('apForm').value = p.form || '';
+    document.getElementById('apImgKey').value = p.img_key || '';
+    document.getElementById('apCost').value = parseFloat(p.cost_wholesale || 0).toFixed(2);
+    document.getElementById('apPrice').value = parseFloat(p.sale_price || 0).toFixed(2);
+    document.getElementById('apStock').value = p.stock_on_hand || 0;
+    document.getElementById('apReorderThreshold').value = p.reorder_threshold || 5;
+    document.getElementById('apReorderQty').value = p.reorder_qty || 10;
+  } else {
+    document.getElementById('apName').value = '';
+    document.getElementById('apCategory').value = 'metabolic';
+    document.getElementById('apContent').value = '';
+    document.getElementById('apForm').value = '';
+    document.getElementById('apImgKey').value = '';
+    document.getElementById('apCost').value = '';
+    document.getElementById('apPrice').value = '';
+    document.getElementById('apStock').value = '0';
+    document.getElementById('apReorderThreshold').value = '5';
+    document.getElementById('apReorderQty').value = '10';
+  }
+  showModal('modalAddProduct');
+}
+
+async function saveProduct() {
+  const name = document.getElementById('apName').value.trim();
+  if (!name) { toast('Product name is required', true); return; }
+
+  const row = {
+    name,
+    category: document.getElementById('apCategory').value,
+    content: document.getElementById('apContent').value.trim(),
+    form: document.getElementById('apForm').value.trim(),
+    img_key: document.getElementById('apImgKey').value.trim(),
+    cost_wholesale: parseFloat(document.getElementById('apCost').value) || 0,
+    sale_price: parseFloat(document.getElementById('apPrice').value) || 0,
+    stock_on_hand: parseInt(document.getElementById('apStock').value) || 0,
+    reorder_threshold: parseInt(document.getElementById('apReorderThreshold').value) || 5,
+    reorder_qty: parseInt(document.getElementById('apReorderQty').value) || 10,
+    is_active: true,
+  };
+
+  const editId = document.getElementById('apEditId').value;
+  let error;
+  if (editId) {
+    ({ error } = await sb.from('products').update(row).eq('id', editId));
+  } else {
+    ({ error } = await sb.from('products').insert(row));
+  }
+  if (error) { toast('Error saving product: ' + error.message, true); return; }
+
+  toast(editId ? 'Product updated' : 'Product added');
+  closeModal('modalAddProduct');
+  await loadProducts();
+  renderInventory();
+  renderLowStock();
 }
 
 // ─── VIEW 5: LOW STOCK ───
