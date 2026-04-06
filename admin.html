@@ -755,6 +755,7 @@ async function submitOrder() {
     status: payStatus === 'paid' ? 'paid' : 'pending',
     payment_status: payStatus,
     channel: document.getElementById('coChannel').value,
+    items: items,
     subtotal: total, total: total,
     shipping_address: document.getElementById('coAddress').value.trim(),
     notes: document.getElementById('coNotes').value.trim(),
