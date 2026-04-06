@@ -1,4 +1,5 @@
 // @ts-nocheck — Deno runtime; Deno.env and Deno.serve are valid in Supabase Edge Functions
+// v2 — added GHL contact upsert on order placement
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
