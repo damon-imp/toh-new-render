@@ -395,7 +395,34 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div class="modal" style="max-width:640px">
     <h3>Order <span id="detailOrderNum"></span></h3>
     <div id="detailContent"></div>
-    <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalOrderDetail')">Close</button></div>
+    <div id="detailEditSection" style="display:none;border-top:1px solid var(--t4);padding-top:16px;margin-top:16px">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:12px">Edit Order</div>
+      <div class="form-row">
+        <div class="form-group"><label>Status</label>
+          <select id="editStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select>
+        </div>
+        <div class="form-group"><label>Payment Status</label>
+          <select id="editPayment"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="refunded">Refunded</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Subtotal</label><input id="editSubtotal" type="number" step="0.01"></div>
+        <div class="form-group"><label>Shipping</label><input id="editShipping" type="number" step="0.01"></div>
+        <div class="form-group"><label>Tax</label><input id="editTax" type="number" step="0.01"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Shipping Protection</label><input id="editProtection" type="number" step="0.01"></div>
+        <div class="form-group"><label>Coupon Discount</label><input id="editDiscount" type="number" step="0.01"></div>
+        <div class="form-group"><label>Total</label><input id="editTotal" type="number" step="0.01"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="editNotes" rows="2"></textarea></div>
+      <button class="btn btn-primary" onclick="saveOrderEdits()" style="margin-top:8px">Save Changes</button>
+      <button class="btn btn-secondary" onclick="toggleEditOrder(false)" style="margin-top:8px">Cancel</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="toggleEditOrder(true)" id="btnEditOrder">Edit Order</button>
+      <button class="btn btn-secondary" onclick="closeModal('modalOrderDetail')">Close</button>
+    </div>
   </div>
 </div>
 
@@ -636,7 +663,73 @@ function openOrderDetail(id) {
     ${getOrderItemRows(o)}
     </tbody></table>
   `;
+  document.getElementById('detailEditSection').style.display = 'none';
+  document.getElementById('btnEditOrder').style.display = '';
+  editingOrderId = o.id;
   showModal('modalOrderDetail');
+}
+
+let editingOrderId = null;
+
+function toggleEditOrder(show) {
+  const section = document.getElementById('detailEditSection');
+  const btn = document.getElementById('btnEditOrder');
+  if (show) {
+    const o = allOrders.find(x => x.id === editingOrderId);
+    if (!o) return;
+    document.getElementById('editStatus').value = o.status || 'pending';
+    document.getElementById('editPayment').value = o.payment_status || 'unpaid';
+    document.getElementById('editSubtotal').value = parseFloat(o.subtotal || 0).toFixed(2);
+    document.getElementById('editShipping').value = parseFloat(o.shipping || 0).toFixed(2);
+    document.getElementById('editTax').value = parseFloat(o.tax || 0).toFixed(2);
+    document.getElementById('editProtection').value = parseFloat(o.shipping_protection || 0).toFixed(2);
+    document.getElementById('editDiscount').value = parseFloat(o.coupon_discount || 0).toFixed(2);
+    document.getElementById('editTotal').value = parseFloat(o.total || 0).toFixed(2);
+    document.getElementById('editNotes').value = o.notes || '';
+    section.style.display = 'block';
+    btn.style.display = 'none';
+  } else {
+    section.style.display = 'none';
+    btn.style.display = '';
+  }
+}
+
+function recalcEditTotal() {
+  const sub = parseFloat(document.getElementById('editSubtotal').value) || 0;
+  const ship = parseFloat(document.getElementById('editShipping').value) || 0;
+  const tax = parseFloat(document.getElementById('editTax').value) || 0;
+  const prot = parseFloat(document.getElementById('editProtection').value) || 0;
+  const disc = parseFloat(document.getElementById('editDiscount').value) || 0;
+  document.getElementById('editTotal').value = (sub + ship + tax + prot - disc).toFixed(2);
+}
+['editSubtotal','editShipping','editTax','editProtection','editDiscount'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', recalcEditTotal);
+});
+
+async function saveOrderEdits() {
+  if (!editingOrderId) return;
+  const updates = {
+    status: document.getElementById('editStatus').value,
+    payment_status: document.getElementById('editPayment').value,
+    subtotal: parseFloat(document.getElementById('editSubtotal').value) || 0,
+    shipping: parseFloat(document.getElementById('editShipping').value) || 0,
+    tax: parseFloat(document.getElementById('editTax').value) || 0,
+    shipping_protection: parseFloat(document.getElementById('editProtection').value) || 0,
+    coupon_discount: parseFloat(document.getElementById('editDiscount').value) || 0,
+    total: parseFloat(document.getElementById('editTotal').value) || 0,
+    notes: document.getElementById('editNotes').value.trim(),
+  };
+  if (updates.payment_status === 'paid') {
+    const o = allOrders.find(x => x.id === editingOrderId);
+    if (o && o.payment_status !== 'paid') updates.paid_at = new Date().toISOString();
+  }
+  const { error } = await sb.from('orders').update(updates).eq('id', editingOrderId);
+  if (error) { toast('Error saving: ' + error.message, true); return; }
+  toast('Order updated');
+  await loadOrders();
+  closeModal('modalOrderDetail');
+  renderFulfillment();
+  renderOrders();
 }
 
 // ─── VIEW 3: CREATE ORDER ───
