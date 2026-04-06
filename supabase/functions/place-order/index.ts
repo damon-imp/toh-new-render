@@ -109,6 +109,42 @@ Deno.serve(async (req) => {
       updated_at: new Date().toISOString(),
     }, { onConflict: "id" });
 
+    // ── Upsert contact in GoHighLevel ────────────────────────────
+    try {
+      const ghlToken = Deno.env.get("GHL_API_TOKEN");
+      const locationId = Deno.env.get("GHL_LOCATION_ID");
+      if (ghlToken && locationId) {
+        const ghlHeaders = {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${ghlToken}`,
+          "Version": "2021-07-28",
+        };
+        const addr = shippingAddress;
+        const upsertRes = await fetch("https://services.leadconnectorhq.com/contacts/upsert", {
+          method: "POST",
+          headers: ghlHeaders,
+          body: JSON.stringify({
+            locationId,
+            firstName: addr.firstName,
+            lastName: addr.lastName,
+            email: customerEmail,
+            phone: addr.phone || undefined,
+            address1: addr.address1,
+            city: addr.city,
+            state: addr.state,
+            postalCode: addr.zip,
+            country: addr.country || "US",
+            source: "Website Order",
+            tags: ["Order Placed"],
+          }),
+        });
+        const upsertData = await upsertRes.json();
+        console.log("GHL upsert result:", upsertData.contact?.id || "no contact ID");
+      }
+    } catch (ghlErr) {
+      console.error("GHL upsert failed (non-blocking):", ghlErr);
+    }
+
     // ── Format helpers ──────────────────────────────────────────
     const fmt = (n: number) => `$${n.toFixed(2)}`;
     const orderDate = new Date().toLocaleDateString("en-US", {
@@ -124,7 +160,7 @@ Deno.serve(async (req) => {
     const itemRowsHtml = items.map((item: any) => `
       <tr>
         <td style="padding:12px 0;border-bottom:1px solid #e5e5e5;vertical-align:middle">
-          <img src="https://damon-imp.github.io/toh-site/images/${item.imgKey}.png" width="60" height="60" style="border-radius:8px;object-fit:cover;background:#f5f5f5" alt="${item.name}">
+          <img src="https://theoptimizedhumanproject.com/images/${item.imgKey}.png" width="60" height="60" style="border-radius:8px;object-fit:cover;background:#f5f5f5" alt="${item.name}">
         </td>
         <td style="padding:12px 16px;border-bottom:1px solid #e5e5e5;vertical-align:middle">
           <div style="font-weight:600;color:#111;font-size:14px">${item.name}</div>
