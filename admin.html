@@ -750,6 +750,8 @@ async function submitOrder() {
   // Create order
   const { data: order, error: oErr } = await sb.from('orders').insert({
     customer_id: customerId,
+    customer_email: email,
+    customer_name: [first, last].filter(Boolean).join(' '),
     status: payStatus === 'paid' ? 'paid' : 'pending',
     payment_status: payStatus,
     channel: document.getElementById('coChannel').value,
