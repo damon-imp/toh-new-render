@@ -180,7 +180,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <select class="filter-select" id="orderStatusFilter" onchange="searchOrders()">
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
-            <option value="paid">Paid</option>
             <option value="processing">Processing</option>
             <option value="partial_shipped">Partial Shipped</option>
             <option value="shipped">Shipped</option>
@@ -432,7 +431,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:12px">Edit Order</div>
       <div class="form-row">
         <div class="form-group"><label>Status</label>
-          <select id="editStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select>
+          <select id="editStatus"><option value="pending">Pending</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select>
         </div>
         <div class="form-group"><label>Payment Status</label>
           <select id="editPayment"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="refunded">Refunded</option></select>
@@ -896,7 +895,7 @@ async function submitOrder() {
     customer_id: customerId,
     customer_email: email,
     customer_name: [first, last].filter(Boolean).join(' '),
-    status: payStatus === 'paid' ? 'paid' : 'pending',
+    status: payStatus === 'paid' ? 'processing' : 'pending',
     payment_status: payStatus,
     channel: document.getElementById('coChannel').value,
     items: items,
