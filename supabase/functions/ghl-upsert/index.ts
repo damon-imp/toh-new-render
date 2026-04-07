@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
 
     // Enroll in workflow if contact was created/found
     if (contactId) {
-      const workflowId = Deno.env.get("GHL_WORKFLOW_ID") || "32606721-b9d8-41d3-a7e7-73a29ba40740";
+      const workflowId = Deno.env.get("GHL_WORKFLOW_ID") || "e8c82a90-3907-42cc-9c59-345f1664ea60";
       await fetch(
         `https://services.leadconnectorhq.com/contacts/${contactId}/workflow/${workflowId}`,
         { method: "POST", headers: ghlHeaders }
