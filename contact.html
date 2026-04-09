@@ -29,19 +29,73 @@
 <div class="contact-info">
 <h2>We respond fast.</h2>
 <p>Questions about products, orders, bulk pricing, or partnership opportunities. Reach out and a real person will get back to you.</p>
-<div class="contact-item"><div class="icon">@</div><div class="text"><h3>Email</h3><p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5b282e2b2b34292f1b2f333e342b2f323632213e3f332e363a3575383436">[email&#160;protected]</a></p></div></div>
+<div class="contact-item"><div class="icon">@</div><div class="text"><h3>Email</h3><p><a href="mailto:support@theoptimizedhumanproject.com">support@theoptimizedhumanproject.com</a></p></div></div>
 <div class="contact-item"><div class="icon">&#9996;</div><div class="text"><h3>Live Chat</h3><p>Available daily, 9AM - 10PM EST</p></div></div>
 <div class="contact-item"><div class="icon">&#9201;</div><div class="text"><h3>Response Time</h3><p>Most inquiries answered within 2 hours</p></div></div>
 </div>
 <div class="contact-form">
-<div class="form-group"><label>Name</label><input type="text" placeholder="Your name"></div>
-<div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
-<div class="form-group"><label>Subject</label><select><option>General Inquiry</option><option>Order Support</option><option>Bulk / Wholesale</option><option>Partnership</option><option>COA Request</option></select></div>
-<div class="form-group"><label>Message</label><textarea placeholder="How can we help?"></textarea></div>
-<button class="btn">Send Message</button>
+<div class="form-group"><label>Name</label><input id="cfName" type="text" placeholder="Your name"></div>
+<div class="form-group"><label>Email</label><input id="cfEmail" type="email" placeholder="you@email.com"></div>
+<div class="form-group"><label>Subject</label><select id="cfSubject"><option>General Inquiry</option><option>Order Support</option><option>Bulk / Wholesale</option><option>Partnership</option><option>COA Request</option></select></div>
+<div class="form-group"><label>Message</label><textarea id="cfMessage" placeholder="How can we help?"></textarea></div>
+<button class="btn" id="cfBtn" onclick="submitContact()">Send Message</button>
+<div id="cfStatus" style="margin-top:12px;font-size:14px;text-align:center;display:none"></div>
 </div>
 </div>
 </div></section>
+<script>
+const SUPABASE_URL = 'https://qrozjbmimzcwegzolptm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyb3pqYm1pbXpjd2Vnem9scHRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTQ1NDgsImV4cCI6MjA5MDEzMDU0OH0.JmmgwESE5BB3PMUFeWTJcX1G3iSVWr8-Sc57p3NNezw';
+
+async function submitContact() {
+  const name = document.getElementById('cfName').value.trim();
+  const email = document.getElementById('cfEmail').value.trim();
+  const subject = document.getElementById('cfSubject').value;
+  const message = document.getElementById('cfMessage').value.trim();
+  const btn = document.getElementById('cfBtn');
+  const status = document.getElementById('cfStatus');
+
+  if (!name || !email || !message) {
+    status.style.display = 'block';
+    status.style.color = '#f87171';
+    status.textContent = 'Please fill in name, email, and message.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  status.style.display = 'none';
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/functions/v1/contact-form', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ name, email, subject, message }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || 'Send failed');
+
+    status.style.display = 'block';
+    status.style.color = '#34D399';
+    status.textContent = 'Message sent! We\'ll get back to you shortly.';
+    document.getElementById('cfName').value = '';
+    document.getElementById('cfEmail').value = '';
+    document.getElementById('cfMessage').value = '';
+    document.getElementById('cfSubject').selectedIndex = 0;
+    btn.textContent = 'Sent!';
+    setTimeout(() => { btn.textContent = 'Send Message'; btn.disabled = false; }, 3000);
+  } catch (err) {
+    status.style.display = 'block';
+    status.style.color = '#f87171';
+    status.textContent = 'Something went wrong. Please email us directly.';
+    btn.textContent = 'Send Message';
+    btn.disabled = false;
+  }
+}
+</script>
 <footer class="footer"><div class="container"><div class="footer-bottom"><p>&copy; 2026 The Optimized Human. All rights reserved.</p><div class="disclaimer">All products are sold strictly for laboratory research purposes only and are not intended for human or animal consumption.</div></div></div></footer>
 </body>
 </html>
